@@ -1,11 +1,11 @@
-package com.example.demo.dto;
+package com.example.demo.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SignInResponse {
+public class TokenDto {
     private String accessToken;
     private String refreshToken;
 }

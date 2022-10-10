@@ -8,19 +8,19 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class Response {
-    private boolean status;
+    private String status;
     private int code;
     private Result result;
 
     public static Response success() {
-        return new Response(true, 0, null);
+        return new Response("success", 200, null);
     }
 
     public static <T> Response success(T data) {
-        return new Response(true, 0, new Success<>(data));
+        return new Response("success", 200, new Success<>(data));
     }
 
     public static Response fail(int code, String msg) {
-        return new Response(false, code, new Fail(msg));
+        return new Response("fail", code, new Fail(msg));
     }
 }
