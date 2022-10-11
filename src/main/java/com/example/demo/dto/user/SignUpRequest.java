@@ -15,10 +15,10 @@ public class SignUpRequest {
     private String image;
     private String grade;
 
-    public static Member toEntity(SignUpRequest signUpRequest, PasswordEncoder passwordEncoder) {
+    public static Member toEntity(SignUpRequest signUpRequest) {
         return Member.builder()
                 .username(signUpRequest.username)
-                .password(passwordEncoder.encode(signUpRequest.password))
+                .password(signUpRequest.password)
                 .nickname(signUpRequest.nickname)
                 .image(signUpRequest.image)
                 .grade(signUpRequest.grade)

@@ -6,10 +6,8 @@ import com.example.demo.dto.user.SignUpRequest;
 import com.example.demo.dto.user.TokenDto;
 import com.example.demo.exception.*;
 import com.example.demo.repository.MemberRepository;
-import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +23,8 @@ public class MemberService {
 
     public void signUp(SignUpRequest signUpRequest) {
         validateInfo(signUpRequest);
-        memberRepository.save(SignUpRequest.toEntity(signUpRequest, passwordEncoder));
+        signUpRequest.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        memberRepository.save(SignUpRequest.toEntity(signUpRequest));
     }
 
     private void validateInfo(SignUpRequest signUpRequest) {
@@ -40,31 +39,11 @@ public class MemberService {
         if (!validatePassword(signInRequest, member)) {
             throw new LoginFailureException();
         }
-        String accessToken = jwtTokenProvider.createToken(member.getUsername());
+        String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         member.updateRefreshToken(refreshToken);
         return new TokenDto(accessToken, refreshToken);
     }
-
-//    @Transactional
-//    public TokenDto reIssue(TokenDto tokenDto) {
-//        if(!jwtTokenProvider.validateToken(tokenDto.getRefreshToken()))
-//            throw new InvalidRefreshTokenException();
-//        Member member = findMemberByToken(tokenDto);
-//
-//        if(!member.getRefreshToken().equals(tokenDto.getRefreshToken()))
-//            throw new InvalidRefreshTokenException();
-//        String accessToken = jwtTokenProvider.createToken(member.getUsername());
-//        String refreshToken = jwtTokenProvider.createRefreshToken();
-//        member.updateRefreshToken(refreshToken);
-//        return new TokenDto(accessToken, refreshToken);
-//    }
-//    public Member findMemberByToken(TokenDto tokenDto) {
-//        Authentication authentication = jwtTokenProvider.getAuthentication(tokenDto.getAccessToken());
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        String username = userDetails.getUsername();
-//        return memberRepository.findByUsername(username).orElseThrow(MemberNotFoundException::new);
-//    }
 
     private boolean validatePassword(SignInRequest signInRequest, Member member) {
         if(passwordEncoder.matches(signInRequest.getPassword(), member.getPassword()))
