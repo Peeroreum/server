@@ -1,7 +1,5 @@
 
 spring:
-  main:
-    allow-circular-references: true
   datasource:
     url: jdbc:mariadb://localhost:3308/befriends
     driver-class-name: org.mariadb.jdbc.Driver
