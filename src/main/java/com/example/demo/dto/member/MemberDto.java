@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class MemberDto {
     private String username;
     private String nickname;
     private String grade;
     private String image;
-    public static UserDto toDto(Member member) {
-        return new UserDto(member.getUsername(), member.getNickname(), member.getGrade(), member.getImage());
+    public static MemberDto toDto(Member member) {
+        return new MemberDto(member.getUsername(), member.getNickname(), member.getGrade(), member.getImage());
     }
 }

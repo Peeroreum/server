@@ -28,14 +28,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .anyRequest().permitAll()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(customEntryPoint)
-                .accessDeniedHandler(customAccessDeniedHandler)
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class);
+                .anyRequest().permitAll();
+//                .and()
+//                .exceptionHandling().authenticationEntryPoint(customEntryPoint)
+//                .accessDeniedHandler(customAccessDeniedHandler)
+//                .and()
+//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class);
 
     }
 
