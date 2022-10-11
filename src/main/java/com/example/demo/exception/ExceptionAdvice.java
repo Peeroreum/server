@@ -22,7 +22,6 @@ public class ExceptionAdvice {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response exception(Exception e) {
-        log.error("e = {}", e.getMessage());
         return getFailureResponse(EXCEPTION);
     }
 
@@ -66,6 +65,12 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response invalidRefreshTokenException(InvalidRefreshTokenException e) {
         return getFailureResponse(INVALID_REFRESH_TOKEN_EXCEPTION);
+    }
+
+    @ExceptionHandler(QuestionNoFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Response QuestionNotFoundException() {
+        return getFailureResponse(QUESTION_NOT_FOUND_EXCEPTION);
     }
 
     private Response getFailureResponse(ExceptionType exceptionType) {

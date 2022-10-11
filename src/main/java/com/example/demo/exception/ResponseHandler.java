@@ -20,7 +20,7 @@ public class ResponseHandler {
     }
 
     private Integer getCode(String key) {
-        return Integer.valueOf(messageSource.getMessage(key, null, null));
+        return Integer.valueOf(messageSource.getMessage(key, null, LocaleContextHolder.getLocale()));
     }
 
     private String getMessage(String key) {
