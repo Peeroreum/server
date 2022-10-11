@@ -1,6 +1,9 @@
 package com.example.demo.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,12 +27,20 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         try {
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             Map<String, String> map = new HashMap<>();
 
             map.put("errortype", "Forbidden");
             map.put("code", "402");
-            map.put("message", "잘못된 접근입니다.");
+            map.put("message", "만료된 토큰입니다.");
+
+            response.getWriter().write(objectMapper.writeValueAsString(map));
+        } catch (JwtException e) {
+            Map<String, String> map = new HashMap<>();
+
+            map.put("errortype", "Forbidden");
+            map.put("code", "402");
+            map.put("message", "유효하지 않은 토큰입니다.");
 
             response.getWriter().write(objectMapper.writeValueAsString(map));
         }

@@ -28,7 +28,7 @@ public class CusmtomEntryPoint implements AuthenticationEntryPoint {
         Map<String, String> map = new HashMap<>();
         map.put("errortype", "Forbidden");
         map.put("code", "403");
-        map.put("message", "유효하지 않은 접근입니다.");
+        map.put("message", "유효하지 않은 토큰입니다.");
 
         response.getWriter().write(objectMapper.writeValueAsString(map));
     }

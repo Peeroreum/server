@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.user.SignInRequest;
-import com.example.demo.dto.user.SignUpRequest;
+import com.example.demo.dto.member.SignInRequest;
+import com.example.demo.dto.member.SignUpRequest;
 import com.example.demo.dto.response.Response;
 import com.example.demo.service.MemberService;
 import lombok.RequiredArgsConstructor;

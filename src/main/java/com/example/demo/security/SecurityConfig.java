@@ -15,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CusmtomEntryPoint customEntryPoint;
@@ -29,10 +28,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user").permitAll()
+                .antMatchers("/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(customEntryPoint).accessDeniedHandler(customAccessDeniedHandler)
+                .exceptionHandling().authenticationEntryPoint(customEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class);

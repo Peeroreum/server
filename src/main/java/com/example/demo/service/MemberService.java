@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Member;
-import com.example.demo.dto.user.SignInRequest;
-import com.example.demo.dto.user.SignUpRequest;
-import com.example.demo.dto.user.TokenDto;
+import com.example.demo.dto.member.SignInRequest;
+import com.example.demo.dto.member.SignUpRequest;
+import com.example.demo.dto.member.TokenDto;
 import com.example.demo.exception.*;
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.security.jwt.JwtTokenProvider;
