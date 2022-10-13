@@ -22,7 +22,7 @@ public class ImageController {
     private final ImageService imageService;
 
     @CrossOrigin
-    @GetMapping(value = "/thumnail/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    @GetMapping(value = "/thumbnail/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseDto getThumbnail(@PathVariable Long id) throws IOException {
         String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
         String path;
