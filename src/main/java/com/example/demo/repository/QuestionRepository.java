@@ -9,7 +9,5 @@ import java.util.Optional;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Override
     Optional<Question> findById(Long id);
-
-    List<Question> findAllBySubject(String subject);
-    List<Question> findAllByMemberGrade(String grade);
+    List<Question> findAllBySubjectAndMemberGrade(String subject, String grade);
 }

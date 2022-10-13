@@ -20,7 +20,9 @@ public enum ExceptionType {
     COMMENT_NOT_FOUND_EXCEPTION("commentNotFoundException.code", "commentNotFoundException.msg"),
     MESSAGE_NOT_FOUND_EXCEPTION("messageNotFoundException.code", "messageNotFoundException.msg"),
     INVALID_REFRESH_TOKEN_EXCEPTION("invalidRefreshTokenException.code", "invalidRefreshTokenException.msg"),
-    QUESTION_NOT_FOUND_EXCEPTION("questionNotFoundException.code", "questionNotFoundException.msg");
+    QUESTION_NOT_FOUND_EXCEPTION("questionNotFoundException.code", "questionNotFoundException.msg"),
+    ANSWER_NOT_FOUND_EXCEPTION("answerNotFoundException.code", "answerNotFoundException.msg"),
+    IMAGE_NOT_FOUND_EXCEPTION("imageNotFoundException.code", "imageNotFoundException.msg");
     private final String code;
     private final String message;
 

@@ -1,6 +1,6 @@
 package com.example.demo.exception;
 
-import com.example.demo.dto.response.Response;
+import com.example.demo.dto.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,63 +21,68 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Response exception(Exception e) {
-        return getFailureResponse(EXCEPTION);
+    public ResponseDto exception() { return getFailureResponse(EXCEPTION);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Response accessDeniedException() {
+    public ResponseDto accessDeniedException() {
         return getFailureResponse(ACCESS_DENIED_EXCEPTION);
     }
 
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response bindException(BindException e) {
+    public ResponseDto bindException(BindException e) {
         return getFailureResponse(BIND_EXCEPTION, e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Response loginFailureException() {
+    public ResponseDto loginFailureException() {
         return getFailureResponse(LOGIN_FAILURE_EXCEPTION);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Response memberEmailAlreadyExistsException(EmailAlreadyExistsException e) {
+    public ResponseDto memberEmailAlreadyExistsException(EmailAlreadyExistsException e) {
         return getFailureResponse(EMAIL_ALREADY_EXISTS_EXCEPTION, e.getMessage());
     }
 
     @ExceptionHandler(NicknameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Response memberNicknameAlreadyExistsException(NicknameAlreadyExistsException e) {
+    public ResponseDto memberNicknameAlreadyExistsException(NicknameAlreadyExistsException e) {
         return getFailureResponse(NICKNAME_ALREADY_EXISTS_EXCEPTION, e.getMessage());
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Response memberNotFoundException() {
+    public ResponseDto memberNotFoundException() {
         return getFailureResponse(MEMBER_NOT_FOUND_EXCEPTION);
-    }
-
-    @ExceptionHandler(InvalidRefreshTokenException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response invalidRefreshTokenException(InvalidRefreshTokenException e) {
-        return getFailureResponse(INVALID_REFRESH_TOKEN_EXCEPTION);
     }
 
     @ExceptionHandler(QuestionNoFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Response QuestionNotFoundException() {
+    public ResponseDto questionNotFoundException() {
         return getFailureResponse(QUESTION_NOT_FOUND_EXCEPTION);
     }
 
-    private Response getFailureResponse(ExceptionType exceptionType) {
+    @ExceptionHandler(AnswerNotFountException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDto answerNotFoundException() {
+        return getFailureResponse(ANSWER_NOT_FOUND_EXCEPTION);
+    }
+
+    @ExceptionHandler(ImageNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDto imageNotFoundException() {
+        return getFailureResponse(IMAGE_NOT_FOUND_EXCEPTION);
+    }
+
+    private ResponseDto getFailureResponse(ExceptionType exceptionType) {
         return responseHandler.getFailureResponse(exceptionType);
     }
 
-    private Response getFailureResponse(ExceptionType exceptionType, Object... args) {
+    private ResponseDto getFailureResponse(ExceptionType exceptionType, Object... args) {
         return responseHandler.getFailureResponse(exceptionType, args);
     }
 

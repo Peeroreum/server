@@ -1,5 +1,9 @@
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
   datasource:
     url: jdbc:mariadb://localhost:3308/befriends
     driver-class-name: org.mariadb.jdbc.Driver
@@ -14,8 +18,5 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: true
-  profiles:
-    active: local
-    include: jwt
 server:
   port: 8081

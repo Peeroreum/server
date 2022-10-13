@@ -17,9 +17,13 @@ public class Image extends EntityTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String imgName;
+    @Column(nullable = false)
+    private String imageName;
 
+    @Column
+    private String imagePath;
+    @Column
+    private Long imageSize;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -31,17 +35,24 @@ public class Image extends EntityTime {
     private Answer answer;
 
     @Builder
-    public Image(String imgName) {
-        this.imgName = imgName;
+    public Image(String imageName, String imagePath, Long imageSize) {
+
+        this.imageName = imageName;
+        this.imagePath = imagePath;
+        this.imageSize = imageSize;
     }
 
-    public void initQuestion(Question question) {
-        if(this.question == null)
-            this.question = question;
+    public void setQuestion(Question question) {
+        this.question = question;
+
+        if(!question.getImages().contains(this))
+            question.getImages().add(this);
     }
 
-    public void initAnswer(Answer answer) {
-        if(this.answer == null)
-            this.answer = answer;
+    public void setAnswer(Answer answer) {
+        this.answer = answer;
+
+        if(!answer.getImages().contains(this))
+            answer.getImages().add(this);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.demo.exception;
 
-import com.example.demo.dto.response.Response;
+import com.example.demo.dto.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 public class ResponseHandler {
     private final MessageSource messageSource;
 
-    public Response getFailureResponse(ExceptionType exceptionType) {
-        return Response.fail(getCode(exceptionType.getCode()), getMessage(exceptionType.getMessage()));
+    public ResponseDto getFailureResponse(ExceptionType exceptionType) {
+        return ResponseDto.fail(getCode(exceptionType.getCode()), getMessage(exceptionType.getMessage()));
     }
 
-    public Response getFailureResponse(ExceptionType exceptionType, Object... args) {
-        return Response.fail(getCode(exceptionType.getCode()), getMessage(exceptionType.getMessage(), args));
+    public ResponseDto getFailureResponse(ExceptionType exceptionType, Object... args) {
+        return ResponseDto.fail(getCode(exceptionType.getCode()), getMessage(exceptionType.getMessage(), args));
     }
 
     private Integer getCode(String key) {

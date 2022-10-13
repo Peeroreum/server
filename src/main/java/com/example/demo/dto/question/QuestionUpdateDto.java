@@ -14,6 +14,5 @@ import java.util.List;
 public class QuestionUpdateDto {
     private String content;
     private String subject;
-    private List<MultipartFile> addedImages = new ArrayList<>();
-    private List<Long> deletedImages = new ArrayList<>();
+    private List<MultipartFile> files = new ArrayList<>();
 }
