@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import static com.example.demo.exception.ExceptionType.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -32,15 +34,15 @@ public class MemberService {
 
     private void validateInfo(SignUpDto signUpDto) {
         if(memberRepository.existsByUsername(signUpDto.getUsername()))
-            throw new EmailAlreadyExistsException(signUpDto.getUsername());
+            throw new CustomException(USERNAME_ALREADY_EXISTS_EXCEPTION);
         if(memberRepository.existsByNickname(signUpDto.getNickname()))
-            throw new NicknameAlreadyExistsException(signUpDto.getNickname());
+            throw new CustomException(NICKNAME_ALREADY_EXISTS_EXCEPTION);
     }
 
     public TokenDto signIn(SignInDto signInDto) {
-        Member member = memberRepository.findByUsername(signInDto.getUsername()).orElseThrow(MemberNotFoundException::new);
+        Member member = memberRepository.findByUsername(signInDto.getUsername()).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         if (!validatePassword(signInDto, member)) {
-            throw new LoginFailureException();
+            throw new CustomException(LOGIN_FAILURE_EXCEPTION);
         }
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();

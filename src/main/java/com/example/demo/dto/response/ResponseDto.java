@@ -21,7 +21,7 @@ public class ResponseDto<T> {
         return new ResponseDto("success", 0, data);
     }
 
-    public static ResponseDto fail(int code, String msg) {
-        return new ResponseDto("fail", code, msg);
+    public static ResponseDto fail(int code, String message) {
+        return new ResponseDto("fail", code, message);
     }
 }
