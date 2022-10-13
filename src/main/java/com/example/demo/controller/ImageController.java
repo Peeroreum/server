@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Image;
+import com.example.demo.dto.Attachment.ImageDto;
 import com.example.demo.dto.response.ResponseDto;
 import com.example.demo.service.attachment.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ImageController {
         String path;
 
         if(id != 0) {
-            Image image = imageService.findByImageId(id);
+            ImageDto image = imageService.findByImageId(id);
             path = image.getImagePath();
         }
         else {
@@ -45,7 +45,7 @@ public class ImageController {
     @CrossOrigin
     @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseDto getImage(@PathVariable Long id) throws IOException {
-        Image image = imageService.findByImageId(id);
+        ImageDto image = imageService.findByImageId(id);
         String absolutePath
                 = new File("").getAbsolutePath() + File.separator + File.separator;
         String path = image.getImagePath();

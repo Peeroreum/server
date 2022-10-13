@@ -2,10 +2,12 @@ package com.example.demo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
+@Data
 @Getter
 public class ResponseDto<T> {
     private String status;

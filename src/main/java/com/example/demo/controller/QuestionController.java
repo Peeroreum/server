@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.question.QuestionSaveDto;
+import com.example.demo.dto.question.QuestionSearchRequest;
 import com.example.demo.dto.question.QuestionUpdateDto;
 import com.example.demo.dto.response.ResponseDto;
 import com.example.demo.service.QuestionService;
@@ -16,11 +17,17 @@ import java.security.Principal;
 public class QuestionController {
     private final QuestionService questionService;
 
+    @GetMapping("/question")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto searchQuestion(@RequestBody QuestionSearchRequest searchRequest) {
+        return ResponseDto.success(questionService.search(searchRequest));
+    }
+
     @PostMapping("/question")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto createQuestion(@RequestBody QuestionSaveDto questionSaveDto, Principal principal) throws IOException {
+    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) throws IOException {
         String username = principal.getName();
-        questionService.create(questionSaveDto, username);
+        questionService.create(saveDto, username);
         return ResponseDto.success();
     }
 
@@ -30,7 +37,7 @@ public class QuestionController {
         return ResponseDto.success(questionService.read(id));
     }
 
-    @PostMapping("/question/{id}")
+    @PutMapping("/question/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto updateQuestion(@PathVariable Long id, @RequestBody QuestionUpdateDto questionUpdateDto) throws IOException {
         questionService.update(id, questionUpdateDto);

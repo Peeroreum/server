@@ -3,12 +3,10 @@ package com.example.demo.service;
 import com.example.demo.domain.Image;
 import com.example.demo.domain.Question;
 import com.example.demo.domain.Member;
-import com.example.demo.dto.question.QuestionSaveDto;
-import com.example.demo.dto.question.QuestionDto;
-import com.example.demo.dto.question.QuestionSearchRequest;
-import com.example.demo.dto.question.QuestionUpdateDto;
-import com.example.demo.exception.MemberNotFoundException;
-import com.example.demo.exception.QuestionNoFoundException;
+import com.example.demo.dto.Attachment.ImageDto;
+import com.example.demo.dto.Attachment.ImageResponse;
+import com.example.demo.dto.question.*;
+import com.example.demo.exception.CustomException;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.MemberRepository;
@@ -24,6 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.exception.ExceptionType.*;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -35,13 +35,13 @@ public class QuestionService {
 
     @Transactional
     public void create(QuestionSaveDto saveDto, String username) throws IOException {
-        Member member = memberRepository.findByUsername(username).orElseThrow(MemberNotFoundException::new);
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         Question question = Question.builder()
                 .content(saveDto.getContent())
                 .member(member)
                 .subject(saveDto.getSubject())
                 .build();
-        List<Image> imageList = fileHandler.parseFileInfo(saveDto.getFiles());
+        List<Image> imageList = fileHandler.parseFileInfo(question, saveDto.getFiles());
         if(!imageList.isEmpty()) {
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));
@@ -49,61 +49,72 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    public QuestionDto read(Long id) {
-        return QuestionDto.toDto(questionRepository.findById(id).orElseThrow(QuestionNoFoundException::new));
+    public QuestionReadDto read(Long id) {
+        List<ImageResponse> imageList = imageService.findAllByQuestion(id);
+        List<Long> imageIds = new ArrayList<>();
+        for(ImageResponse image : imageList)
+            imageIds.add(image.getImageId());
+        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
+        return new QuestionReadDto(question, imageIds);
     }
 
+    @Transactional
     public void update(Long id, QuestionUpdateDto updateDto) throws IOException {
-        Question question = questionRepository.findById(id).orElseThrow(QuestionNoFoundException::new);
-        question.update(updateDto.getContent(), updateDto.getSubject());
-        List<Image> existImages = imageService.findAllByQuestion(id); // 이미 저장된 이미지
-        List<MultipartFile> updateFiles = updateDto.getFiles(); // 업데이트 요청
-        List<MultipartFile> newFiles = new ArrayList<>(); // 새로 저장할 파일
+        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
+        List<ImageResponse> existImages = imageService.findAllByQuestion(id); // 이미 저장된 이미지
+        List<MultipartFile> requestFiles = updateDto.getFiles(); // 업데이트 요청
+        List<MultipartFile> updateFiles = new ArrayList<>(); // 새로 저장할 파일
 
         if(CollectionUtils.isEmpty(existImages)) {
-            if (!CollectionUtils.isEmpty(updateFiles)) {
-                for (MultipartFile multipartFile : updateFiles)
-                    newFiles.add(multipartFile);
+            if (!CollectionUtils.isEmpty(requestFiles)) {
+                for (MultipartFile requestFile : requestFiles)
+                    updateFiles.add(requestFile);
             }
         }
         else {
-            if(CollectionUtils.isEmpty(updateFiles)) {
-                for(Image image : existImages)
-                    imageService.deleteImage(image.getId());
+            if(CollectionUtils.isEmpty(requestFiles)) {
+                for(ImageResponse image : existImages)
+                    imageService.deleteImage(image.getImageId());
             }
             else {
                 List<String> existImagesName = new ArrayList<>();
 
-                for(Image existImage : existImages) {
-                    Image image = imageService.findByImageId(existImage.getId());
+                for(ImageResponse existImage : existImages) {
+                    ImageDto image = imageService.findByImageId(existImage.getImageId());
                     String imageName = image.getImageName();
 
-                    if(!updateFiles.contains(imageName))
-                        imageService.deleteImage(existImage.getId());
+                    if(!requestFiles.contains(imageName))
+                        imageService.deleteImage(existImage.getImageId());
                     else
                         existImagesName.add(imageName);
                 }
 
-                for(MultipartFile multipartFile : updateFiles) {
+                for(MultipartFile multipartFile : requestFiles) {
                     String multipartOriginalName = multipartFile.getOriginalFilename();
                     if(!existImagesName.contains(multipartOriginalName))
-                        newFiles.add(multipartFile);
+                        updateFiles.add(multipartFile);
                 }
             }
         }
-        List<Image> imageList = fileHandler.parseFileInfo(newFiles);
+        List<Image> imageList = fileHandler.parseFileInfo(question, updateFiles);
         if(!imageList.isEmpty()) {
             for(Image image : imageList)
                 imageRepository.save(image);
         }
+
+        question.update(updateDto.getContent(), updateDto.getSubject());
     }
     public void delete(Long id) {
-        Question question = questionRepository.findById(id).orElseThrow(QuestionNoFoundException::new);
+        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
         questionRepository.delete(question);
     }
 
-    public List<Question> list(QuestionSearchRequest searchRequest) {
-        return questionRepository.findAllBySubjectAndMemberGrade(searchRequest.getSubject(), searchRequest.getGrade());
+    public List<QuestionListDto> search(QuestionSearchRequest searchRequest) {
+        List<Question> searchedQuestions = questionRepository.findAllBySubjectAndMemberGrade(searchRequest.getSubject(), searchRequest.getGrade());
+        List<QuestionListDto> results = new ArrayList<>();
+        for(Question question : searchedQuestions) {
+            results.add(new QuestionListDto(question));
+        }
+        return results;
     }
-
 }

@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionSaveDto {
     private String content;
-
     private String subject;
     private List<MultipartFile> files;
 

@@ -1,6 +1,7 @@
 package com.example.demo.service.attachment;
 
 import com.example.demo.domain.Image;
+import com.example.demo.domain.Question;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -15,22 +16,17 @@ import java.util.List;
 
 @Component
 public class FileHandler {
-    private final ImageService imageService;
 
-    public FileHandler(ImageService imageService) {
-        this.imageService = imageService;
-    }
-
-    public List<Image> parseFileInfo(List<MultipartFile> multipartFiles) throws IOException {
+    public List<Image> parseFileInfo(Question question, List<MultipartFile> multipartFiles) throws IOException {
         List<Image> fileList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(multipartFiles)) {
             LocalDateTime now = LocalDateTime.now();
-            String current = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String currentTime = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
 
             String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
 
-            String path = "images" + File.separator + current;
+            String path = "images" + File.separator + currentTime;
             File file = new File(path);
 
             if(!file.exists()) {
@@ -62,6 +58,8 @@ public class FileHandler {
                         .imageSize(multipartFile.getSize())
                         .build();
 
+                if(question.getId() != null)
+                    image.setQuestion(question);
 
                 fileList.add(image);
 

@@ -3,9 +3,11 @@ package com.example.demo.dto.Attachment;
 import com.example.demo.domain.Image;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
+@Getter
 @NoArgsConstructor
 public class ImageDto {
     private String imageName;

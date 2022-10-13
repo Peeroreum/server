@@ -22,7 +22,7 @@ public class Image extends EntityTime {
 
     @Column
     private String imagePath;
-    @Column
+
     private Long imageSize;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
