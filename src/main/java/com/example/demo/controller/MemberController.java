@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.member.SignInRequest;
-import com.example.demo.dto.member.SignUpRequest;
+import com.example.demo.dto.member.SignInDto;
+import com.example.demo.dto.member.SignUpDto;
 import com.example.demo.dto.response.Response;
 import com.example.demo.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,16 +13,14 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/user")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Response signUp(@RequestBody SignUpRequest signUpRequest) {
-        memberService.signUp(signUpRequest);
+    @PostMapping("/signup")
+    public Response signUp(@RequestBody SignUpDto signUpDto) {
+        memberService.signUp(signUpDto);
         return Response.success();
     }
 
-    @GetMapping("/user")
-    @ResponseStatus(HttpStatus.OK)
-    public Response signIn(@RequestBody SignInRequest signInRequest) {
-        return Response.success(memberService.signIn(signInRequest));
+    @GetMapping("/login")
+    public Response signIn(@RequestBody SignInDto signInDto) {
+        return Response.success(memberService.signIn(signInDto));
     }
 }

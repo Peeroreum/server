@@ -38,8 +38,6 @@ public class Member extends EntityTime {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
-    private String refreshToken;
-
     @Builder
     public Member(String username, String password, String nickname, String image, String grade, List<Role> roles) {
         this.username = username;
@@ -54,9 +52,6 @@ public class Member extends EntityTime {
         this.roles.add(role);
     }
 
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
         this.password = passwordEncoder.encode(password);
     }

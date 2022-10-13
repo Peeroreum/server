@@ -29,7 +29,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .role(user.getRoles().get(0))
                     .nickname(user.getNickname())
                     .image(user.getImage())
-                    .refreshToken(user.getRefreshToken())
                     .build();
         }
         return null;

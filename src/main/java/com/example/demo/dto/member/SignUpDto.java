@@ -6,20 +6,20 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SignUpRequest {
+public class SignUpDto {
     private String username;
     private String password;
     private String nickname;
     private String image;
     private String grade;
 
-    public static Member toEntity(SignUpRequest signUpRequest) {
+    public static Member toEntity(SignUpDto signUpDto) {
         return Member.builder()
-                .username(signUpRequest.username)
-                .password(signUpRequest.password)
-                .nickname(signUpRequest.nickname)
-                .image(signUpRequest.image)
-                .grade(signUpRequest.grade)
+                .username(signUpDto.username)
+                .password(signUpDto.password)
+                .nickname(signUpDto.nickname)
+                .image(signUpDto.image)
+                .grade(signUpDto.grade)
                 .build();
     }
 }
