@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.Attachment.ImageDto;
-import com.example.demo.dto.response.ResponseDto;
 import com.example.demo.service.attachment.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ public class ImageController {
 
     @CrossOrigin
     @GetMapping(value = "/thumbnail/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
-    public ResponseDto getThumbnail(@PathVariable Long id) throws IOException {
+    public ResponseEntity<byte[]> getThumbnail(@PathVariable Long id) throws IOException {
         String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
         String path;
 
@@ -39,12 +40,12 @@ public class ImageController {
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
         imageStream.close();
 
-        return ResponseDto.success(imageByteArray);
+        return new ResponseEntity<>(imageByteArray, HttpStatus.OK);
     }
 
     @CrossOrigin
     @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
-    public ResponseDto getImage(@PathVariable Long id) throws IOException {
+    public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
         ImageDto image = imageService.findByImageId(id);
         String absolutePath
                 = new File("").getAbsolutePath() + File.separator + File.separator;
@@ -54,6 +55,6 @@ public class ImageController {
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
         imageStream.close();
 
-        return ResponseDto.success(imageByteArray);
+        return new ResponseEntity<>(imageByteArray, HttpStatus.OK);
     }
 }

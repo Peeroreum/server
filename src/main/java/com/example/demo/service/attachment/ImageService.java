@@ -32,8 +32,15 @@ public class ImageService {
         return imageList.stream().map(ImageResponse::new).collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<ImageResponse> findAllByAnswer(Long answerId) {
+        List<Image> imageList = imageRepository.findAllByAnswerId(answerId);
+        return imageList.stream().map(ImageResponse::new).collect(Collectors.toList());
+    }
+
     public void deleteImage(Long id) {
         Image image = imageRepository.findById(id).orElseThrow(()->new CustomException(IMAGE_NOT_FOUND_EXCEPTION));
         imageRepository.delete(image);
     }
+
 }
