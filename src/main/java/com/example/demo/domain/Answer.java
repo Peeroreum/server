@@ -26,7 +26,7 @@ public class Answer extends EntityTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
@@ -35,30 +35,29 @@ public class Answer extends EntityTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Answer parent;
 
     @OneToMany(mappedBy = "answer", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Image> images;
-
-    @OneToMany(mappedBy = "parent")
-    private List<Answer> children = new ArrayList<>();
+    private List<Image> images = new ArrayList<>();
 
     @Builder
-    public Answer(String content, User user, Question question, Answer parent, List<Image> images) {
+    public Answer(String content, Member member, Question question, Answer parent) {
         this.content = content;
-        this.user = user;
+        this.member = member;
         this.question = question;
         this.parent = parent;
-        this.images = new ArrayList<>();
-        addImages(images);
     }
 
-    private void addImages(List<Image> added) {
-        added.stream().forEach(i -> {
-            images.add(i);
-            i.initAnswer(this);
-        });
+    public void update(String content) {
+        this.content = content;
+    }
+
+    public void addImage(Image image) {
+        this.images.add(image);
+
+        if(image.getAnswer() != this) {
+            image.setAnswer(this);
+        }
     }
 
 }
