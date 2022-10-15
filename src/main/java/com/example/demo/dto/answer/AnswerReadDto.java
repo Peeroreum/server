@@ -13,6 +13,7 @@ public class AnswerReadDto {
     private Long id;
     private String content;
     private String memberNickname;
+    private String memberTier;
     private Long parentId;
     private List<String> fileUri;
     private LocalDateTime createdTime;
@@ -21,6 +22,7 @@ public class AnswerReadDto {
         this.id = answer.getId();
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
+        this.memberTier = answer.getMember().getTier();
         if (answer.getParent() != null)
             this.parentId = answer.getParent().getId();
         else this.parentId = 0L;

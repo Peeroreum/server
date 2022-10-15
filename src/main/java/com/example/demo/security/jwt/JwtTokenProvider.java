@@ -18,8 +18,8 @@ public class JwtTokenProvider {
 
     private String secretKey = "befriendspeerorm";
 
-    private long accessTokenExpiration = 60 * 60 * 1000; //1hr
-    private long refreshTokenExpiration = 60 * 60 * 24 * 30 * 1000; //1mon
+    private final long accessTokenExpiration = 60 * 60 * 24 * 7 * 1000; //7days
+    private final long refreshTokenExpiration = 60 * 60 * 24 * 30 * 1000; //1mon
 
     private final UserDetailsService userDetailsService;
 

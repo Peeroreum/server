@@ -14,6 +14,7 @@ public class QuestionReadDto {
     private String content;
     private String subject;
     private String memberNickname;
+    private String memberTier;
     private List<String> imageUris;
     private LocalDateTime createdTime;
 
@@ -23,6 +24,7 @@ public class QuestionReadDto {
         this.content = question.getContent();
         this.subject = question.getSubject();
         this.memberNickname = question.getMember().getNickname();
+        this.memberTier = question.getMember().getTier();
         this.imageUris = imageUris;
         this.createdTime = question.getCreatedTime();
     }

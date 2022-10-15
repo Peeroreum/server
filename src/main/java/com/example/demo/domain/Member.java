@@ -34,22 +34,22 @@ public class Member extends EntityTime {
     @Column
     private String grade;
 
+    @Column
+    private String tier;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
     @Builder
-    public Member(String username, String password, String nickname, String image, String grade, List<Role> roles) {
+    public Member(String username, String password, String nickname, String image, String grade, String tier) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.image = image;
         this.grade = grade;
+        this.tier = tier;
         this.roles = Collections.singletonList(Role.USER);
-    }
-
-    public void addRole(Role role) {
-        this.roles.add(role);
     }
 
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
@@ -61,5 +61,9 @@ public class Member extends EntityTime {
 
     public void updateImage(String image){
         this.image = image;
+    }
+
+    public void updateTier(String tier) {
+        this.tier = tier;
     }
 }

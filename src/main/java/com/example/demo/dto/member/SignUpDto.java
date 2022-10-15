@@ -13,6 +13,8 @@ public class SignUpDto {
     private String image;
     private String grade;
 
+    private String tier;
+
     public static Member toEntity(SignUpDto signUpDto) {
         return Member.builder()
                 .username(signUpDto.username)
@@ -20,6 +22,7 @@ public class SignUpDto {
                 .nickname(signUpDto.nickname)
                 .image(signUpDto.image)
                 .grade(signUpDto.grade)
+                .tier("bronze")
                 .build();
     }
 }
