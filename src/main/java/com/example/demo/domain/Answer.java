@@ -48,6 +48,10 @@ public class Answer extends EntityTime {
         this.parent = parent;
     }
 
+    public void delete(String content) {
+        this.content = content;
+        this.images = null;
+    }
     public void update(String content) {
         this.content = content;
     }

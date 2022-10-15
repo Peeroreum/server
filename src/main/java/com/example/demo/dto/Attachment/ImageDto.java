@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ImageDto {
+    private Long id;
     private String imageName;
     private String imagePath;
     private Long imageSize;
 
     @Builder
     public ImageDto(Image image) {
+        this.id = image.getId();
         this.imageName = image.getImageName();
         this.imagePath = image.getImagePath();
         this.imageSize = image.getImageSize();

@@ -27,15 +27,15 @@ public class ImageService {
     }
 
     @Transactional
-    public List<ImageResponse> findAllByQuestion(Long questionId) {
+    public List<ImageDto> findAllByQuestion(Long questionId) {
         List<Image> imageList = imageRepository.findAllByQuestionId(questionId);
-        return imageList.stream().map(ImageResponse::new).collect(Collectors.toList());
+        return imageList.stream().map(ImageDto::new).collect(Collectors.toList());
     }
 
     @Transactional
-    public List<ImageResponse> findAllByAnswer(Long answerId) {
+    public List<ImageDto> findAllByAnswer(Long answerId) {
         List<Image> imageList = imageRepository.findAllByAnswerId(answerId);
-        return imageList.stream().map(ImageResponse::new).collect(Collectors.toList());
+        return imageList.stream().map(ImageDto::new).collect(Collectors.toList());
     }
 
     public void deleteImage(Long id) {

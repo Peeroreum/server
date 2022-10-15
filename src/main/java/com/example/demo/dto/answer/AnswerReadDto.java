@@ -14,17 +14,17 @@ public class AnswerReadDto {
     private String content;
     private String memberNickname;
     private Long parentId;
-    private List<Long> fileId;
+    private List<String> fileUri;
     private LocalDateTime createdTime;
 
-    public AnswerReadDto(Answer answer, List<Long> fileId) {
+    public AnswerReadDto(Answer answer, List<String> fileUri) {
         this.id = answer.getId();
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
         if (answer.getParent() != null)
             this.parentId = answer.getParent().getId();
         else this.parentId = 0L;
-        this.fileId = fileId;
+        this.fileUri = fileUri;
         this.createdTime = answer.getCreatedTime();
     }
 }

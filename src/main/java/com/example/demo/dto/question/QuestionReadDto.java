@@ -14,16 +14,16 @@ public class QuestionReadDto {
     private String content;
     private String subject;
     private String memberNickname;
-    private List<Long> fileId;
+    private List<String> imageUris;
     private LocalDateTime createdTime;
 
 
-    public QuestionReadDto(Question question, List<Long> fileId) {
+    public QuestionReadDto(Question question, List<String> imageUris) {
         this.id = question.getId();
         this.content = question.getContent();
         this.subject = question.getSubject();
         this.memberNickname = question.getMember().getNickname();
-        this.fileId = fileId;
+        this.imageUris = imageUris;
         this.createdTime = question.getCreatedTime();
     }
 

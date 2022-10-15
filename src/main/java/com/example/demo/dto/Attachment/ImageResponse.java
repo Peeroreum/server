@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 @Data
 public class ImageResponse {
-    private Long imageId;
+    private String imagePath;
 
     public ImageResponse(Image image) {
-        this.imageId = image.getId();
+        this.imagePath = image.getImagePath();
     }
 }

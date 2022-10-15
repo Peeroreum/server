@@ -4,7 +4,7 @@ import com.example.demo.domain.Answer;
 import com.example.demo.domain.Image;
 import com.example.demo.domain.Member;
 import com.example.demo.domain.Question;
-import com.example.demo.dto.Attachment.ImageResponse;
+import com.example.demo.dto.Attachment.ImageDto;
 import com.example.demo.dto.answer.*;
 import com.example.demo.exception.CustomException;
 import com.example.demo.repository.AnswerRepository;
@@ -59,11 +59,11 @@ public class AnswerService {
         List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
         List<AnswerReadDto> result = new ArrayList<>();
         for(Answer answer : answers) {
-            List<ImageResponse> imageResponseList = imageService.findAllByAnswer(answer.getId());
-            List<Long> imageIds = new ArrayList<>();
-            for(ImageResponse image : imageResponseList)
-                imageIds.add(image.getImageId());
-            result.add(new AnswerReadDto(answer, imageIds));
+            List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
+            List<String> imageUris = new ArrayList<>();
+            for(ImageDto image : imageDtoList)
+                imageUris.add(image.getImagePath());
+            result.add(new AnswerReadDto(answer, imageUris));
         }
         return result;
     }
@@ -74,6 +74,18 @@ public class AnswerService {
 
     public void delete(Long id) {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
-        answerRepository.delete(answer);
+        Optional<Answer> parent = Optional.ofNullable(answer.getParent());
+        Long parentId;
+        if(!parent.isEmpty())
+            parentId = answer.getParent().getId();
+        else parentId = 0L;
+        if(parentId > 0) { // 답글인 경우
+            answerRepository.delete(answer);
+        }
+        else { // 원답변인 경우
+            if(answerRepository.countByParentId(answer.getId()) > 0) { // 답댓글이 존재하는 경우
+            }
+            else answerRepository.delete(answer);
+        }
     }
 }

@@ -4,7 +4,6 @@ import com.example.demo.domain.Image;
 import com.example.demo.domain.Question;
 import com.example.demo.domain.Member;
 import com.example.demo.dto.Attachment.ImageDto;
-import com.example.demo.dto.Attachment.ImageResponse;
 import com.example.demo.dto.question.*;
 import com.example.demo.exception.CustomException;
 import com.example.demo.repository.ImageRepository;
@@ -50,18 +49,18 @@ public class QuestionService {
     }
 
     public QuestionReadDto read(Long id) {
-        List<ImageResponse> imageList = imageService.findAllByQuestion(id);
-        List<Long> imageIds = new ArrayList<>();
-        for(ImageResponse image : imageList)
-            imageIds.add(image.getImageId());
+        List<ImageDto> imageList = imageService.findAllByQuestion(id);
+        List<String> imageUris = new ArrayList<>();
+        for(ImageDto image : imageList)
+            imageUris.add(image.getImagePath());
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        return new QuestionReadDto(question, imageIds);
+        return new QuestionReadDto(question, imageUris);
     }
 
     @Transactional
     public void update(Long id, QuestionUpdateDto updateDto) throws IOException {
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        List<ImageResponse> existImages = imageService.findAllByQuestion(id); // 이미 저장된 이미지
+        List<ImageDto> existImages = imageService.findAllByQuestion(id); // 이미 저장된 이미지
         List<MultipartFile> requestFiles = updateDto.getFiles(); // 업데이트 요청
         List<MultipartFile> updateFiles = new ArrayList<>(); // 새로 저장할 파일
 
@@ -73,18 +72,18 @@ public class QuestionService {
         }
         else {
             if(CollectionUtils.isEmpty(requestFiles)) {
-                for(ImageResponse image : existImages)
-                    imageService.deleteImage(image.getImageId());
+                for(ImageDto image : existImages)
+                    imageService.deleteImage(image.getId());
             }
             else {
                 List<String> existImagesName = new ArrayList<>();
 
-                for(ImageResponse existImage : existImages) {
-                    ImageDto image = imageService.findByImageId(existImage.getImageId());
+                for(ImageDto existImage : existImages) {
+                    ImageDto image = imageService.findByImageId(existImage.getId());
                     String imageName = image.getImageName();
 
                     if(!requestFiles.contains(imageName))
-                        imageService.deleteImage(existImage.getImageId());
+                        imageService.deleteImage(existImage.getId());
                     else
                         existImagesName.add(imageName);
                 }
