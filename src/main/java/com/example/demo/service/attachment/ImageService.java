@@ -2,7 +2,6 @@ package com.example.demo.service.attachment;
 
 import com.example.demo.domain.Image;
 import com.example.demo.dto.Attachment.ImageDto;
-import com.example.demo.dto.Attachment.ImageResponse;
 import com.example.demo.exception.CustomException;
 import com.example.demo.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;

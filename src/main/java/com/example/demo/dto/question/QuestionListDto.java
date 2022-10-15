@@ -4,7 +4,6 @@ import com.example.demo.domain.Question;
 import lombok.Data;
 import lombok.Getter;
 
-import java.io.File;
 import java.time.LocalDateTime;
 
 @Getter
