@@ -16,6 +16,7 @@ public class AnswerReadDto {
     private String memberTier;
     private Long parentId;
     private Long likes;
+    private Long dislikes;
     private List<String> fileUri;
     private LocalDateTime createdTime;
 
@@ -28,6 +29,7 @@ public class AnswerReadDto {
             this.parentId = answer.getParent().getId();
         else this.parentId = 0L;
         this.likes = answer.getLikes();
+        this.dislikes = answer.getDislikes();
         this.fileUri = fileUri;
         this.createdTime = answer.getCreatedTime();
     }
