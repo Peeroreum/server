@@ -40,6 +40,8 @@ public class Answer extends EntityTime {
     @OneToMany(mappedBy = "answer", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
+    private Long likes = 0L;
+
     @Builder
     public Answer(String content, Member member, Question question, Answer parent) {
         this.content = content;
@@ -48,12 +50,15 @@ public class Answer extends EntityTime {
         this.parent = parent;
     }
 
-    public void delete(String content) {
-        this.content = content;
+    public void delete() {
+        this.content = "삭제된 댓글입니다.";
         this.images = null;
     }
     public void update(String content) {
-        this.content = content;
+    }
+
+    public void updateLikes(int like) {
+        this.likes += like;
     }
 
     public void addImage(Image image) {

@@ -35,17 +35,26 @@ public class Question extends EntityTime {
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
+    @Column
+    private Long likes;
+
     @Builder
     public Question(String content, String subject, Member member) {
         this.content = content;
         this.subject = subject;
         this.member = member;
+        this.likes = 0L;
     }
 
     public void update(String content, String subject) {
         this.content = content;
         this.subject = subject;
     }
+
+    public void updateLikes(int like) {
+        this.likes = this.likes + like;
+    }
+
     public void addImage(Image image) {
         this.images.add(image);
 

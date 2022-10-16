@@ -15,6 +15,7 @@ public class QuestionReadDto {
     private String subject;
     private String memberNickname;
     private String memberTier;
+    private Long likes;
     private List<String> imageUris;
     private LocalDateTime createdTime;
 
@@ -25,6 +26,7 @@ public class QuestionReadDto {
         this.subject = question.getSubject();
         this.memberNickname = question.getMember().getNickname();
         this.memberTier = question.getMember().getTier();
+        this.likes = question.getLikes();
         this.imageUris = imageUris;
         this.createdTime = question.getCreatedTime();
     }
