@@ -14,6 +14,7 @@ public class QuestionListDto {
     private String memberNickname;
     private String memberTier;
     private Long likes;
+    private Long dislikes;
     private String thumbnailUri;
     private LocalDateTime createdTime;
 
@@ -22,7 +23,8 @@ public class QuestionListDto {
         this.content = question.getContent();
         this.memberNickname = question.getMember().getNickname();
         this.memberTier = question.getMember().getTier();
-        this.likes = Long.valueOf(question.getLikes());
+        this.likes = question.getLikes();
+        this.dislikes = question.getDislikes();
         this.createdTime = question.getCreatedTime();
 
         if(!question.getImages().isEmpty())

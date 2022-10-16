@@ -19,11 +19,25 @@ public class HeartController {
         return ResponseDto.success();
     }
 
-    @DeleteMapping("/question/{questionId}/like")
-    public ResponseDto unlikeQuestion(@PathVariable Long questionId) {
-        heartService.unlikeQuestion(questionId);
+    @PostMapping("/question/{questionId}/dislike")
+    public ResponseDto dislikeQuestion(@PathVariable Long questionId) {
+        heartService.dislikeQuestion(questionId);
         return ResponseDto.success();
     }
+
+
+    @DeleteMapping("/question/{questionId}/like")
+    public ResponseDto cancelQuestionLike(@PathVariable Long questionId) {
+        heartService.cancelQuestionLike(questionId);
+        return ResponseDto.success();
+    }
+
+    @DeleteMapping("/question/{questionId}/dislike")
+    public ResponseDto cancelQuestionDislike(@PathVariable Long questionId) {
+        heartService.cancelQuestionDislike(questionId);
+        return ResponseDto.success();
+    }
+
 
     @PostMapping("/answer/{answerId}/like")
     public ResponseDto likeAnswer(@PathVariable Long answerId) {
@@ -31,9 +45,21 @@ public class HeartController {
         return ResponseDto.success();
     }
 
+    @PostMapping("/answer/{answerId}/dislike")
+    public ResponseDto dislikeAnswer(@PathVariable Long answerId) {
+        heartService.dislikeAnswer(answerId);
+        return ResponseDto.success();
+    }
+
     @DeleteMapping("/answer/{answerId}/like")
-    public ResponseDto unlikeAnswer(@PathVariable Long answerId) {
-        heartService.unlikeAnswer(answerId);
+    public ResponseDto cancelAnswerLike(@PathVariable Long answerId) {
+        heartService.cancelAnswerLike(answerId);
+        return ResponseDto.success();
+    }
+
+    @DeleteMapping("/answer/{answerId}/dislike")
+    public ResponseDto cancelAnswerDislike(@PathVariable Long answerId) {
+        heartService.cancelAnsweDislike(answerId);
         return ResponseDto.success();
     }
 }
