@@ -14,7 +14,8 @@ public enum ExceptionType {
     QUESTION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 질문입니다."),
     ANSWER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 답변입니다."),
     IMAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
-    ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 눌렀습니다.");
+    ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 눌렀습니다."),
+    ALREADY_DISLIKED(HttpStatus.CONFLICT, "이미 싫어요를 눌렀습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
