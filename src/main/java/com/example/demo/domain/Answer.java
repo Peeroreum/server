@@ -51,8 +51,7 @@ public class Answer extends EntityTime {
     }
 
     public void delete() {
-        this.content = "삭제된 댓글입니다.";
-        this.images = null;
+        question.getAnswers().remove(this);
     }
     public void update(String content) {
     }

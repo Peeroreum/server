@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.domain.Member;
+import com.example.demo.domain.Role;
 import com.example.demo.exception.CustomException;
 import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             return CustomUserDetails.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .role(user.getRoles().get(0))
+                    .role(Role.USER)
                     .nickname(user.getNickname())
                     .image(user.getImage())
                     .build();

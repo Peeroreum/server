@@ -35,6 +35,9 @@ public class Question extends EntityTime {
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<Answer> answers = new ArrayList<>();
+
     @Column
     private Long likes;
 
@@ -60,5 +63,9 @@ public class Question extends EntityTime {
 
         if(image.getQuestion() != this)
             image.setQuestion(this);
+    }
+
+    public void addAnswer(Answer answer) {
+        this.answers.add(answer);
     }
 }

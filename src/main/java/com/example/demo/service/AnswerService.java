@@ -25,6 +25,7 @@ import java.util.Optional;
 import static com.example.demo.exception.ExceptionType.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AnswerService {
     private final AnswerRepository answerRepository;
@@ -34,7 +35,6 @@ public class AnswerService {
     private final ImageService imageService;
     private final FileHandler fileHandler;
 
-    @Transactional
     public void create(AnswerSaveDto saveDto, String username) throws IOException {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
@@ -51,12 +51,13 @@ public class AnswerService {
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
         }
+        question.addAnswer(answer);
+        questionRepository.save(question);
         answerRepository.save(answer);
     }
 
-    @Transactional
     public List<AnswerReadDto> readAll(AnswerReadRequest readRequest) {
-        List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
+        List<Answer> answers = questionRepository.findById(readRequest.getQuestionId()).get().getAnswers();
         List<AnswerReadDto> result = new ArrayList<>();
         for(Answer answer : answers) {
             List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
@@ -76,16 +77,16 @@ public class AnswerService {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
         Optional<Answer> parent = Optional.ofNullable(answer.getParent());
         Long parentId;
-        if(!parent.isEmpty())
+        if(parent.isPresent())
             parentId = answer.getParent().getId();
         else parentId = 0L;
-        if(parentId > 0) { // 답글인 경우
+
+        answer.delete();
+        questionRepository.save(answer.getQuestion());
+
+        if(parentId == 0 && answerRepository.countByParentId(answer.getId()) > 0) {
+        }
+        else
             answerRepository.delete(answer);
-        }
-        else { // 원답변인 경우
-            if(answerRepository.countByParentId(answer.getId()) > 0) { // 답댓글이 존재하는 경우
-            }
-            else answerRepository.delete(answer);
-        }
     }
 }
