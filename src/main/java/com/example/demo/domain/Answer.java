@@ -16,6 +16,7 @@ import java.util.List;
 public class Answer extends EntityTime {
 
     @Id
+    @Column(name = "answer_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

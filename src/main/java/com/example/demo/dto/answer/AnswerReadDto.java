@@ -13,7 +13,7 @@ public class AnswerReadDto {
     private Long id;
     private String content;
     private String memberNickname;
-    private String memberTier;
+    private Long memberGrade;
     private Long parentId;
     private Long likes;
     private Long dislikes;
@@ -24,7 +24,7 @@ public class AnswerReadDto {
         this.id = answer.getId();
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
-        this.memberTier = answer.getMember().getTier();
+        this.memberGrade = answer.getMember().getGrade();
         if (answer.getParent() != null)
             this.parentId = answer.getParent().getId();
         else this.parentId = 0L;

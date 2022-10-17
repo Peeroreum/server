@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 public class MemberDto {
     private String username;
     private String nickname;
-    private String grade;
-    private String image;
+    private Long grade;
     public static MemberDto toDto(Member member) {
-        return new MemberDto(member.getUsername(), member.getNickname(), member.getGrade(), member.getImage());
+        return new MemberDto(member.getUsername(), member.getNickname(), member.getGrade());
     }
 }

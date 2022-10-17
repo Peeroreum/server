@@ -19,4 +19,5 @@ public class EntityTime {
 
     @LastModifiedDate
     private LocalDateTime modifiedTime;
+
 }

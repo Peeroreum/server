@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Override
     Optional<Answer> findById(Long id);
-
+    Long countByQuestionId(Long questionId);
     List<Answer> findAllByQuestionId(Long questionId);
-    Integer countByParentId(Long parentId);
+    Long countByParentId(Long parentId);
 
 }

@@ -12,21 +12,22 @@ public class QuestionListDto {
     private Long id;
     private String content;
     private String memberNickname;
-    private String memberTier;
+    private Long memberGrade;
     private Long likes;
     private Long dislikes;
+    private Long answerCount;
     private String thumbnailUri;
     private LocalDateTime createdTime;
 
-    public QuestionListDto(Question question) {
+    public QuestionListDto(Question question, Long answerCount) {
         this.id = question.getId();
         this.content = question.getContent();
         this.memberNickname = question.getMember().getNickname();
-        this.memberTier = question.getMember().getTier();
+        this.memberGrade = question.getMember().getGrade();
         this.likes = question.getLikes();
         this.dislikes = question.getDislikes();
+        this.answerCount = answerCount;
         this.createdTime = question.getCreatedTime();
-
         if(!question.getImages().isEmpty())
             this.thumbnailUri = question.getImages().get(0).getImagePath();
         else this.thumbnailUri = "";

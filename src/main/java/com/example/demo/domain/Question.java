@@ -25,7 +25,7 @@ public class Question extends EntityTime {
     private String content;
 
     @Column
-    private String subject;
+    private Long subject;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -39,13 +39,13 @@ public class Question extends EntityTime {
     private Long dislikes = 0L;
 
     @Builder
-    public Question(String content, String subject, Member member) {
+    public Question(String content, Long subject, Member member) {
         this.content = content;
         this.subject = subject;
         this.member = member;
     }
 
-    public void update(String content, String subject) {
+    public void update(String content, Long subject) {
         this.content = content;
         this.subject = subject;
     }

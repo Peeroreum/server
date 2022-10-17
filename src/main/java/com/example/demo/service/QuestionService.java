@@ -6,6 +6,7 @@ import com.example.demo.domain.Member;
 import com.example.demo.dto.Attachment.ImageDto;
 import com.example.demo.dto.question.*;
 import com.example.demo.exception.CustomException;
+import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.MemberRepository;
@@ -28,6 +29,7 @@ import static com.example.demo.exception.ExceptionType.*;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final AnswerRepository answerRepository;
     private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final FileHandler fileHandler;
@@ -54,7 +56,7 @@ public class QuestionService {
         for(ImageDto image : imageList)
             imageUris.add(image.getImagePath());
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        return new QuestionReadDto(question, imageUris);
+        return new QuestionReadDto(question, imageUris, answerRepository.countByQuestionId(id));
     }
 
     @Transactional
@@ -112,7 +114,7 @@ public class QuestionService {
         List<Question> searchedQuestions = questionRepository.findAllBySubjectAndMemberGrade(searchRequest.getSubject(), searchRequest.getGrade());
         List<QuestionListDto> results = new ArrayList<>();
         for(Question question : searchedQuestions) {
-            results.add(new QuestionListDto(question));
+            results.add(new QuestionListDto(question, answerRepository.countByQuestionId(question.getId())));
         }
         return results;
     }

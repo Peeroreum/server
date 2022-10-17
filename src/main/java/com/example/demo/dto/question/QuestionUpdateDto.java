@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionUpdateDto {
     private String content;
-    private String subject;
+    private Long subject;
     private List<MultipartFile> files = new ArrayList<>();
 }

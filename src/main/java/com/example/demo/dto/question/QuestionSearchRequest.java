@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class QuestionSearchRequest {
-    private String grade;
-    private String subject;
+    private Long grade;
+    private Long subject;
 }
