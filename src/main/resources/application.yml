@@ -5,10 +5,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 20MB
   datasource:
-    url: jdbc:mariadb://localhost:3308/befriends
+    url: jdbc:mariadb://befriends-backend.cgeoa5gu9cm5.ap-northeast-2.rds.amazonaws.com:3306/befriends_backend
     driver-class-name: org.mariadb.jdbc.Driver
-    username: root
-    password: nt6819
+    username: admin
+    password: nt406819
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
