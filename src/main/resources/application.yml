@@ -1,3 +1,14 @@
+cloud:
+  aws:
+    s3:
+      bucket: befriends
+    credentials:
+      access-key: AKIATPKWOWPTZJB5ZA4G
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
 spring:
   servlet:
     multipart:

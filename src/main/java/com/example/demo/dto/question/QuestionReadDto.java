@@ -18,11 +18,11 @@ public class QuestionReadDto {
     private Long likes;
     private Long dislikes;
     private Long answerCount;
-    private List<String> imageUris;
+    private List<String> imagePaths;
     private LocalDateTime createdTime;
 
 
-    public QuestionReadDto(Question question, List<String> imageUris, Long answerCount) {
+    public QuestionReadDto(Question question, List<String> imagePaths, Long answerCount) {
         this.id = question.getId();
         this.content = question.getContent();
         this.subject = question.getSubject();
@@ -31,7 +31,7 @@ public class QuestionReadDto {
         this.likes = question.getLikes();
         this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
-        this.imageUris = imageUris;
+        this.imagePaths = imagePaths;
         this.createdTime = question.getCreatedTime();
     }
 
