@@ -51,9 +51,6 @@ public class Answer extends EntityTime {
         this.parent = parent;
     }
 
-    public void delete() {
-        question.getAnswers().remove(this);
-    }
     public void update(String content) {
     }
 
@@ -72,4 +69,7 @@ public class Answer extends EntityTime {
         }
     }
 
+    public void delete() {
+        this.content = "";
+    }
 }

@@ -51,13 +51,12 @@ public class AnswerService {
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
         }
-        question.addAnswer(answer);
         questionRepository.save(question);
         answerRepository.save(answer);
     }
 
     public List<AnswerReadDto> readAll(AnswerReadRequest readRequest) {
-        List<Answer> answers = questionRepository.findById(readRequest.getQuestionId()).get().getAnswers();
+        List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
         List<AnswerReadDto> result = new ArrayList<>();
         for(Answer answer : answers) {
             List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
@@ -69,10 +68,6 @@ public class AnswerService {
         return result;
     }
 
-    public void update(Long id, AnswerUpdateDto updateDto) {
-
-    }
-
     public void delete(Long id) {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
         Optional<Answer> parent = Optional.ofNullable(answer.getParent());
@@ -82,7 +77,7 @@ public class AnswerService {
         else parentId = 0L;
 
         answer.delete();
-        questionRepository.save(answer.getQuestion());
+        answerRepository.save(answer);
 
         if(parentId == 0 && answerRepository.countByParentId(answer.getId()) > 0) {
         }
