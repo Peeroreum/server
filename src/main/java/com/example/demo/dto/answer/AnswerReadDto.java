@@ -17,10 +17,11 @@ public class AnswerReadDto {
     private Long parentId;
     private Long likes;
     private Long dislikes;
-    private List<String> fileUri;
+    private Boolean isDeleted;
+    private List<String> imagePaths;
     private LocalDateTime createdTime;
 
-    public AnswerReadDto(Answer answer, List<String> fileUri) {
+    public AnswerReadDto(Answer answer, List<String> imagePaths) {
         this.id = answer.getId();
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
@@ -30,7 +31,8 @@ public class AnswerReadDto {
         else this.parentId = 0L;
         this.likes = answer.getLikes();
         this.dislikes = answer.getDislikes();
-        this.fileUri = fileUri;
+        this.isDeleted = answer.isDeleted();
+        this.imagePaths = imagePaths;
         this.createdTime = answer.getCreatedTime();
     }
 }

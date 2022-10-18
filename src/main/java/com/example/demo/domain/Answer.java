@@ -43,6 +43,7 @@ public class Answer extends EntityTime {
 
     private Long likes = 0L;
     private Long dislikes = 0L;
+    private boolean isDeleted;
 
     @Builder
     public Answer(String content, Member member, Question question, Answer parent) {
@@ -50,6 +51,7 @@ public class Answer extends EntityTime {
         this.member = member;
         this.question = question;
         this.parent = parent;
+        this.isDeleted = false;
     }
 
     public void update(String content) {
@@ -72,5 +74,6 @@ public class Answer extends EntityTime {
 
     public void delete() {
         this.content = "";
+        isDeleted = true;
     }
 }

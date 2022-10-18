@@ -11,13 +11,12 @@ import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.repository.QuestionRepository;
-import com.example.demo.service.attachment.FileHandler;
 import com.example.demo.service.attachment.ImageService;
+import com.example.demo.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +32,9 @@ public class AnswerService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final ImageService imageService;
-    private final FileHandler fileHandler;
+    private final S3Service s3Service;
 
-    public void create(AnswerSaveDto saveDto, String username) throws IOException {
+    public void create(AnswerSaveDto saveDto, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
         Answer parent = Optional.ofNullable(saveDto.getParentId()).map(id -> answerRepository.findById(id)
@@ -46,7 +45,7 @@ public class AnswerService {
                 .question(question)
                 .parent(parent)
                 .build();
-        List<Image> imageList = fileHandler.parseFileInfo(answer, saveDto.getFiles());
+        List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
         if(!imageList.isEmpty()) {
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
@@ -60,10 +59,10 @@ public class AnswerService {
         List<AnswerReadDto> result = new ArrayList<>();
         for(Answer answer : answers) {
             List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
-            List<String> imageUris = new ArrayList<>();
+            List<String> imagePaths = new ArrayList<>();
             for(ImageDto image : imageDtoList)
-                imageUris.add(image.getImagePath());
-            result.add(new AnswerReadDto(answer, imageUris));
+                imagePaths.add(image.getImagePath());
+            result.add(new AnswerReadDto(answer, imagePaths));
         }
         return result;
     }
@@ -72,16 +71,22 @@ public class AnswerService {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
         Optional<Answer> parent = Optional.ofNullable(answer.getParent());
         Long parentId;
+        List<Image> images = answer.getImages();
         if(parent.isPresent())
             parentId = answer.getParent().getId();
         else parentId = 0L;
 
-        answer.delete();
-        answerRepository.save(answer);
-
         if(parentId == 0 && answerRepository.countByParentId(answer.getId()) > 0) {
+            answer.delete();
+            answerRepository.save(answer);
         }
-        else
+        else {
             answerRepository.delete(answer);
+        }
+        if(!images.isEmpty()) {
+            for(Image image : images) {
+                s3Service.deleteImage(image.getImageName());
+            }
+        }
     }
 }
