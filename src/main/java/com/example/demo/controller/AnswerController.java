@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.security.Principal;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class AnswerController {
@@ -18,7 +18,7 @@ public class AnswerController {
 
     @PostMapping("/answer")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto createAnswer(@ModelAttribute AnswerSaveDto answerSaveDto, Principal principal) throws IOException {
+    public ResponseDto createAnswer(@ModelAttribute AnswerSaveDto answerSaveDto, Principal principal) {
         String username = principal.getName();
         answerService.create(answerSaveDto, username);
         return ResponseDto.success();

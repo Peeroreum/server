@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.Principal;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class QuestionController {

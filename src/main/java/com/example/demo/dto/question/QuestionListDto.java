@@ -27,6 +27,7 @@ public class QuestionListDto {
         this.likes = question.getLikes();
         this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
+
         this.createdTime = question.getCreatedTime();
         if(!question.getImages().isEmpty())
             this.thumbnailUri = question.getImages().get(0).getImagePath();
