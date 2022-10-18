@@ -24,7 +24,7 @@ public class AnswerController {
         return ResponseDto.success();
     }
 
-    @PostMapping("/answer")
+    @PostMapping("/answer/read")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest) {
         return ResponseDto.success(answerService.readAll(answerReadRequest));
