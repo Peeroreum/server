@@ -17,7 +17,7 @@ import java.security.Principal;
 public class QuestionController {
     private final QuestionService questionService;
 
-    @PostMapping("/question")
+    @PostMapping("home/question")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto searchQuestion(@RequestBody QuestionSearchRequest searchRequest) {
         return ResponseDto.success(questionService.search(searchRequest));
