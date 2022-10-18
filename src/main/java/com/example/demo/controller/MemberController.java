@@ -19,7 +19,7 @@ public class MemberController {
         return ResponseDto.success();
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseDto signIn(@RequestBody SignInDto signInDto) {
         return ResponseDto.success(memberService.signIn(signInDto));
     }

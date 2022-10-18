@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.security.Principal;
 
 @CrossOrigin
@@ -18,7 +17,7 @@ import java.security.Principal;
 public class QuestionController {
     private final QuestionService questionService;
 
-    @GetMapping("/question")
+    @PostMapping("/question")
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto searchQuestion(@RequestBody QuestionSearchRequest searchRequest) {
         return ResponseDto.success(questionService.search(searchRequest));
@@ -26,7 +25,7 @@ public class QuestionController {
 
     @PostMapping("/question")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) throws IOException {
+    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
         String username = principal.getName();
         questionService.create(saveDto, username);
         return ResponseDto.success();
@@ -40,7 +39,7 @@ public class QuestionController {
 
     @PutMapping("/question/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto updateQuestion(@PathVariable Long id, @RequestBody QuestionUpdateDto questionUpdateDto) throws IOException {
+    public ResponseDto updateQuestion(@PathVariable Long id, @RequestBody QuestionUpdateDto questionUpdateDto) {
         questionService.update(id, questionUpdateDto);
         return ResponseDto.success();
     }
