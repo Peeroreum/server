@@ -22,9 +22,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class S3Service {
-    @Value("${cloud.aws.s3.bucket")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private String baseurl = "https://befriends.s3.ap-northeast-2.amazonaws.com/";
+    private final String baseurl = "https://befriends.s3.ap-northeast-2.amazonaws.com/";
 
     private final AmazonS3 amazonS3;
 
