@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -27,7 +26,6 @@ public class RankingService {
     private final List<RankingDto> rankingList;
 
     @Async
-    @PostConstruct
     @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
     public void init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
@@ -68,6 +66,7 @@ public class RankingService {
 
 
     public RankingDto getMyRanking(String username) {
+        init();
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         for(RankingDto rankingDto : rankingList) {
             if(rankingDto.getMemberNickname().equals(member.getNickname()))
@@ -77,6 +76,7 @@ public class RankingService {
     }
 
     public List<RankingDto> getRankingList() {
+        init();
         return rankingList;
     }
 
