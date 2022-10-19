@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface HeartRepository extends JpaRepository<Heart, Long> {
     Optional<Heart> findLikeByMemberAndQuestionId(Member member, Long questionId);
     Optional<Heart> findLikeByMemberAndAnswerId(Member member, Long answerId);
+    Long countByAnswer(Long answerId);
 }
