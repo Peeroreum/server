@@ -3,80 +3,81 @@ package com.example.demo.service;
 import com.example.demo.domain.Answer;
 import com.example.demo.domain.Member;
 import com.example.demo.domain.Role;
-import com.example.demo.domain.Score;
+import com.example.demo.dto.ranking.ScoreDto;
 import com.example.demo.dto.ranking.RankingDto;
 import com.example.demo.exception.CustomException;
 import com.example.demo.exception.ExceptionType;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class RankingService {
-    private final RedisTemplate redisTemplate;
     private final MemberRepository memberRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final HeartRepository heartRepository;
     private final XHeartRepository xHeartRepository;
+    private final List<RankingDto> rankingList;
 
     @PostConstruct
+    @Async
+    @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
     public void init() {
+        HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
-        Long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
-        double score;
+        long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
+        ScoreDto scoreDto;
         for(Member member : memberList) {
             questionCnt = questionRepository.countByMember(member.getId());
             List<Answer> answers = answerRepository.findAllByMember(member.getId());
-            answerCnt = Long.valueOf(answers.size());
+            answerCnt = answers.size();
             for(Answer answer : answers) {
                 answerLike += heartRepository.countByAnswer(answer.getId());
                 answerDislike += xHeartRepository.countByAnswer(answer.getId());
             }
             durationTime = member.getDurationTime();
-            score = new Score(questionCnt, answerCnt, answerLike, answerDislike, durationTime).getScore();
+            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
+
             if(member.getRoles().get(0) != Role.ADMIN) {
-                redisTemplate.opsForZSet().add("ranking", member.getNickname(), score);
+                hashMap.put(scoreDto, scoreDto.getScore());
+            }
+        }
+        List<ScoreDto> scoreList = new ArrayList<>(hashMap.keySet());
+        scoreList.sort(Comparator.comparing(hashMap::get).reversed());
+
+        if(scoreList.size() < 10) {
+            for(int i = 1; i <= scoreList.size(); i++) {
+                ScoreDto score = scoreList.get(i);
+                rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
+            }
+        }
+        else {
+            for(int i = 1; i <= 10; i++) {
+                ScoreDto score = scoreList.get(i);
+                rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
             }
         }
     }
 
+
     public RankingDto getMyRanking(String username) {
-        Long rank = 0L;
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Double score = redisTemplate.opsForZSet().score("ranking", member.getNickname());
-        Set<String> ranking2 = redisTemplate.opsForZSet().reverseRangeByScore("ranking", score, score, 0, 1);
-        for(String s : ranking2) {
-            rank = redisTemplate.opsForZSet().reverseRank("ranking", s);
+        for(RankingDto rankingDto : rankingList) {
+            if(rankingDto.getMemberNickname().equals(member.getNickname()))
+                return rankingDto;
         }
-        return new RankingDto(member, questionRepository.countByMember(member.getId()), answerRepository.countByMember(member.getId()), rank+1);
+        return null;
     }
 
     public List<RankingDto> getRankingList() {
-        List<RankingDto> rankingList = new ArrayList<>();
-        String key = "ranking";
-        Long rank = 1L;
-        Member member;
-        ZSetOperations<String, String> stringStringZSetOperations = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<String>> typedTuples = stringStringZSetOperations.reverseRangeWithScores(key, 0, 10);
-        for(ZSetOperations.TypedTuple<String> tuple : typedTuples) {
-            member = memberRepository.findByUsername(tuple.getValue()).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-            rankingList.add(new RankingDto(member, questionRepository.countByMember(member.getId()), answerRepository.countByMember(member.getId()), rank++));
-        }
         return rankingList;
     }
 
-    @PreDestroy
-    public void destroy() {
-        redisTemplate.delete("ranking");
-    }
 }

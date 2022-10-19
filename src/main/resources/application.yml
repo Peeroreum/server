@@ -14,9 +14,6 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 20MB
-  redis:
-    host: 3.39.204.192
-    port: 6379
   datasource:
     url: jdbc:mariadb://befriends-backend.cgeoa5gu9cm5.ap-northeast-2.rds.amazonaws.com:3306/befriends_backend
     driver-class-name: org.mariadb.jdbc.Driver

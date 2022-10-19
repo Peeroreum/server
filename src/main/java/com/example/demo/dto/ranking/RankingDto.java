@@ -9,9 +9,9 @@ public class RankingDto {
     Long memberGrade;
     Long questionCnt;
     Long answerCnt;
-    Long rank;
+    int rank;
 
-    public RankingDto(Member member, Long questionCnt, Long answerCnt, Long rank) {
+    public RankingDto(Member member, Long questionCnt, Long answerCnt, int rank) {
         this.memberNickname = member.getNickname();
         this.memberGrade = member.getGrade();
         this.questionCnt = questionCnt;
