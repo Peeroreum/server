@@ -9,8 +9,6 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.exception.ExceptionType;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -27,7 +25,7 @@ public class RankingService {
 //
 //    @Async
 //    @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
-    public void init() {
+    public List<RankingDto> init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
@@ -62,13 +60,13 @@ public class RankingService {
                 rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
             }
         }
+        return rankingList;
     }
 
 
     public RankingDto getMyRanking(String username) {
-        init();
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        for(RankingDto rankingDto : rankingList) {
+        for(RankingDto rankingDto : init()) {
             if(rankingDto.getMemberNickname().equals(member.getNickname()))
                 return rankingDto;
         }
@@ -76,8 +74,7 @@ public class RankingService {
     }
 
     public List<RankingDto> getRankingList() {
-        init();
-        return rankingList;
+        return init();
     }
 
 }
