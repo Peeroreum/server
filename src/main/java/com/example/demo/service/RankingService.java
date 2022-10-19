@@ -51,15 +51,15 @@ public class RankingService {
         scoreList.sort(Comparator.comparing(hashMap::get).reversed());
 
         if(scoreList.size() < 10) {
-            for(int i = 1; i <= scoreList.size(); i++) {
+            for(int i = 0; i < scoreList.size(); i++) {
                 ScoreDto score = scoreList.get(i);
-                rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
+                rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i+1));
             }
         }
         else {
-            for(int i = 1; i <= 10; i++) {
+            for(int i = 0; i < 10; i++) {
                 ScoreDto score = scoreList.get(i);
-                rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
+                rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i+1));
             }
         }
     }
