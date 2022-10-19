@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface XHeartRepository extends JpaRepository<XHeart, Long> {
     Optional<XHeart> findByMemberAndQuestionId(Member member, Long questionId);
     Optional<XHeart> findByMemberAndAnswerId(Member member, Long answerId);
+    Long countByAnswer(Long answerId);
 }
