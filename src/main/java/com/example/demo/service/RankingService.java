@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -26,7 +25,6 @@ public class RankingService {
     private final XHeartRepository xHeartRepository;
     private final List<RankingDto> rankingList;
 
-    @PostConstruct
     @Async
     @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
     public void init() {
