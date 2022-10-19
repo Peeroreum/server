@@ -31,12 +31,12 @@ public class RankingService {
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
         ScoreDto scoreDto;
         for(Member member : memberList) {
-            questionCnt = questionRepository.countByMember(member.getId());
-            List<Answer> answers = answerRepository.findAllByMember(member.getId());
+            questionCnt = questionRepository.countByMember(member);
+            List<Answer> answers = answerRepository.findAllByMember(member);
             answerCnt = answers.size();
             for(Answer answer : answers) {
-                answerLike += heartRepository.countByAnswer(answer.getId());
-                answerDislike += xHeartRepository.countByAnswer(answer.getId());
+                answerLike += heartRepository.countByAnswer(answer);
+                answerDislike += xHeartRepository.countByAnswer(answer);
             }
             durationTime = member.getDurationTime();
             scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
