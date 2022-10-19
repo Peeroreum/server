@@ -9,14 +9,13 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.exception.ExceptionType;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class RankingService {
     private final MemberRepository memberRepository;
@@ -26,6 +25,7 @@ public class RankingService {
     private final XHeartRepository xHeartRepository;
     private final List<RankingDto> rankingList;
 
+    @Async
     @Scheduled(cron = "30 * * * * *")
     public void init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
