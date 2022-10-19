@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.domain.Answer;
 import com.example.demo.domain.Member;
-import com.example.demo.domain.Role;
 import com.example.demo.dto.ranking.ScoreDto;
 import com.example.demo.dto.ranking.RankingDto;
 import com.example.demo.exception.CustomException;
@@ -41,9 +40,7 @@ public class RankingService {
             durationTime = member.getDurationTime();
             scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
 
-            if(member.getRoles().get(0) != Role.ADMIN) {
-                hashMap.put(scoreDto, scoreDto.getScore());
-            }
+            hashMap.put(scoreDto, scoreDto.getScore());
         }
         List<ScoreDto> scoreList = new ArrayList<>(hashMap.keySet());
         scoreList.sort(Comparator.comparing(hashMap::get).reversed());
