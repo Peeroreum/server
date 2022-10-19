@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.domain.Member;
 import com.example.demo.domain.RefreshToken;
+import com.example.demo.dto.member.DurationTimeDto;
 import com.example.demo.dto.member.SignInDto;
 import com.example.demo.dto.member.SignUpDto;
 import com.example.demo.dto.member.TokenDto;
@@ -54,4 +55,9 @@ public class MemberService {
         return passwordEncoder.matches(signInDto.getPassword(), member.getPassword());
     }
 
+    public void updateDT(DurationTimeDto durationTimeDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+        member.updateDurationTime(durationTimeDto.getDurationTime());
+        memberRepository.save(member);
+    }
 }

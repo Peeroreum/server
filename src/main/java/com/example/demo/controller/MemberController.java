@@ -1,11 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.member.DurationTimeDto;
 import com.example.demo.dto.member.SignInDto;
 import com.example.demo.dto.member.SignUpDto;
 import com.example.demo.dto.response.ResponseDto;
 import com.example.demo.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @CrossOrigin
 @RestController
@@ -22,5 +25,11 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseDto signIn(@RequestBody SignInDto signInDto) {
         return ResponseDto.success(memberService.signIn(signInDto));
+    }
+
+    @PutMapping("/member/dt")
+    public ResponseDto updateDT(@RequestBody DurationTimeDto durationTimeDto, Principal principal) {
+        memberService.updateDT(durationTimeDto, principal.getName());
+        return ResponseDto.success();
     }
 }

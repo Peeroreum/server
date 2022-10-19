@@ -34,6 +34,9 @@ public class Member extends EntityTime {
     @Column
     private Long grade;
 
+    @Column
+    private Long durationTime;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
@@ -45,9 +48,13 @@ public class Member extends EntityTime {
         this.nickname = nickname;
         this.image = image;
         this.grade = grade;
+        durationTime = 0L;
         this.roles = Collections.singletonList(Role.USER);
     }
 
+    public void updateDurationTime(Long durationTime) {
+        this.durationTime += durationTime;
+    }
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
         this.password = passwordEncoder.encode(password);
     }
