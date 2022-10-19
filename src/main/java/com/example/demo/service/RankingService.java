@@ -28,6 +28,7 @@ public class RankingService {
     public List<RankingDto> init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
+        System.out.println(memberList); //지우기
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
         ScoreDto scoreDto;
         for(Member member : memberList) {
@@ -47,6 +48,7 @@ public class RankingService {
         }
         List<ScoreDto> scoreList = new ArrayList<>(hashMap.keySet());
         scoreList.sort(Comparator.comparing(hashMap::get).reversed());
+        System.out.println(scoreList);
 
         if(scoreList.size() < 10) {
             for(int i = 1; i <= scoreList.size(); i++) {
@@ -60,6 +62,7 @@ public class RankingService {
                 rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
             }
         }
+        System.out.println(rankingList);
         return rankingList;
     }
 
