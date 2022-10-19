@@ -24,9 +24,9 @@ public class RankingService {
     private final HeartRepository heartRepository;
     private final XHeartRepository xHeartRepository;
     private final List<RankingDto> rankingList;
-
-    @Async
-    @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
+//
+//    @Async
+//    @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
     public void init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
