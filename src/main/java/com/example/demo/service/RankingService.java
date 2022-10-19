@@ -24,7 +24,7 @@ public class RankingService {
     private final XHeartRepository xHeartRepository;
     private final List<RankingDto> rankingList;
 
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "30 * * * * *")
     public void init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
