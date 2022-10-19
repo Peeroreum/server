@@ -31,8 +31,8 @@ public class RankingService {
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
         ScoreDto scoreDto;
         for(Member member : memberList) {
-            questionCnt = questionRepository.countByMember(member);
-            List<Answer> answers = answerRepository.findAllByMember(member);
+            questionCnt = questionRepository.countByMemberId(member.getId());
+            List<Answer> answers = answerRepository.findAllByMemberId(member.getId());
             answerCnt = answers.size();
             for(Answer answer : answers) {
                 answerLike += heartRepository.countByAnswer(answer);
