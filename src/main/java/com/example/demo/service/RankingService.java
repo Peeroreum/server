@@ -9,6 +9,7 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.exception.ExceptionType;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,13 +23,11 @@ public class RankingService {
     private final HeartRepository heartRepository;
     private final XHeartRepository xHeartRepository;
     private final List<RankingDto> rankingList;
-//
-//    @Async
-//    @Scheduled(cron = "0 0 0 * * *") //매일 자정에 반복
-    public List<RankingDto> init() {
+
+    @Scheduled(cron = "* * * * * *")
+    public void init() {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
-        System.out.println(memberList); //지우기
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
         ScoreDto scoreDto;
         for(Member member : memberList) {
@@ -48,7 +47,6 @@ public class RankingService {
         }
         List<ScoreDto> scoreList = new ArrayList<>(hashMap.keySet());
         scoreList.sort(Comparator.comparing(hashMap::get).reversed());
-        System.out.println(scoreList);
 
         if(scoreList.size() < 10) {
             for(int i = 1; i <= scoreList.size(); i++) {
@@ -62,14 +60,12 @@ public class RankingService {
                 rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i));
             }
         }
-        System.out.println(rankingList);
-        return rankingList;
     }
 
 
     public RankingDto getMyRanking(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        for(RankingDto rankingDto : init()) {
+        for(RankingDto rankingDto : rankingList) {
             if(rankingDto.getMemberNickname().equals(member.getNickname()))
                 return rankingDto;
         }
@@ -77,7 +73,7 @@ public class RankingService {
     }
 
     public List<RankingDto> getRankingList() {
-        return init();
+        return rankingList;
     }
 
 }
