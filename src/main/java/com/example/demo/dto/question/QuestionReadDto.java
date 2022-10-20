@@ -4,7 +4,8 @@ import com.example.demo.domain.Question;
 import lombok.Data;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -19,7 +20,7 @@ public class QuestionReadDto {
     private Long dislikes;
     private Long answerCount;
     private List<String> imagePaths;
-    private LocalDateTime createdTime;
+    private String createdTime;
 
 
     public QuestionReadDto(Question question, List<String> imagePaths, Long answerCount) {
@@ -32,7 +33,9 @@ public class QuestionReadDto {
         this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
         this.imagePaths = imagePaths;
-        this.createdTime = question.getCreatedTime();
+        if(question.getCreatedTime().getYear() != Year.now().getValue())
+            this.createdTime = question.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+        else this.createdTime = question.getCreatedTime().format(DateTimeFormatter.ofPattern("MM/dd HH:mm"));
     }
 
 }
