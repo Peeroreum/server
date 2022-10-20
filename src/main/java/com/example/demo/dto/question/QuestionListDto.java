@@ -4,7 +4,8 @@ import com.example.demo.domain.Question;
 import lombok.Data;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Data
@@ -17,7 +18,7 @@ public class QuestionListDto {
     private Long dislikes;
     private Long answerCount;
     private String thumbnailUri;
-    private LocalDateTime createdTime;
+    private String createdTime;
 
     public QuestionListDto(Question question, Long answerCount) {
         this.id = question.getId();
@@ -28,7 +29,10 @@ public class QuestionListDto {
         this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
 
-        this.createdTime = question.getCreatedTime();
+        if(question.getCreatedTime().getYear() != Year.now().getValue())
+            this.createdTime = question.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+        else this.createdTime = question.getCreatedTime().format(DateTimeFormatter.ofPattern("MM/dd HH:mm"));
+
         if(!question.getImages().isEmpty())
             this.thumbnailUri = question.getImages().get(0).getImagePath();
         else this.thumbnailUri = "";

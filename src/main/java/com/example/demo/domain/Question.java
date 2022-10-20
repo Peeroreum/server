@@ -64,4 +64,7 @@ public class Question extends EntityTime {
             image.setQuestion(this);
     }
 
+    public void clearImage() {
+        this.images.clear();
+    }
 }
