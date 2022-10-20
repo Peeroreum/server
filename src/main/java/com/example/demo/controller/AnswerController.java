@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.answer.AnswerReadRequest;
 import com.example.demo.dto.answer.AnswerSaveDto;
+import com.example.demo.dto.answer.AnswerUpdateDto;
 import com.example.demo.dto.response.ResponseDto;
 import com.example.demo.service.AnswerService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,13 @@ public class AnswerController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest) {
         return ResponseDto.success(answerService.readAll(answerReadRequest));
+    }
+
+    @PutMapping("/answer/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto updateAnswer(@PathVariable Long id, @ModelAttribute AnswerUpdateDto answerUpdateDto) {
+        answerService.update(id, answerUpdateDto);
+        return ResponseDto.success();
     }
 
     @DeleteMapping("/answer/{id}")

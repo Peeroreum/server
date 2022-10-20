@@ -55,6 +55,7 @@ public class Answer extends EntityTime {
     }
 
     public void update(String content) {
+        this.content = content;
     }
 
     public void updateLikes(int like) {
@@ -70,6 +71,10 @@ public class Answer extends EntityTime {
         if(image.getAnswer() != this) {
             image.setAnswer(this);
         }
+    }
+
+    public void clearImage() {
+        this.images.clear();
     }
 
     public void delete() {
