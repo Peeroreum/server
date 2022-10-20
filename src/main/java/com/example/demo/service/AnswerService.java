@@ -67,6 +67,27 @@ public class AnswerService {
         return result;
     }
 
+
+    public void update(Long id, AnswerUpdateDto answerUpdateDto) {
+        Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
+        List<Image> images = answer.getImages(); //기존 저장 이미지 삭제
+        if(!images.isEmpty()) {
+            for(Image image : images) {
+                s3Service.deleteImage(image.getImageName());
+                imageRepository.delete(image);
+            }
+        }
+        answer.clearImage();
+
+        List<Image> imageList = s3Service.uploadImage(answerUpdateDto.getFiles()); // 이미지 새로 저장
+        if(!imageList.isEmpty()) {
+            for(Image image : imageList)
+                answer.addImage(imageRepository.save(image));
+        }
+        answer.update(answerUpdateDto.getContent());
+        answerRepository.save(answer);
+    }
+
     public void delete(Long id) {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
         Optional<Answer> parent = Optional.ofNullable(answer.getParent());
@@ -89,4 +110,5 @@ public class AnswerService {
             }
         }
     }
+
 }
