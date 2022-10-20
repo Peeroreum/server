@@ -21,10 +21,11 @@ public class RankingService {
     private final AnswerRepository answerRepository;
     private final HeartRepository heartRepository;
     private final XHeartRepository xHeartRepository;
-    private final List<RankingDto> rankingList;
+    private List<RankingDto> rankingList;
 
-    @Scheduled(cron = "30 * * * * *")
+    @Scheduled(cron = "* * * * * *")
     public void init() {
+        rankingList = new ArrayList<>();
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
