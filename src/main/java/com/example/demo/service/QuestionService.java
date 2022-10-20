@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.domain.Answer;
 import com.example.demo.domain.Image;
 import com.example.demo.domain.Question;
 import com.example.demo.domain.Member;
@@ -16,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,58 +59,42 @@ public class QuestionService {
 
     @Transactional
     public void update(Long id, QuestionUpdateDto updateDto) {
-//        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-//        List<ImageDto> existImages = imageService.findAllByQuestion(id); // 이미 저장된 이미지
-//        List<MultipartFile> requestFiles = updateDto.getFiles(); // 업데이트 요청
-//        List<MultipartFile> updateFiles = new ArrayList<>(); // 새로 저장할 파일
-//
-//        if(CollectionUtils.isEmpty(existImages)) {
-//            if (!CollectionUtils.isEmpty(requestFiles)) {
-//                for (MultipartFile requestFile : requestFiles)
-//                    updateFiles.add(requestFile);
-//            }
-//        }
-//        else {
-//            if(CollectionUtils.isEmpty(requestFiles)) {
-//                for(ImageDto image : existImages)
-//                    imageService.deleteImage(image.getId());
-//            }
-//            else {
-//                List<String> existImagesName = new ArrayList<>();
-//
-//                for(ImageDto existImage : existImages) {
-//                    ImageDto image = imageService.findByImageId(existImage.getId());
-//                    String imageName = image.getImageName();
-//
-//                    if(!requestFiles.contains(imageName))
-//                        imageService.deleteImage(existImage.getId());
-//                    else
-//                        existImagesName.add(imageName);
-//                }
-//
-//                for(MultipartFile multipartFile : requestFiles) {
-//                    String multipartOriginalName = multipartFile.getOriginalFilename();
-//                    if(!existImagesName.contains(multipartOriginalName))
-//                        updateFiles.add(multipartFile);
-//                }
-//            }
-//        }
-//        List<Image> imageList = fileHandler.parseFileInfo(question, updateFiles);
-//        if(!imageList.isEmpty()) {
-//            for(Image image : imageList)
-//                imageRepository.save(image);
-//        }
-//
-//        question.update(updateDto.getContent(), updateDto.getSubject());
+        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
+        List<Image> images = question.getImages(); //기존 저장 이미지 삭제
+        if(!images.isEmpty()) {
+            for(Image image : images) {
+                s3Service.deleteImage(image.getImageName());
+                imageRepository.delete(image);
+            }
+        }
+        question.clearImage();
+
+        List<Image> imageList = s3Service.uploadImage(updateDto.getFiles()); // 이미지 새로 저장
+        if(!imageList.isEmpty()) {
+            for(Image image : imageList)
+                question.addImage(imageRepository.save(image));
+        }
+        question.update(updateDto.getContent(), updateDto.getSubject());
+        questionRepository.save(question);
     }
+
+    @Transactional
     public void delete(Long id) {
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
+
         List<Image> images = question.getImages();
         if(!images.isEmpty()) {
             for(Image image : images) {
                 s3Service.deleteImage(image.getImageName());
+                imageRepository.delete(image);
             }
         }
+
+        List<Answer> answers = answerRepository.findAllByQuestionId(id);
+        if(!answers.isEmpty()) {
+            answerRepository.deleteAll(answers);
+        }
+
         questionRepository.delete(question);
     }
 

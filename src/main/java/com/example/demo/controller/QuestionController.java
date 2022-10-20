@@ -39,7 +39,7 @@ public class QuestionController {
 
     @PutMapping("/question/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto updateQuestion(@PathVariable Long id, @RequestBody QuestionUpdateDto questionUpdateDto) {
+    public ResponseDto updateQuestion(@PathVariable Long id, @ModelAttribute QuestionUpdateDto questionUpdateDto) {
         questionService.update(id, questionUpdateDto);
         return ResponseDto.success();
     }
