@@ -20,7 +20,7 @@ public class ScoreDto {
         this.answerLike = answerLike;
         this.answerDislike = answerDislike;
         this.durationTime = durationTime;
-        this.score = questionCnt + answerCnt + durationTime;
+        this.score = questionCnt + answerCnt + (durationTime / 30.0);
         if(answerLike > answerDislike)
             this.score += (answerLike - answerDislike) * 0.5;
     }
