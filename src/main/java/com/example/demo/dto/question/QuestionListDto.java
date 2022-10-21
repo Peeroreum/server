@@ -17,6 +17,7 @@ public class QuestionListDto {
     private Long likes;
     private Long dislikes;
     private Long answerCount;
+    private int imageCount;
     private String thumbnailUri;
     private String createdTime;
 
@@ -28,6 +29,7 @@ public class QuestionListDto {
         this.likes = question.getLikes();
         this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
+        this.imageCount = question.getImages().size();
 
         if(question.getCreatedTime().getYear() != Year.now().getValue())
             this.createdTime = question.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));

@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllBySubjectAndMemberGrade(Long subject, Long grade);
+    List<Question> findAllBySubject(Long subject);
+    List<Question> findAllByMemberGrade(Long grade);
     Long countByMemberId(@Param("user_id") Long memberId);
 }

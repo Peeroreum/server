@@ -99,8 +99,22 @@ public class QuestionService {
     }
 
     public List<QuestionListDto> search(QuestionSearchRequest searchRequest) {
-        List<Question> searchedQuestions = questionRepository.findAllBySubjectAndMemberGrade(searchRequest.getSubject(), searchRequest.getGrade());
+        List<Question> searchedQuestions;
         List<QuestionListDto> results = new ArrayList<>();
+        if(searchRequest.getSubject() == 0 && searchRequest.getGrade() == 0) {
+            searchedQuestions = questionRepository.findAll();
+        }
+        else {
+            if(searchRequest.getSubject() == 0) {
+                searchedQuestions = questionRepository.findAllByMemberGrade(searchRequest.getGrade());
+            }
+            else if(searchRequest.getGrade() == 0) {
+                searchedQuestions = questionRepository.findAllBySubject(searchRequest.getSubject());
+            }
+            else {
+                searchedQuestions = questionRepository.findAllBySubjectAndMemberGrade(searchRequest.getSubject(), searchRequest.getGrade());
+            }
+        }
         for(Question question : searchedQuestions) {
             results.add(new QuestionListDto(question, answerRepository.countByQuestionId(question.getId())));
         }

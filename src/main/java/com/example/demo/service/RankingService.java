@@ -19,8 +19,6 @@ public class RankingService {
     private final MemberRepository memberRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
-    private final HeartRepository heartRepository;
-    private final XHeartRepository xHeartRepository;
     private List<RankingDto> rankingList;
 
     @Scheduled(cron = "* * * * * *")
@@ -35,8 +33,8 @@ public class RankingService {
             List<Answer> answers = answerRepository.findAllByMemberId(member.getId());
             answerCnt = answers.size();
             for(Answer answer : answers) {
-                answerLike += heartRepository.countByAnswer(answer);
-                answerDislike += xHeartRepository.countByAnswer(answer);
+                answerLike += answer.getLikes();
+                answerDislike += answer.getDislikes();
             }
             durationTime = member.getDurationTime();
             scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
