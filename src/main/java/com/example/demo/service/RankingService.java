@@ -21,7 +21,7 @@ public class RankingService {
     private final AnswerRepository answerRepository;
     private List<RankingDto> rankingList;
 
-    @Scheduled(cron = "* * * * * *")
+//    @Scheduled(cron = "* * * * * *")
     public void init() {
         rankingList = new ArrayList<>();
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
