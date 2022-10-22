@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.example.demo.exception.ExceptionType.*;
@@ -116,6 +117,8 @@ public class QuestionService {
                 searchedQuestions = questionRepository.findAllBySubjectAndGrade(searchRequest.getSubject(), searchRequest.getGrade());
             }
         }
+        Collections.reverse(searchedQuestions);
+
         for(Question question : searchedQuestions) {
             results.add(new QuestionListDto(question, answerRepository.countByQuestionId(question.getId())));
         }
