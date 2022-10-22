@@ -41,8 +41,9 @@ public class QuestionService {
                 .subject(saveDto.getSubject())
                 .grade(saveDto.getGrade())
                 .build();
-        List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
-        if(!imageList.isEmpty()) {
+
+        if(!saveDto.getFiles().isEmpty()) {
+            List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));
         }
@@ -69,8 +70,8 @@ public class QuestionService {
         }
         question.clearImage();
 
-        List<Image> imageList = s3Service.uploadImage(updateDto.getFiles()); // 이미지 새로 저장
-        if(!imageList.isEmpty()) {
+        if(!updateDto.getFiles().isEmpty()) {
+            List<Image> imageList = s3Service.uploadImage(updateDto.getFiles()); // 이미지 새로 저장
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));
         }
