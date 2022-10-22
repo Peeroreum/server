@@ -14,5 +14,6 @@ import java.util.List;
 public class QuestionUpdateDto {
     private String content;
     private Long subject;
+    private Long grade;
     private List<MultipartFile> files = new ArrayList<>();
 }

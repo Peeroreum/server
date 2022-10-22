@@ -27,6 +27,9 @@ public class Question extends EntityTime {
     @Column
     private Long subject;
 
+    @Column
+    private Long grade;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -39,15 +42,17 @@ public class Question extends EntityTime {
     private Long dislikes = 0L;
 
     @Builder
-    public Question(String content, Long subject, Member member) {
+    public Question(String content, Long subject, Long grade, Member member) {
         this.content = content;
         this.subject = subject;
+        this.grade = grade;
         this.member = member;
     }
 
-    public void update(String content, Long subject) {
+    public void update(String content, Long subject, Long grade) {
         this.content = content;
         this.subject = subject;
+        this.grade = grade;
     }
 
     public void updateLikes(int like) {

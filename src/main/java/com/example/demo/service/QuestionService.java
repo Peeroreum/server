@@ -39,6 +39,7 @@ public class QuestionService {
                 .content(saveDto.getContent())
                 .member(member)
                 .subject(saveDto.getSubject())
+                .grade(saveDto.getGrade())
                 .build();
         List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
         if(!imageList.isEmpty()) {
@@ -74,7 +75,7 @@ public class QuestionService {
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));
         }
-        question.update(updateDto.getContent(), updateDto.getSubject());
+        question.update(updateDto.getContent(), updateDto.getSubject(), updateDto.getGrade());
         questionRepository.save(question);
     }
 
@@ -106,13 +107,13 @@ public class QuestionService {
         }
         else {
             if(searchRequest.getSubject() == 0) {
-                searchedQuestions = questionRepository.findAllByMemberGrade(searchRequest.getGrade());
+                searchedQuestions = questionRepository.findAllByGrade(searchRequest.getGrade());
             }
             else if(searchRequest.getGrade() == 0) {
                 searchedQuestions = questionRepository.findAllBySubject(searchRequest.getSubject());
             }
             else {
-                searchedQuestions = questionRepository.findAllBySubjectAndMemberGrade(searchRequest.getSubject(), searchRequest.getGrade());
+                searchedQuestions = questionRepository.findAllBySubjectAndGrade(searchRequest.getSubject(), searchRequest.getGrade());
             }
         }
         for(Question question : searchedQuestions) {
