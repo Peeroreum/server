@@ -7,8 +7,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findAllBySubjectAndMemberGrade(Long subject, Long grade);
+    List<Question> findAllBySubjectAndGrade(Long subject, Long grade);
     List<Question> findAllBySubject(Long subject);
-    List<Question> findAllByMemberGrade(Long grade);
+    List<Question> findAllByGrade(Long grade);
     Long countByMemberId(@Param("user_id") Long memberId);
 }
