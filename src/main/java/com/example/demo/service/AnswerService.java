@@ -17,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.demo.exception.ExceptionType.*;
 
@@ -37,14 +36,14 @@ public class AnswerService {
     public void create(AnswerSaveDto saveDto, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        Answer parent = Optional.ofNullable(saveDto.getParentId()).map(id -> answerRepository.findById(id)
-                .orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION))).orElse(null);
+
         Answer answer = Answer.builder()
                 .content(saveDto.getContent())
                 .member(member)
                 .question(question)
-                .parent(parent)
+                .parentId(saveDto.getParentId())
                 .build();
+
         if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
             List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
             for(Image image : imageList)
@@ -92,12 +91,8 @@ public class AnswerService {
 
     public void delete(Long id) {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
-        Optional<Answer> parent = Optional.ofNullable(answer.getParent());
-        Long parentId;
+        Long parentId= answer.getParentId();
         List<Image> images = answer.getImages();
-        if(parent.isPresent())
-            parentId = answer.getParent().getId();
-        else parentId = 0L;
 
         if(parentId == 0 && answerRepository.countByParentId(answer.getId()) > 0) {
             answer.delete();
