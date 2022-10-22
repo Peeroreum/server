@@ -33,8 +33,9 @@ public class QuestionController {
 
     @GetMapping("/question/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto readQuestion(@PathVariable Long id){
-        return ResponseDto.success(questionService.read(id));
+    public ResponseDto readQuestion(@PathVariable Long id, Principal principal){
+        String username = principal.getName();
+        return ResponseDto.success(questionService.read(id, username));
     }
 
     @PutMapping("/question/{id}")

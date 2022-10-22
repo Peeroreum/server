@@ -27,8 +27,9 @@ public class AnswerController {
 
     @PostMapping("/answer/read")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest) {
-        return ResponseDto.success(answerService.readAll(answerReadRequest));
+    public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest, Principal principal) {
+        String username = principal.getName();
+        return ResponseDto.success(answerService.readAll(answerReadRequest, username));
     }
 
     @PutMapping("/answer/{id}")

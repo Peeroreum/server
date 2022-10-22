@@ -52,13 +52,13 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    public QuestionReadDto read(Long id) {
+    public QuestionReadDto read(Long id, String username) {
         List<ImageDto> imageList = imageService.findAllByQuestion(id);
         List<String> imagePaths = new ArrayList<>();
         for(ImageDto image : imageList)
             imagePaths.add(image.getImagePath());
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        return new QuestionReadDto(question, imagePaths, answerRepository.countByQuestionId(id));
+        return new QuestionReadDto(username, question, imagePaths, answerRepository.countByQuestionId(id));
     }
 
     public void update(Long id, QuestionUpdateDto updateDto) {

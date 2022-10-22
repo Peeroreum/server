@@ -55,7 +55,7 @@ public class AnswerService {
         answerRepository.save(answer);
     }
 
-    public List<AnswerReadDto> readAll(AnswerReadRequest readRequest) {
+    public List<AnswerReadDto> readAll(AnswerReadRequest readRequest, String username) {
         List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
         List<AnswerReadDto> result = new ArrayList<>();
         for(Answer answer : answers) {
@@ -63,7 +63,7 @@ public class AnswerService {
             List<String> imagePaths = new ArrayList<>();
             for(ImageDto image : imageDtoList)
                 imagePaths.add(image.getImagePath());
-            result.add(new AnswerReadDto(answer, imagePaths));
+            result.add(new AnswerReadDto(username, answer, imagePaths));
         }
         return result;
     }

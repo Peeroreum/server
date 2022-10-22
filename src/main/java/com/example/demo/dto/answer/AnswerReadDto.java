@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @Getter
 public class AnswerReadDto {
+    private boolean writtenByUser;
     private Long id;
     private String content;
     private String memberNickname;
@@ -22,7 +23,8 @@ public class AnswerReadDto {
     private List<String> imagePaths;
     private String createdTime;
 
-    public AnswerReadDto(Answer answer, List<String> imagePaths) {
+    public AnswerReadDto(String username, Answer answer, List<String> imagePaths) {
+        this.writtenByUser = answer.getMember().getUsername().equals(username);
         this.id = answer.getId();
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
