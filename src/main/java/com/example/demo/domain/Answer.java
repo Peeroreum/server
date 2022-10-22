@@ -34,8 +34,9 @@ public class Answer extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Long parentId;
+    private Answer parent;
 
     @OneToMany(mappedBy = "answer", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
@@ -45,11 +46,11 @@ public class Answer extends EntityTime {
     private boolean isDeleted;
 
     @Builder
-    public Answer(String content, Member member, Question question, Long parentId) {
+    public Answer(String content, Member member, Question question, Answer parent) {
         this.content = content;
         this.member = member;
         this.question = question;
-        this.parentId = parentId;
+        this.parent = parent;
         this.isDeleted = false;
     }
 
