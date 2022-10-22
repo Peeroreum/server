@@ -45,7 +45,7 @@ public class AnswerService {
                 .question(question)
                 .parent(parent)
                 .build();
-        if(!saveDto.getFiles().isEmpty()) {
+        if(saveDto.getFiles() != null) {
             List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
@@ -79,7 +79,7 @@ public class AnswerService {
         }
         answer.clearImage();
 
-        if(!answerUpdateDto.getFiles().isEmpty()) {
+        if(answerUpdateDto.getFiles() != null) {
             List<Image> imageList = s3Service.uploadImage(answerUpdateDto.getFiles()); // 이미지 새로 저장
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
