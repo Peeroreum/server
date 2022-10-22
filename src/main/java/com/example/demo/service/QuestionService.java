@@ -23,6 +23,7 @@ import java.util.List;
 import static com.example.demo.exception.ExceptionType.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
@@ -32,7 +33,6 @@ public class QuestionService {
     private final ImageService imageService;
     private final S3Service s3Service;
 
-    @Transactional
     public void create(QuestionSaveDto saveDto, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         Question question = Question.builder()
@@ -58,7 +58,6 @@ public class QuestionService {
         return new QuestionReadDto(question, imagePaths, answerRepository.countByQuestionId(id));
     }
 
-    @Transactional
     public void update(Long id, QuestionUpdateDto updateDto) {
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
         List<Image> images = question.getImages(); //기존 저장 이미지 삭제
@@ -79,7 +78,6 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    @Transactional
     public void delete(Long id) {
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
 
