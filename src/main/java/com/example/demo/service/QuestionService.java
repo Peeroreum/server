@@ -71,7 +71,7 @@ public class QuestionService {
         }
         question.clearImage();
 
-        if(updateDto.getFiles() != null) {
+        if(!CollectionUtils.isEmpty(updateDto.getFiles())) {
             List<Image> imageList = s3Service.uploadImage(updateDto.getFiles()); // 이미지 새로 저장
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));

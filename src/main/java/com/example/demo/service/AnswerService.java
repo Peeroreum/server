@@ -15,6 +15,7 @@ import com.example.demo.service.attachment.ImageService;
 import com.example.demo.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class AnswerService {
                 .question(question)
                 .parent(parent)
                 .build();
-        if(saveDto.getFiles() != null) {
+        if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
             List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
@@ -79,7 +80,7 @@ public class AnswerService {
         }
         answer.clearImage();
 
-        if(answerUpdateDto.getFiles() != null) {
+        if(!CollectionUtils.isEmpty(answerUpdateDto.getFiles())) {
             List<Image> imageList = s3Service.uploadImage(answerUpdateDto.getFiles()); // 이미지 새로 저장
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
