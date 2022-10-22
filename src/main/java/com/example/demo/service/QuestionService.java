@@ -42,11 +42,9 @@ public class QuestionService {
                 .grade(saveDto.getGrade())
                 .build();
 
-        if(!saveDto.getFiles().isEmpty()) {
-            List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
-            for(Image image : imageList)
-                question.addImage(imageRepository.save(image));
-        }
+        List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
+        for(Image image : imageList)
+            question.addImage(imageRepository.save(image));
         questionRepository.save(question);
     }
 
