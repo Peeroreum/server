@@ -7,10 +7,7 @@ import com.example.demo.domain.Question;
 import com.example.demo.dto.Attachment.ImageDto;
 import com.example.demo.dto.answer.*;
 import com.example.demo.exception.CustomException;
-import com.example.demo.repository.AnswerRepository;
-import com.example.demo.repository.ImageRepository;
-import com.example.demo.repository.MemberRepository;
-import com.example.demo.repository.QuestionRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.attachment.ImageService;
 import com.example.demo.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +29,8 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
+    private final HeartRepository heartRepository;
+    private final XHeartRepository xHeartRepository;
     private final ImageService imageService;
     private final S3Service s3Service;
 
@@ -59,11 +58,13 @@ public class AnswerService {
         List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
         List<AnswerReadDto> result = new ArrayList<>();
         for(Answer answer : answers) {
+            boolean liked = heartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
+            boolean disliked = xHeartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
             List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
             List<String> imagePaths = new ArrayList<>();
             for(ImageDto image : imageDtoList)
                 imagePaths.add(image.getImagePath());
-            result.add(new AnswerReadDto(username, answer, imagePaths));
+            result.add(new AnswerReadDto(username, liked, disliked, answer, imagePaths));
         }
         return result;
     }

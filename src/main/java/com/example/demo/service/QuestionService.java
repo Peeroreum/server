@@ -7,10 +7,7 @@ import com.example.demo.domain.Member;
 import com.example.demo.dto.Attachment.ImageDto;
 import com.example.demo.dto.question.*;
 import com.example.demo.exception.CustomException;
-import com.example.demo.repository.AnswerRepository;
-import com.example.demo.repository.ImageRepository;
-import com.example.demo.repository.QuestionRepository;
-import com.example.demo.repository.MemberRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.attachment.ImageService;
 import com.example.demo.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +29,8 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final AnswerRepository answerRepository;
     private final ImageRepository imageRepository;
+    private final HeartRepository heartRepository;
+    private final XHeartRepository xHeartRepository;
     private final ImageService imageService;
     private final S3Service s3Service;
 
@@ -55,10 +54,12 @@ public class QuestionService {
     public QuestionReadDto read(Long id, String username) {
         List<ImageDto> imageList = imageService.findAllByQuestion(id);
         List<String> imagePaths = new ArrayList<>();
+        boolean liked = heartRepository.existsByMemberAndQuestionId(memberRepository.findByUsername(username).get(), id);
+        boolean disliked = xHeartRepository.existsByMemberAndQuestionId(memberRepository.findByUsername(username).get(), id);
         for(ImageDto image : imageList)
             imagePaths.add(image.getImagePath());
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        return new QuestionReadDto(username, question, imagePaths, answerRepository.countByQuestionId(id));
+        return new QuestionReadDto(username, liked, disliked, question, imagePaths, answerRepository.countByQuestionId(id));
     }
 
     public void update(Long id, QuestionUpdateDto updateDto) {

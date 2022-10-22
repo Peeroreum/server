@@ -23,10 +23,10 @@ public class HeartService {
     public void likeQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
         Member member = question.getMember();
-        if(heartRepository.findLikeByMemberAndQuestionId(member, questionId).isPresent()) {
+        if(heartRepository.existsByMemberAndQuestionId(member, questionId)) {
             throw new CustomException(ALREADY_LIKED);
         }
-        if(xHeartRepository.findByMemberAndQuestionId(member, questionId).isPresent()) {
+        if(xHeartRepository.existsByMemberAndQuestionId(member, questionId)) {
             throw new CustomException(ALREADY_DISLIKED);
         }
 
@@ -38,10 +38,10 @@ public class HeartService {
     public void dislikeQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
         Member member = question.getMember();
-        if(xHeartRepository.findByMemberAndQuestionId(member, questionId).isPresent()) {
+        if(xHeartRepository.existsByMemberAndQuestionId(member, questionId)) {
             throw new CustomException(ALREADY_DISLIKED);
         }
-        if(heartRepository.findLikeByMemberAndQuestionId(member, questionId).isPresent()) {
+        if(heartRepository.existsByMemberAndQuestionId(member, questionId)) {
             throw new CustomException(ALREADY_LIKED);
         }
 
@@ -54,9 +54,9 @@ public class HeartService {
     public void likeAnswer(Long answerId) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
         Member member = answer.getMember();
-        if(heartRepository.findLikeByMemberAndAnswerId(member, answerId).isPresent())
+        if(heartRepository.existsByMemberAndAnswerId(member, answerId))
             throw new CustomException(ALREADY_LIKED);
-        if(xHeartRepository.findByMemberAndAnswerId(member, answerId).isPresent()) {
+        if(xHeartRepository.existsByMemberAndAnswerId(member, answerId)) {
             throw new CustomException(ALREADY_DISLIKED);
         }
 
@@ -69,10 +69,10 @@ public class HeartService {
     public void dislikeAnswer(Long answerId) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
         Member member = answer.getMember();
-        if(xHeartRepository.findByMemberAndAnswerId(member, answerId).isPresent()) {
+        if(xHeartRepository.existsByMemberAndAnswerId(member, answerId)) {
             throw new CustomException(ALREADY_DISLIKED);
         }
-        if(heartRepository.findLikeByMemberAndAnswerId(member, answerId).isPresent()) {
+        if(heartRepository.existsByMemberAndAnswerId(member, answerId)) {
             throw new CustomException(ALREADY_LIKED);
         }
 
