@@ -33,9 +33,7 @@ public class AnswerReadDto {
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
         this.memberGrade = answer.getMember().getGrade();
-        if (answer.getParent() != null)
-            this.parentId = answer.getParent().getId();
-        else this.parentId = 0L;
+        this.parentId = answer.getParentId();
         this.likes = answer.getLikes();
         this.dislikes = answer.getDislikes();
         this.isDeleted = answer.isDeleted();
