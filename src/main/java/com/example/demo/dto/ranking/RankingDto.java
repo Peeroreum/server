@@ -16,7 +16,7 @@ public class RankingDto {
     int rank;
 
     public RankingDto(Member member, Long questionCnt, Long answerCnt, int rank) {
-        this.date = LocalDate.now().format(DateTimeFormatter.ofPattern("MM월dd일"));
+        this.date = LocalDate.now().format(DateTimeFormatter.ofPattern("MM월 dd일"));
         this.memberNickname = member.getNickname();
         this.memberGrade = member.getGrade();
         this.questionCnt = questionCnt;
