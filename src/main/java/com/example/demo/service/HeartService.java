@@ -2,14 +2,10 @@ package com.example.demo.service;
 
 import com.example.demo.domain.*;
 import com.example.demo.exception.CustomException;
-import com.example.demo.repository.AnswerRepository;
-import com.example.demo.repository.HeartRepository;
-import com.example.demo.repository.QuestionRepository;
-import com.example.demo.repository.XHeartRepository;
+import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 import static com.example.demo.exception.ExceptionType.*;
 
@@ -18,11 +14,13 @@ import static com.example.demo.exception.ExceptionType.*;
 public class HeartService {
     private final HeartRepository heartRepository;
     private final XHeartRepository xHeartRepository;
+    private final MemberRepository memberRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
-    public void likeQuestion(Long questionId) {
+    public void likeQuestion(Long questionId, String username) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        Member member = question.getMember();
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
         if(heartRepository.existsByMemberAndQuestionId(member, questionId)) {
             throw new CustomException(ALREADY_LIKED);
         }
@@ -35,9 +33,9 @@ public class HeartService {
         question.updateLikes(1);
         questionRepository.save(question);
     }
-    public void dislikeQuestion(Long questionId) {
+    public void dislikeQuestion(Long questionId, String username) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        Member member = question.getMember();
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         if(xHeartRepository.existsByMemberAndQuestionId(member, questionId)) {
             throw new CustomException(ALREADY_DISLIKED);
         }
@@ -51,9 +49,10 @@ public class HeartService {
         questionRepository.save(question);
     }
 
-    public void likeAnswer(Long answerId) {
+    public void likeAnswer(Long answerId, String username) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
-        Member member = answer.getMember();
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
         if(heartRepository.existsByMemberAndAnswerId(member, answerId))
             throw new CustomException(ALREADY_LIKED);
         if(xHeartRepository.existsByMemberAndAnswerId(member, answerId)) {
@@ -66,9 +65,10 @@ public class HeartService {
         answerRepository.save(answer);
     }
 
-    public void dislikeAnswer(Long answerId) {
+    public void dislikeAnswer(Long answerId, String username) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
-        Member member = answer.getMember();
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
         if(xHeartRepository.existsByMemberAndAnswerId(member, answerId)) {
             throw new CustomException(ALREADY_DISLIKED);
         }
@@ -82,40 +82,44 @@ public class HeartService {
         answerRepository.save(answer);
     }
 
-    public void cancelQuestionLike(Long questionId) {
+    public void cancelQuestionLike(Long questionId, String username) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        Member member = question.getMember();
-        Optional<Heart> like = heartRepository.findLikeByMemberAndQuestionId(member, questionId);
-        heartRepository.delete(like.get());
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        Heart like = heartRepository.findLikeByMemberAndQuestionId(member, questionId).orElseThrow(() -> new CustomException(LIKE_NOT_FOUND));
+        heartRepository.delete(like);
         question.updateLikes(-1);
         questionRepository.save(question);
     }
 
-    public void cancelQuestionDislike(Long questionId) {
+    public void cancelQuestionDislike(Long questionId, String username) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
-        Member member = question.getMember();
-        Optional<XHeart> dislike = xHeartRepository.findByMemberAndQuestionId(member, questionId);
-        xHeartRepository.delete(dislike.get());
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        XHeart dislike = xHeartRepository.findByMemberAndQuestionId(member, questionId).orElseThrow(() -> new CustomException(DISLIKE_NOT_FOUND));
+        xHeartRepository.delete(dislike);
         question.updateDislikes(-1);
         questionRepository.save(question);
     }
 
 
 
-    public void cancelAnswerLike(Long answerId) {
+    public void cancelAnswerLike(Long answerId, String username) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
-        Member member = answer.getMember();
-        Optional<Heart> like = heartRepository.findLikeByMemberAndAnswerId(member, answerId);
-        heartRepository.delete(like.get());
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        Heart like = heartRepository.findLikeByMemberAndAnswerId(member, answerId).orElseThrow(() -> new CustomException(LIKE_NOT_FOUND));
+        heartRepository.delete(like);
         answer.updateLikes(-1);
         answerRepository.save(answer);
     }
 
-    public void cancelAnsweDislike(Long answerId) {
+    public void cancelAnswerDislike(Long answerId, String username) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
-        Member member = answer.getMember();
-        Optional<XHeart> dislike = xHeartRepository.findByMemberAndAnswerId(member, answerId);
-        xHeartRepository.delete(dislike.get());
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        XHeart dislike = xHeartRepository.findByMemberAndAnswerId(member, answerId).orElseThrow(() -> new CustomException(DISLIKE_NOT_FOUND));
+        xHeartRepository.delete(dislike);
         answer.updateDislikes(-1);
         answerRepository.save(answer);
     }
