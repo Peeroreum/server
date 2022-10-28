@@ -5,7 +5,7 @@ import com.example.demo.domain.RefreshToken;
 import com.example.demo.dto.member.DurationTimeDto;
 import com.example.demo.dto.member.SignInDto;
 import com.example.demo.dto.member.SignUpDto;
-import com.example.demo.dto.member.TokenDto;
+import com.example.demo.dto.member.LogInDto;
 import com.example.demo.exception.*;
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.repository.RefreshTokenRepository;
@@ -40,7 +40,7 @@ public class MemberService {
             throw new CustomException(NICKNAME_ALREADY_EXISTS_EXCEPTION);
     }
 
-    public TokenDto signIn(SignInDto signInDto) {
+    public LogInDto signIn(SignInDto signInDto) {
         Member member = memberRepository.findByUsername(signInDto.getUsername()).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         if (!validatePassword(signInDto, member)) {
             throw new CustomException(LOGIN_FAILURE_EXCEPTION);
@@ -48,7 +48,8 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         refreshTokenRepository.save(new RefreshToken(refreshToken, member.getId()));
-        return new TokenDto(accessToken, refreshToken);
+        String nickname = member.getNickname();
+        return new LogInDto(accessToken, refreshToken, nickname);
     }
 
     private boolean validatePassword(SignInDto signInDto, Member member) {
