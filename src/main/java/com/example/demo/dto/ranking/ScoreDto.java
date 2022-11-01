@@ -11,7 +11,6 @@ public class ScoreDto {
     private Long answerLike;
     private Long answerDislike;
     private Long durationTime;
-    private double score;
 
     public ScoreDto(Member member, Long questionCnt, Long answerCnt, Long answerLike, Long answerDislike, Long durationTime) {
         this.member = member;
@@ -20,9 +19,5 @@ public class ScoreDto {
         this.answerLike = answerLike;
         this.answerDislike = answerDislike;
         this.durationTime = durationTime;
-        if(answerLike > answerDislike)
-            this.score = questionCnt + answerCnt + (durationTime / 30.0) + (answerLike - answerDislike) * 0.5;
-        else
-            this.score = questionCnt + answerCnt + (durationTime / 30.0);
     }
 }

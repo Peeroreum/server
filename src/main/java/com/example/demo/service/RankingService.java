@@ -29,6 +29,7 @@ public class RankingService {
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
         long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
+        double score;
         ScoreDto scoreDto;
         for (Member member : memberList) {
             questionCnt = questionRepository.countByMemberId(member.getId());
@@ -40,14 +41,17 @@ public class RankingService {
             }
             durationTime = member.getDurationTime();
             scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
-
-            hashMap.put(scoreDto, scoreDto.getScore());
+            if(answerLike > answerDislike)
+                score = questionCnt + answerCnt + (durationTime / 30.0) + (answerLike - answerDislike) * 0.5;
+            else
+                score = questionCnt + answerCnt + (durationTime / 30.0);
+            hashMap.put(scoreDto, score);
         }
         List<ScoreDto> scoreList = new ArrayList<>(hashMap.keySet());
-        scoreList.sort(Comparator.comparing(hashMap::get).reversed());
+        scoreList.sort((o1, o2) -> (hashMap.get(o2).compareTo(hashMap.get(o1))));
         for (int i = 0; i < scoreList.size(); i++) {
-            ScoreDto score = scoreList.get(i);
-            rankingList.add(new RankingDto(score.getMember(), score.getQuestionCnt(), score.getAnswerCnt(), i + 1));
+            ScoreDto scores = scoreList.get(i);
+            rankingList.add(new RankingDto(scores.getMember(), scores.getQuestionCnt(), scores.getAnswerCnt(), i + 1));
         }
     }
 
