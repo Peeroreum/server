@@ -41,7 +41,7 @@ public class RankingService {
             durationTime = member.getDurationTime();
             scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
             if(answerLike > answerDislike)
-                score = questionCnt + answerCnt + (durationTime / 30.0) + (answerLike - answerDislike) * 0.5;
+                score = questionCnt + answerCnt + (durationTime / 30.0) + ((answerLike - answerDislike) * 0.5);
             else
                 score = questionCnt + answerCnt + (durationTime / 30.0);
             hashMap.put(scoreDto, score);
