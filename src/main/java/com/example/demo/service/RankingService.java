@@ -47,16 +47,18 @@ public class RankingService {
                 score = questionCnt + answerCnt + (durationTime / 30.0);
             hashMap.put(scoreDto, score);
         }
-        List<ScoreDto> scoreList = new ArrayList<>(hashMap.keySet());
-        scoreList.sort((o1, o2) -> (hashMap.get(o2).compareTo(hashMap.get(o1))));
+        List<Map.Entry<ScoreDto, Double>> scoreList = new LinkedList<>(hashMap.entrySet());
+        scoreList.sort(Map.Entry.comparingByValue());
+        Collections.reverse(scoreList);
         for (int i = 0; i < scoreList.size(); i++) {
-            ScoreDto scores = scoreList.get(i);
+            ScoreDto scores = scoreList.get(i).getKey();
             rankingList.add(new RankingDto(scores.getMember(), scores.getQuestionCnt(), scores.getAnswerCnt(), i + 1));
         }
     }
 
 
     public RankingDto getMyRanking(String username) {
+        init();
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         for(RankingDto rankingDto : rankingList) {
             if(rankingDto.getMemberNickname().equals(member.getNickname()))
@@ -66,6 +68,7 @@ public class RankingService {
     }
 
     public List<RankingDto> getRankingList() {
+        init();
         return rankingList;
     }
 
