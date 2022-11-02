@@ -8,7 +8,6 @@ import com.example.demo.exception.CustomException;
 import com.example.demo.exception.ExceptionType;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,7 +22,7 @@ public class RankingService {
     private final AnswerRepository answerRepository;
     private List<RankingDto> rankingList;
 
-    @Scheduled(cron = "* * * * * *")
+//    @Scheduled(cron = "* * * * * *")
     public void init() {
         rankingList = new ArrayList<>();
         HashMap<ScoreDto, Double> hashMap = new HashMap<>();
