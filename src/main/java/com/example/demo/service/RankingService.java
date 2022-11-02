@@ -22,7 +22,7 @@ public class RankingService {
     private final AnswerRepository answerRepository;
     private List<RankingDto> rankingList;
 
-//    @Scheduled(cron = "* * * * * *")
+    //    @Scheduled(cron = "* * * * * *")
     public void init() {
         rankingList = new ArrayList<>();
         HashMap<ScoreDto, Double> scoreMap = new HashMap<>();
@@ -51,7 +51,14 @@ public class RankingService {
             scoreMap.put(scoreDto, score);
         }
         List<Map.Entry<ScoreDto, Double>> scoreList = new LinkedList<>(scoreMap.entrySet());
-        scoreList.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
+        scoreList.sort((o1, o2) -> {
+            double value = o2.getValue() - o1.getValue();
+            if(value > 0)
+                return 1;
+            else if (value == 0)
+                return 0;
+            else return -1;
+        });
 
         int size = scoreList.size();
         for (int i = 0; i < size; i++) {
