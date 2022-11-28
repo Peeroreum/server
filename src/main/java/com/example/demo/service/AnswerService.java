@@ -38,7 +38,7 @@ public class AnswerService {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(QUESTION_NOT_FOUND_EXCEPTION));
         Answer parent = null;
-        if(saveDto.getParentId() != -1)
+        if(saveDto.getParentId() != -1 || saveDto.getParentId() != 0)
             parent = answerRepository.findById(saveDto.getParentId()).orElseThrow(() -> new CustomException(ANSWER_NOT_FOUND_EXCEPTION));
 
         Answer answer = Answer.builder()
