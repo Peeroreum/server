@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -40,6 +42,9 @@ public class Wedu extends EntityTime {
 
     @Column
     private Long gender;
+
+    @ManyToMany(mappedBy = "wedus")
+    private Set<Member> attendants = new HashSet<>();
 
     @Builder
     public Wedu(String title, String image, int maximumPeople, boolean isSearchable, boolean isLocked, String password, Long grade, Long subject, Long gender) {

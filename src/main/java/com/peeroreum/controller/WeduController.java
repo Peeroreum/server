@@ -1,12 +1,13 @@
 package com.peeroreum.controller;
 
+import com.peeroreum.domain.Wedu;
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.service.WeduService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @Controller
 public class WeduController {
@@ -18,13 +19,29 @@ public class WeduController {
     }
 
     @GetMapping("/wedu")
-    public ResponseDto getWedus() {
-        return ResponseDto.success(weduService.findAllWedu());
+    public ResponseDto getAllWedus() {
+        return ResponseDto.success(weduService.getAllWedus());
+    }
+
+    @GetMapping("/wedu/{id}")
+    public ResponseDto getWeduById(@PathVariable Long id) {
+        return ResponseDto.success(weduService.getWeduById(id));
     }
 
     @PostMapping("/wedu")
-    public ResponseDto postWedu(@RequestBody WeduSaveDto weduSaveDto) {
+    public ResponseDto createWedu(@RequestBody WeduSaveDto weduSaveDto) {
         return ResponseDto.success(weduService.makeWedu(weduSaveDto));
+    }
+
+    @PutMapping("/wedu/{id}")
+    public ResponseDto updateWedu(@PathVariable Long id, @RequestBody WeduUpdateDto weduUpdateDto) {
+        return ResponseDto.success(weduService.updateWedu(id, weduUpdateDto));
+    }
+
+    @DeleteMapping("/wedu/{id}")
+    public ResponseDto deleteWedu(@PathVariable Long id) {
+        weduService.deleteWedu(id);
+        return ResponseDto.success();
     }
 
 }
