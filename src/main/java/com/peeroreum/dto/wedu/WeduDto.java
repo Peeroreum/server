@@ -1,11 +1,12 @@
 package com.peeroreum.dto.wedu;
 
+import com.peeroreum.domain.Image;
 import com.peeroreum.domain.Wedu;
 
 public class WeduDto {
 
     private String title;
-    private String image;
+    private Image image;
     private Long grade;
     private int attendingPeopleNum;
     private int dDay;
