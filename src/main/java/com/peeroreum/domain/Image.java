@@ -24,6 +24,7 @@ public class Image extends EntityTime {
     private String imagePath;
 
     private Long imageSize;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -33,6 +34,11 @@ public class Image extends EntityTime {
     @JoinColumn(name = "answer_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Answer answer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wedu_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Wedu wedu;
 
     @Builder
     public Image(String imageName, String imagePath, Long imageSize) {
@@ -54,5 +60,12 @@ public class Image extends EntityTime {
 
         if(!answer.getImages().contains(this))
             answer.getImages().add(this);
+    }
+
+    public void setWedu(Wedu wedu) {
+        this.wedu = wedu;
+
+        if(wedu.getImage() != this)
+            wedu.setImage(this);
     }
 }

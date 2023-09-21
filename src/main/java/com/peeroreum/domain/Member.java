@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -41,6 +39,14 @@ public class Member extends EntityTime {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "member_wedu",
+            joinColumns = { @JoinColumn(name = "member_id") },
+            inverseJoinColumns = { @JoinColumn(name = "wedu_id") }
+    )
+    private Set<Wedu> wedus = new HashSet<>();
+
     @Builder
     public Member(String username, String password, String nickname, String image, Long grade) {
         this.username = username;
@@ -66,4 +72,9 @@ public class Member extends EntityTime {
         this.image = image;
     }
 
+    public void setWedus(Wedu wedu) {
+        if(!this.wedus.contains(wedu)) {
+            this.wedus.add(wedu);
+        }
+    }
 }
