@@ -3,6 +3,7 @@ package com.peeroreum.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Wedu extends EntityTime {
 
@@ -21,7 +23,7 @@ public class Wedu extends EntityTime {
     private String title;
 
     @Column
-    private String image;
+    private Image image;
 
     @Column
     private int maximumPeople;
@@ -47,7 +49,7 @@ public class Wedu extends EntityTime {
     private Set<Member> attendants = new HashSet<>();
 
     @Builder
-    public Wedu(String title, String image, int maximumPeople, boolean isSearchable, boolean isLocked, String password, Long grade, Long subject, Long gender) {
+    public Wedu(String title, Image image, int maximumPeople, boolean isSearchable, boolean isLocked, String password, Long grade, Long subject, Long gender) {
         this.title = title;
         this.image = image;
         this.maximumPeople = maximumPeople;
@@ -59,5 +61,11 @@ public class Wedu extends EntityTime {
         this.gender = gender;
     }
 
+    public void setMember(Member member) {
+        if(!attendants.contains(member)) {
+            this.attendants.add(member);
+            member.setWedus(this);
+        }
+    }
 
 }

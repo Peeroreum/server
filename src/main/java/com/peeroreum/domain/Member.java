@@ -72,4 +72,9 @@ public class Member extends EntityTime {
         this.image = image;
     }
 
+    public void setWedus(Wedu wedu) {
+        if(!this.wedus.contains(wedu)) {
+            this.wedus.add(wedu);
+        }
+    }
 }

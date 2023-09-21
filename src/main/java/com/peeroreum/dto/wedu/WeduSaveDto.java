@@ -17,7 +17,7 @@ public class WeduSaveDto {
     public static Wedu toEntity(WeduSaveDto weduSaveDto) {
         return Wedu.builder()
                 .title(weduSaveDto.title)
-                .image(weduSaveDto.image)
+//                .image(weduSaveDto.image) 이미지 s3에 저장 과정 거친 후 DB 등록하도록 수정 필요
                 .maximumPeople(weduSaveDto.maximumPeople)
                 .isSearchable(weduSaveDto.isSearchable)
                 .isLocked(weduSaveDto.isLocked)
