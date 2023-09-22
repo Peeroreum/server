@@ -45,6 +45,9 @@ public class Wedu extends EntityTime {
     @Column
     private Long gender;
 
+    @OneToOne(mappedBy = "wedu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Invitation invitation;
+
     @ManyToMany(mappedBy = "wedus")
     private Set<Member> attendants = new HashSet<>();
 

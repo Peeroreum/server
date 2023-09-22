@@ -37,6 +37,15 @@ public class WeduService {
         return weduDtoList;
     }
 
+    public List<WeduDto> getAllMyWedus(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        List<Wedu> myWeduList = weduRepository.findAllByMember(member.getId());
+        List<WeduDto> myWeduDtoList = new ArrayList<>();
+        for(Wedu myWedu : myWeduList) {
+            myWeduDtoList.add(new WeduDto(myWedu));
+        }
+        return myWeduDtoList;
+    }
     public Optional<Wedu> getWeduById(Long id) {
         return weduRepository.findById(id);
     }
