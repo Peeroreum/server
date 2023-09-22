@@ -54,4 +54,9 @@ public class WeduController {
         return ResponseDto.success();
     }
 
+    @GetMapping("/wedu/my")
+    public ResponseDto getMyWedus(Principal principal) {
+        String username = principal.getName();
+        return ResponseDto.success(weduService.getAllMyWedus(username));
+    }
 }

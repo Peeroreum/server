@@ -19,4 +19,11 @@ public class WeduDto {
         this.dDay = dDay;
     }
 
+    public WeduDto(Wedu wedu) {
+        this.title = wedu.getTitle();
+        this.image = wedu.getImage();
+        this.grade = wedu.getGrade();
+        this.attendingPeopleNum = wedu.getAttendants().size();
+    }
+
 }
