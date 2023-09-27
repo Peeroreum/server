@@ -23,7 +23,7 @@ public class WeduDto {
         this.title = wedu.getTitle();
         this.image = wedu.getImage();
         this.grade = wedu.getGrade();
-        this.attendingPeopleNum = wedu.getAttendants().size();
+        this.attendingPeopleNum = wedu.getAttendants().size() + 1;
     }
 
 }

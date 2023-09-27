@@ -17,6 +17,7 @@ import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -49,11 +50,16 @@ public class AnswerService {
                 .question(question)
                 .parent(parent)
                 .build();
+
         if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
-            List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
+            List<Image> imageList = new ArrayList<>();
+            for(MultipartFile file : saveDto.getFiles()) {
+                imageList.add(s3Service.uploadImage(file));
+            }
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
         }
+
         questionRepository.save(question);
         answerRepository.save(answer);
     }
@@ -61,6 +67,7 @@ public class AnswerService {
     public List<AnswerReadDto> readAll(AnswerReadRequest readRequest, String username) {
         List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
         List<AnswerReadDto> result = new ArrayList<>();
+
         for(Answer answer : answers) {
             boolean liked = heartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
             boolean disliked = xHeartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
@@ -70,6 +77,7 @@ public class AnswerService {
                 imagePaths.add(image.getImagePath());
             result.add(new AnswerReadDto(username, liked, disliked, answer, imagePaths));
         }
+
         return result;
     }
 
@@ -86,7 +94,10 @@ public class AnswerService {
         answer.clearImage();
 
         if(!CollectionUtils.isEmpty(answerUpdateDto.getFiles())) {
-            List<Image> imageList = s3Service.uploadImage(answerUpdateDto.getFiles()); // 이미지 새로 저장
+            List<Image> imageList = new ArrayList<>();
+            for(MultipartFile file : answerUpdateDto.getFiles()) {
+                imageList.add(s3Service.uploadImage(file));
+            }
             for(Image image : imageList)
                 answer.addImage(imageRepository.save(image));
         }

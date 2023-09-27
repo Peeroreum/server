@@ -14,6 +14,7 @@ import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -43,10 +44,14 @@ public class QuestionService {
                 .build();
 
         if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
-            List<Image> imageList = s3Service.uploadImage(saveDto.getFiles());
+            List<Image> imageList = new ArrayList<>();
+            for(MultipartFile file : saveDto.getFiles()) {
+                imageList.add(s3Service.uploadImage(file));
+            }
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));
         }
+
         questionRepository.save(question);
     }
 
@@ -73,10 +78,15 @@ public class QuestionService {
         question.clearImage();
 
         if(!CollectionUtils.isEmpty(updateDto.getFiles())) {
-            List<Image> imageList = s3Service.uploadImage(updateDto.getFiles()); // 이미지 새로 저장
+            List<Image> imageList = new ArrayList<>();
+            for(MultipartFile file : updateDto.getFiles()) {
+                imageList.add(s3Service.uploadImage(file));
+            }
             for(Image image : imageList)
                 question.addImage(imageRepository.save(image));
         }
+
+
         question.update(updateDto.getContent(), updateDto.getSubject(), updateDto.getGrade());
         questionRepository.save(question);
     }

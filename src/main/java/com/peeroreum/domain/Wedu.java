@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -21,9 +23,6 @@ public class Wedu extends EntityTime {
 
     @Column(nullable = false)
     private String title;
-
-    @Column
-    private Image image;
 
     @Column
     private int maximumPeople;
@@ -45,6 +44,15 @@ public class Wedu extends EntityTime {
     @Column
     private Long gender;
 
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Member host;
+
     @OneToOne(mappedBy = "wedu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Invitation invitation;
 
@@ -52,9 +60,10 @@ public class Wedu extends EntityTime {
     private Set<Member> attendants = new HashSet<>();
 
     @Builder
-    public Wedu(String title, Image image, int maximumPeople, boolean isSearchable, boolean isLocked, String password, Long grade, Long subject, Long gender) {
+    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isSearchable, boolean isLocked, String password, Long grade, Long subject, Long gender) {
         this.title = title;
         this.image = image;
+        this.host = host;
         this.maximumPeople = maximumPeople;
         this.isSearchable = isSearchable;
         this.isLocked = isLocked;
@@ -64,7 +73,7 @@ public class Wedu extends EntityTime {
         this.gender = gender;
     }
 
-    public void setMember(Member member) {
+    public void addAttendant(Member member) {
         if(!attendants.contains(member)) {
             this.attendants.add(member);
             member.setWedus(this);

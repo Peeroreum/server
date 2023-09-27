@@ -8,22 +8,29 @@ import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.dto.wedu.WeduUpdateDto;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
+import com.peeroreum.repository.ImageRepository;
 import com.peeroreum.repository.MemberRepository;
 import com.peeroreum.repository.WeduRepository;
+import com.peeroreum.service.attachment.S3Service;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class WeduService {
 
     private final WeduRepository weduRepository;
     private final MemberRepository memberRepository;
+    private final ImageRepository imageRepository;
+    private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, ImageRepository imageRepository, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
+        this.imageRepository = imageRepository;
+        this.s3Service = s3Service;
     }
 
     public List<WeduDto> getAllWedus() {
@@ -39,29 +46,48 @@ public class WeduService {
 
     public List<WeduDto> getAllMyWedus(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        List<Wedu> myWeduList = weduRepository.findAllByMember(member.getId());
+        Set<Wedu> myWeduList = member.getWedus();
         List<WeduDto> myWeduDtoList = new ArrayList<>();
         for(Wedu myWedu : myWeduList) {
             myWeduDtoList.add(new WeduDto(myWedu));
         }
         return myWeduDtoList;
     }
+
     public Optional<Wedu> getWeduById(Long id) {
         return weduRepository.findById(id);
     }
 
     public Wedu makeWedu(WeduSaveDto weduSaveDto, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Wedu savedWedu = WeduSaveDto.toEntity(weduSaveDto);
-        return weduRepository.save(savedWedu);
+        Member host = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Image image = imageRepository.save(s3Service.uploadImage(weduSaveDto.getFile()));
+        Wedu savingWedu = Wedu.builder()
+                .title(weduSaveDto.getTitle())
+                .host(host)
+                .image(image)
+                .maximumPeople(weduSaveDto.getMaximumPeople())
+                .isSearchable(weduSaveDto.isSearchable())
+                .isLocked(weduSaveDto.isLocked())
+                .password(weduSaveDto.getPassword())
+                .grade(weduSaveDto.getGrade())
+                .subject(weduSaveDto.getSubject())
+                .gender(weduSaveDto.getGender())
+                .build();
+
+        return weduRepository.save(savingWedu);
     }
 
-    public Wedu updateWedu(Long id, WeduUpdateDto weduUpdateDto, String username) {
+    public Wedu updateWedu(Long id, WeduUpdateDto weduUpdateDto) {
         Wedu existingWedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        Image image = existingWedu.getImage();
+        s3Service.deleteImage(image.getImageName());
+        imageRepository.delete(image);
+
+        Image newImage = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
 
         existingWedu.setTitle(weduUpdateDto.getTitle());
-//        existingWedu.setImage(weduUpdateDto.getImage()); 이미지 s3에 저장 과정 거친 후 DB 등록하도록 수정 필요
+        existingWedu.setImage(newImage);
         existingWedu.setMaximumPeople(weduUpdateDto.getMaximumPeople());
         existingWedu.setPassword(weduUpdateDto.getPassword());
         existingWedu.setGrade(weduUpdateDto.getGrade());
@@ -77,8 +103,9 @@ public class WeduService {
     public void enrollWedu(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        member.setWedus(wedu);
-        wedu.setMember(member);
+        wedu.addAttendant(member);
+        memberRepository.save(member);
+        weduRepository.save(wedu);
     }
 
 }
