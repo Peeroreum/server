@@ -12,5 +12,5 @@ public interface WeduRepository extends JpaRepository<Wedu, Long> {
     @Override
     List<Wedu> findAll();
     Wedu save(Wedu wedu);
-    List<Wedu> findAllByMember(Long id);
+
 }

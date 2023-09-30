@@ -28,31 +28,27 @@ public class S3Service {
 
     private final AmazonS3 amazonS3;
 
-    public List<Image> uploadImage(List<MultipartFile> multipartFiles) {
-        List<Image> images = new ArrayList<>();
+    public Image uploadImage(MultipartFile file) {
 
-        multipartFiles.forEach(file -> {
-            String fileName = createFilename(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
+        String fileName = createFilename(file.getOriginalFilename());
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setContentType(file.getContentType());
 
-            try(InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (IOException e) {
-                throw new CustomException(ExceptionType.UPLOAD_FAILURE_EXCEPTION);
-            }
+        try(InputStream inputStream = file.getInputStream()) {
+            amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (IOException e) {
+            throw new CustomException(ExceptionType.UPLOAD_FAILURE_EXCEPTION);
+        }
 
-            Image image = Image.builder()
-                    .imageName(fileName)
-                    .imagePath(baseurl + fileName)
-                    .imageSize(file.getSize())
-                    .build();
-            images.add(image);
-        });
+        Image image = Image.builder()
+                .imageName(fileName)
+                .imagePath(baseurl + fileName)
+                .imageSize(file.getSize())
+                .build();
 
-        return images;
+        return image;
     }
 
     public void deleteImage(String fileName) {

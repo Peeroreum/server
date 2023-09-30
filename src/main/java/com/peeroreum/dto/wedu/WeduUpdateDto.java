@@ -3,7 +3,6 @@ package com.peeroreum.dto.wedu;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Data
 public class WeduUpdateDto {
     private String title;
