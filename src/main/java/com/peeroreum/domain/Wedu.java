@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,24 +26,27 @@ public class Wedu extends EntityTime {
     private String title;
 
     @Column
-    private int maximumPeople;
+    private Long subject;
 
     @Column
-    private boolean isSearchable;
-
-    @Column
-    private boolean isLocked;
-
-    private String password;
+    private LocalDate targetDate;
 
     @Column
     private Long grade;
 
     @Column
-    private Long subject;
+    private int maximumPeople;
 
     @Column
     private Long gender;
+
+    @Column
+    private Long challenge;
+
+    @Column
+    private boolean isLocked;
+
+    private String password;
 
     @OneToOne
     @JoinColumn(name = "image_id")
@@ -53,30 +57,29 @@ public class Wedu extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member host;
 
-    @OneToOne(mappedBy = "wedu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Invitation invitation;
-
     @ManyToMany(mappedBy = "wedus")
     private Set<Member> attendants = new HashSet<>();
 
     @Builder
-    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isSearchable, boolean isLocked, String password, Long grade, Long subject, Long gender) {
+    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, Long grade, Long subject, Long gender, LocalDate targetDate, Long challenge) {
         this.title = title;
         this.image = image;
         this.host = host;
         this.maximumPeople = maximumPeople;
-        this.isSearchable = isSearchable;
         this.isLocked = isLocked;
-        this.password = password;
         this.grade = grade;
         this.subject = subject;
         this.gender = gender;
+        this.targetDate = targetDate;
+        this.challenge = challenge;
     }
 
     public void addAttendant(Member member) {
         if(!attendants.contains(member)) {
-            this.attendants.add(member);
-            member.setWedus(this);
+            if(attendants.size() < maximumPeople) {
+                this.attendants.add(member);
+                member.setWedus(this);
+            }
         }
     }
 
