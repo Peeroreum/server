@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Optional;
 
 @Controller
 public class WeduController {
@@ -32,7 +31,7 @@ public class WeduController {
     @PostMapping("/wedu")
     public ResponseDto createWedu(@ModelAttribute WeduSaveDto weduSaveDto, Principal principal) {
         String username = principal.getName();
-        return ResponseDto.success(weduService.makeWedu(weduSaveDto, username));
+        return ResponseDto.success(weduService.make(weduSaveDto, username));
     }
 
     @PutMapping("/wedu/{id}")

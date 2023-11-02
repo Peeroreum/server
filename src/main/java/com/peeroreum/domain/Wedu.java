@@ -61,12 +61,13 @@ public class Wedu extends EntityTime {
     private Set<Member> attendants = new HashSet<>();
 
     @Builder
-    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, Long grade, Long subject, Long gender, LocalDate targetDate, Long challenge) {
+    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, Long gender, LocalDate targetDate, Long challenge) {
         this.title = title;
         this.image = image;
         this.host = host;
         this.maximumPeople = maximumPeople;
         this.isLocked = isLocked;
+        this.password = password;
         this.grade = grade;
         this.subject = subject;
         this.gender = gender;

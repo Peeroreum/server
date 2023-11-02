@@ -58,22 +58,22 @@ public class WeduService {
         return weduRepository.findById(id);
     }
 
-    public Wedu makeWedu(WeduSaveDto weduSaveDto, String username) {
+    public Wedu make(WeduSaveDto weduSaveDto, String username) {
         Member host = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Image image = imageRepository.save(s3Service.uploadImage(weduSaveDto.getFile()));
         Wedu savingWedu = Wedu.builder()
                 .title(weduSaveDto.getTitle())
-                .host(host)
                 .image(image)
+                .host(host)
                 .maximumPeople(weduSaveDto.getMaximumPeople())
-                .isSearchable(weduSaveDto.isSearchable())
                 .isLocked(weduSaveDto.isLocked())
                 .password(weduSaveDto.getPassword())
                 .grade(weduSaveDto.getGrade())
                 .subject(weduSaveDto.getSubject())
                 .gender(weduSaveDto.getGender())
+                .targetDate(weduSaveDto.getTargetDate())
                 .build();
-
+        savingWedu.addAttendant(host);
         return weduRepository.save(savingWedu);
     }
 
