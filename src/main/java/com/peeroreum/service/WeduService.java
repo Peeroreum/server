@@ -33,7 +33,7 @@ public class WeduService {
         this.s3Service = s3Service;
     }
 
-    public List<WeduDto> getAllWedus() {
+    public List<WeduDto> getAll() {
         List<Wedu> weduList = weduRepository.findAll();
         List<WeduDto> weduDtoList = new ArrayList<>();
         int dDay = 0;
@@ -44,7 +44,7 @@ public class WeduService {
         return weduDtoList;
     }
 
-    public List<WeduDto> getAllMyWedus(String username) {
+    public List<WeduDto> getAllMy(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Set<Wedu> myWeduList = member.getWedus();
         List<WeduDto> myWeduDtoList = new ArrayList<>();
@@ -54,7 +54,7 @@ public class WeduService {
         return myWeduDtoList;
     }
 
-    public Optional<Wedu> getWeduById(Long id) {
+    public Optional<Wedu> getById(Long id) {
         return weduRepository.findById(id);
     }
 
@@ -77,8 +77,8 @@ public class WeduService {
         return weduRepository.save(savingWedu);
     }
 
-    public Wedu updateWedu(Long id, WeduUpdateDto weduUpdateDto, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public Wedu update(Long id, WeduUpdateDto weduUpdateDto, String username) {
+        Member member = findMember(username);
         Wedu existingWedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
 
         if(member != existingWedu.getHost()) {
@@ -96,8 +96,8 @@ public class WeduService {
         return weduRepository.save(existingWedu);
     }
 
-    public void deleteWedu(Long id, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public void delete(Long id, String username) {
+        Member member = findMember(username);
         Wedu existingWedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
 
         if(member != existingWedu.getHost()) {
@@ -111,12 +111,16 @@ public class WeduService {
         weduRepository.delete(existingWedu);
     }
 
-    public void enrollWedu(Long id, String username) {
+    public void enroll(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Member member = findMember(username);
         wedu.addAttendant(member);
         memberRepository.save(member);
         weduRepository.save(wedu);
+    }
+
+    private Member findMember(String username) {
+        return memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
     }
 
 }
