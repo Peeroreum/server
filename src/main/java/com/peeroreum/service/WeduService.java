@@ -77,25 +77,25 @@ public class WeduService {
         return weduRepository.save(savingWedu);
     }
 
-    public Wedu updateWedu(Long id, WeduUpdateDto weduUpdateDto) {
+    public Wedu updateWedu(Long id, WeduUpdateDto weduUpdateDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Wedu existingWedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
 
+        if(member != existingWedu.getHost()) {
+            throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
+        }
+
         Image image = existingWedu.getImage();
-        s3Service.deleteImage(image.getImageName());
-        imageRepository.delete(image);
-
-        Image newImage = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
-
-        existingWedu.setTitle(weduUpdateDto.getTitle());
-        existingWedu.setImage(newImage);
-        existingWedu.setMaximumPeople(weduUpdateDto.getMaximumPeople());
-        existingWedu.setPassword(weduUpdateDto.getPassword());
-        existingWedu.setGrade(weduUpdateDto.getGrade());
-        existingWedu.setSubject(weduUpdateDto.getSubject());
-        existingWedu.setGender(weduUpdateDto.getGender());
+        if(!weduUpdateDto.getImage().isEmpty()) {
+            s3Service.deleteImage(image.getImageName());
+            imageRepository.delete(image);
+            image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
+        }
+        existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.getGender(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
 
         return weduRepository.save(existingWedu);
     }
+
     public void deleteWedu(Long id) {
         weduRepository.deleteById(id);
     }

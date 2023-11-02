@@ -14,7 +14,6 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class Wedu extends EntityTime {
 
@@ -82,6 +81,14 @@ public class Wedu extends EntityTime {
                 member.setWedus(this);
             }
         }
+    }
+
+    public void update(Image image, int maximumPeople, Long gender, boolean isLocked, String password) {
+        this.image = image;
+        this.maximumPeople = maximumPeople;
+        this.gender = gender;
+        this.isLocked = isLocked;
+        this.password = password;
     }
 
 }

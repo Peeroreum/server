@@ -37,7 +37,7 @@ public class WeduController {
     @PutMapping("/wedu/{id}")
     public ResponseDto updateWedu(@PathVariable Long id, @ModelAttribute WeduUpdateDto weduUpdateDto, Principal principal) {
         String username = principal.getName();
-        return ResponseDto.success(weduService.updateWedu(id, weduUpdateDto));
+        return ResponseDto.success(weduService.updateWedu(id, weduUpdateDto, username));
     }
 
     @DeleteMapping("/wedu/{id}")
