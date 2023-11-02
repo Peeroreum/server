@@ -20,14 +20,6 @@ public class HeartController {
         return ResponseDto.success();
     }
 
-    @PostMapping("/question/{questionId}/dislike")
-    public ResponseDto dislikeQuestion(@PathVariable Long questionId, Principal principal) {
-        String username = principal.getName();
-        heartService.dislikeQuestion(questionId, username);
-        return ResponseDto.success();
-    }
-
-
     @DeleteMapping("/question/{questionId}/like")
     public ResponseDto cancelQuestionLike(@PathVariable Long questionId, Principal principal) {
         String username = principal.getName();
@@ -35,25 +27,10 @@ public class HeartController {
         return ResponseDto.success();
     }
 
-    @DeleteMapping("/question/{questionId}/dislike")
-    public ResponseDto cancelQuestionDislike(@PathVariable Long questionId, Principal principal) {
-        String username = principal.getName();
-        heartService.cancelQuestionDislike(questionId, username);
-        return ResponseDto.success();
-    }
-
-
     @PostMapping("/answer/{answerId}/like")
     public ResponseDto likeAnswer(@PathVariable Long answerId, Principal principal) {
         String username = principal.getName();
         heartService.likeAnswer(answerId, username);
-        return ResponseDto.success();
-    }
-
-    @PostMapping("/answer/{answerId}/dislike")
-    public ResponseDto dislikeAnswer(@PathVariable Long answerId, Principal principal) {
-        String username = principal.getName();
-        heartService.dislikeAnswer(answerId, username);
         return ResponseDto.success();
     }
 
@@ -64,10 +41,4 @@ public class HeartController {
         return ResponseDto.success();
     }
 
-    @DeleteMapping("/answer/{answerId}/dislike")
-    public ResponseDto cancelAnswerDislike(@PathVariable Long answerId, Principal principal) {
-        String username = principal.getName();
-        heartService.cancelAnswerDislike(answerId, username);
-        return ResponseDto.success();
-    }
 }

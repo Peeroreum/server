@@ -15,7 +15,6 @@ public class QuestionListDto {
     private String memberNickname;
     private Long memberGrade;
     private Long likes;
-    private Long dislikes;
     private Long answerCount;
     private int imageCount;
     private String thumbnailUri;
@@ -27,7 +26,6 @@ public class QuestionListDto {
         this.memberNickname = question.getMember().getNickname();
         this.memberGrade = question.getMember().getGrade();
         this.likes = question.getLikes();
-        this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
         this.imageCount = question.getImages().size();
 

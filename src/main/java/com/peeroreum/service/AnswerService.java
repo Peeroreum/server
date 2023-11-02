@@ -33,7 +33,6 @@ public class AnswerService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final HeartRepository heartRepository;
-    private final XHeartRepository xHeartRepository;
     private final ImageService imageService;
     private final S3Service s3Service;
 
@@ -70,12 +69,11 @@ public class AnswerService {
 
         for(Answer answer : answers) {
             boolean liked = heartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
-            boolean disliked = xHeartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
             List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
             List<String> imagePaths = new ArrayList<>();
             for(ImageDto image : imageDtoList)
                 imagePaths.add(image.getImagePath());
-            result.add(new AnswerReadDto(username, liked, disliked, answer, imagePaths));
+            result.add(new AnswerReadDto(username, liked, answer, imagePaths));
         }
 
         return result;

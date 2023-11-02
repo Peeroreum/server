@@ -30,7 +30,6 @@ public class QuestionService {
     private final AnswerRepository answerRepository;
     private final ImageRepository imageRepository;
     private final HeartRepository heartRepository;
-    private final XHeartRepository xHeartRepository;
     private final ImageService imageService;
     private final S3Service s3Service;
 
@@ -59,11 +58,10 @@ public class QuestionService {
         List<ImageDto> imageList = imageService.findAllByQuestion(id);
         List<String> imagePaths = new ArrayList<>();
         boolean liked = heartRepository.existsByMemberAndQuestionId(memberRepository.findByUsername(username).get(), id);
-        boolean disliked = xHeartRepository.existsByMemberAndQuestionId(memberRepository.findByUsername(username).get(), id);
         for(ImageDto image : imageList)
             imagePaths.add(image.getImagePath());
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
-        return new QuestionReadDto(username, liked, disliked, question, imagePaths, answerRepository.countByQuestionId(id));
+        return new QuestionReadDto(username, liked, question, imagePaths, answerRepository.countByQuestionId(id));
     }
 
     public void update(Long id, QuestionUpdateDto updateDto) {
