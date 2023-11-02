@@ -20,7 +20,8 @@ public enum ExceptionType {
     ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 눌렀습니다."),
     ALREADY_DISLIKED(HttpStatus.CONFLICT, "이미 싫어요를 눌렀습니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요 한 적 없는 글입니다."),
-    DISLIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "싫어요 한 적 없는 글입니다.");
+    DISLIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "싫어요 한 적 없는 글입니다."),
+    DO_NOT_HAVE_PERMISSION(HttpStatus.FORBIDDEN, "권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
