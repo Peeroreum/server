@@ -4,6 +4,7 @@ import com.peeroreum.domain.Image;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Wedu;
 import com.peeroreum.dto.wedu.WeduDto;
+import com.peeroreum.dto.wedu.WeduReadDto;
 import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.dto.wedu.WeduUpdateDto;
 import com.peeroreum.exception.CustomException;
@@ -13,6 +14,9 @@ import com.peeroreum.repository.MemberRepository;
 import com.peeroreum.repository.WeduRepository;
 import com.peeroreum.service.attachment.S3Service;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,8 +58,15 @@ public class WeduService {
         return myWeduDtoList;
     }
 
-    public Optional<Wedu> getById(Long id) {
-        return weduRepository.findById(id);
+    public WeduReadDto getById(Long id) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        WeduReadDto weduReadDto = WeduReadDto.builder()
+                .title(wedu.getTitle())
+                .imageUrl(wedu.getImage().getImagePath())
+                .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
+                .challenge(wedu.getChallenge())
+                .build();
+        return weduReadDto;
     }
 
     public Wedu make(WeduSaveDto weduSaveDto, String username) {
