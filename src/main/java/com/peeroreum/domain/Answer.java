@@ -42,7 +42,6 @@ public class Answer extends EntityTime {
     private List<Image> images = new ArrayList<>();
 
     private Long likes = 0L;
-    private Long dislikes = 0L;
     private boolean isDeleted;
 
     @Builder
@@ -60,9 +59,6 @@ public class Answer extends EntityTime {
 
     public void updateLikes(int like) {
         this.likes += like;
-    }
-    public void updateDislikes(int dislike) {
-         this.dislikes += dislike;
     }
 
     public void addImage(Image image) {

@@ -13,7 +13,6 @@ import java.util.List;
 public class QuestionReadDto {
     private boolean writtenByUser;
     private boolean liked;
-    private boolean disliked;
     private Long id;
     private String content;
     private Long subject;
@@ -26,17 +25,15 @@ public class QuestionReadDto {
     private String createdTime;
 
 
-    public QuestionReadDto(String username, boolean liked, boolean disliked, Question question, List<String> imagePaths, Long answerCount) {
+    public QuestionReadDto(String username, boolean liked, Question question, List<String> imagePaths, Long answerCount) {
         this.writtenByUser = question.getMember().getUsername().equals(username);
         this.liked = liked;
-        this.disliked = disliked;
         this.id = question.getId();
         this.content = question.getContent();
         this.subject = question.getSubject();
         this.memberNickname = question.getMember().getNickname();
         this.memberGrade = question.getMember().getGrade();
         this.likes = question.getLikes();
-        this.dislikes = question.getDislikes();
         this.answerCount = answerCount;
         this.imagePaths = imagePaths;
         if(question.getCreatedTime().getYear() != Year.now().getValue())

@@ -29,7 +29,7 @@ public class RankingService {
         rankingList = new ArrayList<>();
         HashMap<ScoreDto, Double> scoreMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
-        long questionCnt, answerCnt, answerLike = 0L, answerDislike = 0L, durationTime;
+        long questionCnt, answerCnt, answerLike = 0L, durationTime;
         double score;
         ScoreDto scoreDto;
         for (Member member : memberList) {
@@ -40,15 +40,12 @@ public class RankingService {
             if(answerCnt > 0) {
                 for (Answer answer : answers) {
                     answerLike += answer.getLikes();
-                    answerDislike += answer.getDislikes();
                 }
             }
 
             durationTime = member.getDurationTime();
-            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, answerDislike, durationTime);
-//            if(answerLike > answerDislike)
-//                score = questionCnt + answerCnt + (durationTime / 30.0) + ((answerLike - answerDislike) * 0.5);
-//            else
+            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, durationTime);
+
             score = questionCnt + answerCnt + (durationTime / 30.0);
             scoreMap.put(scoreDto, score);
         }
