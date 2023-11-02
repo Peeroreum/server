@@ -96,8 +96,19 @@ public class WeduService {
         return weduRepository.save(existingWedu);
     }
 
-    public void deleteWedu(Long id) {
-        weduRepository.deleteById(id);
+    public void deleteWedu(Long id, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Wedu existingWedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+
+        if(member != existingWedu.getHost()) {
+            throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
+        }
+
+        Image image = existingWedu.getImage();
+        s3Service.deleteImage(image.getImageName());
+        imageRepository.delete(image);
+
+        weduRepository.delete(existingWedu);
     }
 
     public void enrollWedu(Long id, String username) {

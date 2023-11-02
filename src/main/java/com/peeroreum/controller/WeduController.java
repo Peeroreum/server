@@ -41,8 +41,9 @@ public class WeduController {
     }
 
     @DeleteMapping("/wedu/{id}")
-    public ResponseDto deleteWedu(@PathVariable Long id) {
-        weduService.deleteWedu(id);
+    public ResponseDto deleteWedu(@PathVariable Long id, Principal principal) {
+        String username = principal.getName();
+        weduService.deleteWedu(id, username);
         return ResponseDto.success();
     }
 
