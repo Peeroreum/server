@@ -35,6 +35,11 @@ public class Image extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Answer answer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proof_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Proof proof;
+
     @Builder
     public Image(String imageName, String imagePath, Long imageSize) {
 
@@ -54,6 +59,13 @@ public class Image extends EntityTime {
         this.answer = answer;
 
         if(!answer.getImages().contains(this))
+            answer.getImages().add(this);
+    }
+
+    public void setProof(Proof proof) {
+        this.proof = proof;
+
+        if(!proof.getImageList().contains(this))
             answer.getImages().add(this);
     }
 
