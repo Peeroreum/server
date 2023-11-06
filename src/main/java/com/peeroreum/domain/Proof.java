@@ -1,6 +1,7 @@
 package com.peeroreum.domain;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Proof extends EntityTime {
 
@@ -34,6 +36,13 @@ public class Proof extends EntityTime {
         this.imageList = imageList;
         this.member = member;
         this.wedu = wedu;
+    }
+
+    public void addImage(Image image) {
+        this.imageList.add(image);
+
+        if(image.getProof() != this)
+            image.setProof(this);
     }
 
 }
