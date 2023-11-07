@@ -18,12 +18,12 @@ public class Member extends EntityTime {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nickname;
 
     @Column
@@ -39,13 +39,8 @@ public class Member extends EntityTime {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
-    @JoinTable(
-            name = "member_wedu",
-            joinColumns = { @JoinColumn(name = "member_id") },
-            inverseJoinColumns = { @JoinColumn(name = "wedu_id") }
-    )
-    private Set<Wedu> wedus = new HashSet<>();
+    @OneToMany(mappedBy = "member")
+    private Set<MemberWedu> memberWedus;
 
     @Builder
     public Member(String username, String password, String nickname, String image, Long grade) {
@@ -72,9 +67,4 @@ public class Member extends EntityTime {
         this.image = image;
     }
 
-    public void setWedus(Wedu wedu) {
-        if(!this.wedus.contains(wedu)) {
-            this.wedus.add(wedu);
-        }
-    }
 }

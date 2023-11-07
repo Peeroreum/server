@@ -18,10 +18,10 @@ public class WeduController {
         this.weduService = weduService;
     }
 
-    @GetMapping("/wedu")
-    public ResponseDto getAllWedus() {
-        return ResponseDto.success(weduService.getAll());
-    }
+//    @GetMapping("/wedu")
+//    public ResponseDto getAllWedus() {
+//        return ResponseDto.success(weduService.getAll());
+//    }
 
     @GetMapping("/wedu/{id}")
     public ResponseDto getWeduById(@PathVariable Long id) {

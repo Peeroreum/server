@@ -2,6 +2,7 @@ package com.peeroreum.service;
 
 import com.peeroreum.domain.Image;
 import com.peeroreum.domain.Member;
+import com.peeroreum.domain.MemberWedu;
 import com.peeroreum.domain.Wedu;
 import com.peeroreum.dto.wedu.WeduDto;
 import com.peeroreum.dto.wedu.WeduReadDto;
@@ -11,6 +12,7 @@ import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.ImageRepository;
 import com.peeroreum.repository.MemberRepository;
+import com.peeroreum.repository.MemberWeduRepository;
 import com.peeroreum.repository.WeduRepository;
 import com.peeroreum.service.attachment.S3Service;
 import org.springframework.stereotype.Service;
@@ -19,41 +21,42 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class WeduService {
 
     private final WeduRepository weduRepository;
     private final MemberRepository memberRepository;
+    private final MemberWeduRepository memberWeduRepository;
     private final ImageRepository imageRepository;
     private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, ImageRepository imageRepository, S3Service s3Service) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, ImageRepository imageRepository, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
+        this.memberWeduRepository = memberWeduRepository;
         this.imageRepository = imageRepository;
         this.s3Service = s3Service;
     }
 
-    public List<WeduDto> getAll() {
-        List<Wedu> weduList = weduRepository.findAll();
-        List<WeduDto> weduDtoList = new ArrayList<>();
-        int dDay = 0;
-        for(Wedu wedu : weduList) {
-            weduDtoList.add(new WeduDto(wedu, dDay));
-        }
-
-        return weduDtoList;
-    }
+//    public List<WeduDto> getAll() {
+//        List<Wedu> weduList = weduRepository.findAll();
+//        List<WeduDto> weduDtoList = new ArrayList<>();
+//        int dDay = 0;
+//        for(Wedu wedu : weduList) {
+//            weduDtoList.add(new WeduDto(wedu, dDay));
+//        }
+//
+//        return weduDtoList;
+//    }
 
     public List<WeduDto> getAllMy(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Set<Wedu> myWeduList = member.getWedus();
+        List<MemberWedu> myWeduList = memberWeduRepository.findAllByMember(member);
         List<WeduDto> myWeduDtoList = new ArrayList<>();
-        for(Wedu myWedu : myWeduList) {
-            myWeduDtoList.add(new WeduDto(myWedu));
+        for(MemberWedu memberWedu : myWeduList) {
+            Wedu myWedu = memberWedu.getWedu();
+            myWeduDtoList.add(new WeduDto(myWedu, memberWeduRepository.countAllByWedu(myWedu)));
         }
         return myWeduDtoList;
     }
@@ -84,8 +87,9 @@ public class WeduService {
                 .gender(weduSaveDto.getGender())
                 .targetDate(weduSaveDto.getTargetDate())
                 .build();
-        savingWedu.addAttendant(host);
-        return weduRepository.save(savingWedu);
+        Wedu wedu = weduRepository.save(savingWedu);
+        memberWeduRepository.save(MemberWedu.builder().member(host).wedu(wedu).build());
+        return wedu;
     }
 
     public Wedu update(Long id, WeduUpdateDto weduUpdateDto, String username) {
@@ -119,15 +123,17 @@ public class WeduService {
         s3Service.deleteImage(image.getImageName());
         imageRepository.delete(image);
 
+        memberWeduRepository.deleteAllByWedu(existingWedu);
         weduRepository.delete(existingWedu);
     }
 
     public void enroll(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = findMember(username);
-        wedu.addAttendant(member);
-        memberRepository.save(member);
-        weduRepository.save(wedu);
+        if(memberWeduRepository.existsByMember(member)) {
+            throw new CustomException(ExceptionType.ALREADY_ENROLLED_WEDU);
+        }
+        memberWeduRepository.save(MemberWedu.builder().member(member).wedu(wedu).build());
     }
 
     private Member findMember(String username) {
