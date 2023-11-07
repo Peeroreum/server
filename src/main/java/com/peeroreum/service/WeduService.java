@@ -1,19 +1,10 @@
 package com.peeroreum.service;
 
-import com.peeroreum.domain.Image;
-import com.peeroreum.domain.Member;
-import com.peeroreum.domain.MemberWedu;
-import com.peeroreum.domain.Wedu;
-import com.peeroreum.dto.wedu.WeduDto;
-import com.peeroreum.dto.wedu.WeduReadDto;
-import com.peeroreum.dto.wedu.WeduSaveDto;
-import com.peeroreum.dto.wedu.WeduUpdateDto;
+import com.peeroreum.domain.*;
+import com.peeroreum.dto.wedu.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
-import com.peeroreum.repository.ImageRepository;
-import com.peeroreum.repository.MemberRepository;
-import com.peeroreum.repository.MemberWeduRepository;
-import com.peeroreum.repository.WeduRepository;
+import com.peeroreum.repository.*;
 import com.peeroreum.service.attachment.S3Service;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +19,15 @@ public class WeduService {
     private final WeduRepository weduRepository;
     private final MemberRepository memberRepository;
     private final MemberWeduRepository memberWeduRepository;
+    private final InvitationRepository invitationRepository;
     private final ImageRepository imageRepository;
     private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, ImageRepository imageRepository, S3Service s3Service) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
         this.memberWeduRepository = memberWeduRepository;
+        this.invitationRepository = invitationRepository;
         this.imageRepository = imageRepository;
         this.s3Service = s3Service;
     }
@@ -140,4 +133,26 @@ public class WeduService {
         return memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
     }
 
+    public Invitation makeInvitation(Long id, InvitationDto invitationDto) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        Invitation invitation = Invitation.builder()
+                .backgroundColor(invitationDto.getBackgroundColor())
+                .content(invitationDto.getContent())
+                .textColor(invitationDto.getTextColor())
+                .wedu(wedu)
+                .build();
+        return invitationRepository.save(invitation);
+    }
+
+    public Invitation updateInvitation(Long id, InvitationDto invitationDto) {
+        Invitation invitation = invitationRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.INVITATION_NOT_FOUND_EXCEPTION));
+        invitation.update(invitationDto.getContent(), invitationDto.getBackgroundColor(), invitationDto.getTextColor());
+        return invitationRepository.save(invitation);
+    }
+
+    public InvitationDto getInvitation(Long id) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        Invitation invitation = invitationRepository.findByWedu(wedu);
+        return new InvitationDto(invitation.getContent(), invitation.getBackgroundColor(), invitation.getTextColor());
+    }
 }

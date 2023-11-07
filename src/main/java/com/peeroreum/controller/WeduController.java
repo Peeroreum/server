@@ -1,6 +1,7 @@
 package com.peeroreum.controller;
 
 import com.peeroreum.dto.response.ResponseDto;
+import com.peeroreum.dto.wedu.InvitationDto;
 import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.dto.wedu.WeduUpdateDto;
 import com.peeroreum.service.WeduService;
@@ -58,5 +59,20 @@ public class WeduController {
     public ResponseDto getMyWedus(Principal principal) {
         String username = principal.getName();
         return ResponseDto.success(weduService.getAllMy(username));
+    }
+
+    @PostMapping("/wedu/{id}/invitation")
+    public ResponseDto createInvitation(@PathVariable Long id, @ModelAttribute InvitationDto invitationDto) {
+        return ResponseDto.success(weduService.makeInvitation(id, invitationDto));
+    }
+
+    @PutMapping("/wedu/invitation/{id}")
+    public ResponseDto updateInvitation(@PathVariable Long id, @ModelAttribute InvitationDto invitationDto) {
+        return ResponseDto.success(weduService.updateInvitation(id, invitationDto));
+    }
+
+    @GetMapping("/wedu/{id}/invitation")
+    public ResponseDto getInvitation(@PathVariable Long id) {
+        return ResponseDto.success(weduService.getInvitation(id));
     }
 }
