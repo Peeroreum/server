@@ -14,6 +14,7 @@ public enum ExceptionType {
     QUESTION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 질문입니다."),
     ANSWER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 답변입니다."),
     WEDU_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 같이방입니다."),
+    INVITATION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 초대장입니다."),
     IMAGE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
     FILETYPE_WRONG_EXCEPTION(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다."),
     UPLOAD_FAILURE_EXCEPTION(HttpStatus.EXPECTATION_FAILED, "이미지 업로드에 실패했습니다."),
