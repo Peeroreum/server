@@ -3,12 +3,9 @@ package com.peeroreum.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -51,13 +48,11 @@ public class Wedu extends EntityTime {
     private Image image;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id", nullable = false)
     private Member host;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @OneToMany(mappedBy = "wedu")
+    private Set<MemberWedu> memberWedus;
 
     @Builder
     public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, Long gender, LocalDate targetDate, Long challenge) {

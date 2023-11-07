@@ -15,15 +15,15 @@ public class Member extends EntityTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nickname;
 
     @Column
@@ -39,7 +39,7 @@ public class Member extends EntityTime {
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "member")
     private Set<MemberWedu> memberWedus;
 
     @Builder

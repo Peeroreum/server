@@ -16,7 +16,7 @@ public class MemberWedu {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "user_id")
     private Member member;
 
     @ManyToOne
