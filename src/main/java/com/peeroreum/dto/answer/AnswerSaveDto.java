@@ -12,6 +12,5 @@ import java.util.List;
 public class AnswerSaveDto {
     private String content;
     private Long questionId;
-    private Long parentId;
     private List<MultipartFile> files = new ArrayList<>();
 }

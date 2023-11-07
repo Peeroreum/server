@@ -39,15 +39,11 @@ public class AnswerService {
     public void create(AnswerSaveDto saveDto, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
-        Answer parent = null;
-        if(saveDto.getParentId() != -1 && saveDto.getParentId() != 0)
-            parent = answerRepository.findById(saveDto.getParentId()).orElseThrow(() -> new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
 
         Answer answer = Answer.builder()
                 .content(saveDto.getContent())
                 .member(member)
                 .question(question)
-                .parent(parent)
                 .build();
 
         if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
@@ -105,20 +101,10 @@ public class AnswerService {
 
     public void delete(Long id) {
         Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
-        Optional<Answer> parent = Optional.ofNullable(answer.getParent());
-        Long parentId;
         List<Image> images = answer.getImages();
-        if(parent.isPresent())
-            parentId = answer.getParent().getId();
-        else parentId = 0L;
 
-        if(parentId == 0 && answerRepository.countByParentId(answer.getId()) > 0) {
-            answer.delete();
-            answerRepository.save(answer);
-        }
-        else {
-            answerRepository.delete(answer);
-        }
+        answerRepository.delete(answer);
+
         if(!images.isEmpty()) {
             for(Image image : images) {
                 s3Service.deleteImage(image.getImageName());

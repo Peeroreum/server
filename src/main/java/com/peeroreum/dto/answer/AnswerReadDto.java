@@ -17,7 +17,6 @@ public class AnswerReadDto {
     private String content;
     private String memberNickname;
     private Long memberGrade;
-    private Long parentId;
     private Long likes;
     private Long dislikes;
     private Boolean isDeleted;
@@ -31,9 +30,6 @@ public class AnswerReadDto {
         this.content = answer.getContent();
         this.memberNickname = answer.getMember().getNickname();
         this.memberGrade = answer.getMember().getGrade();
-        if (answer.getParent() != null)
-            this.parentId = answer.getParent().getId();
-        else this.parentId = 0L;
         this.likes = answer.getLikes();
         this.isDeleted = answer.isDeleted();
         this.imagePaths = imagePaths;
