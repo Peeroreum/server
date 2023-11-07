@@ -3,7 +3,6 @@ package com.peeroreum.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -56,8 +55,9 @@ public class Wedu extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member host;
 
-    @ManyToMany(mappedBy = "wedus")
-    private Set<Member> attendants = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Builder
     public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, Long gender, LocalDate targetDate, Long challenge) {
@@ -72,15 +72,6 @@ public class Wedu extends EntityTime {
         this.gender = gender;
         this.targetDate = targetDate;
         this.challenge = challenge;
-    }
-
-    public void addAttendant(Member member) {
-        if(!attendants.contains(member)) {
-            if(attendants.size() < maximumPeople) {
-                this.attendants.add(member);
-                member.setWedus(this);
-            }
-        }
     }
 
     public void update(Image image, int maximumPeople, Long gender, boolean isLocked, String password) {
