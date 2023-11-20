@@ -8,12 +8,15 @@ import com.peeroreum.repository.*;
 import com.peeroreum.service.attachment.S3Service;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class WeduService {
 
     private final WeduRepository weduRepository;
@@ -68,17 +71,19 @@ public class WeduService {
     public Wedu make(WeduSaveDto weduSaveDto, String username) {
         Member host = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Image image = imageRepository.save(s3Service.uploadImage(weduSaveDto.getFile()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Wedu savingWedu = Wedu.builder()
                 .title(weduSaveDto.getTitle())
                 .image(image)
                 .host(host)
                 .maximumPeople(weduSaveDto.getMaximumPeople())
-                .isLocked(weduSaveDto.isLocked())
+                .isLocked((weduSaveDto.getIsLocked() == 1)? true : false)
                 .password(weduSaveDto.getPassword())
                 .grade(weduSaveDto.getGrade())
                 .subject(weduSaveDto.getSubject())
                 .gender(weduSaveDto.getGender())
-                .targetDate(weduSaveDto.getTargetDate())
+                .challenge(weduSaveDto.getChallenge())
+                .targetDate(LocalDate.parse(weduSaveDto.getTargetDate(), formatter))
                 .build();
         Wedu wedu = weduRepository.save(savingWedu);
         memberWeduRepository.save(MemberWedu.builder().member(host).wedu(wedu).build());

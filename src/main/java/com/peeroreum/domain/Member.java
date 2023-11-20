@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,7 @@ public class Member extends EntityTime {
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    @JsonIgnore
     private Set<MemberWedu> memberWedus;
 
     @Builder

@@ -40,6 +40,11 @@ public class Image extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Proof proof;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wedu_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Wedu wedu;
+
     @Builder
     public Image(String imageName, String imagePath, Long imageSize) {
 
