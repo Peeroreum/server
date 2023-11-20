@@ -11,5 +11,5 @@ public interface MemberWeduRepository extends JpaRepository<MemberWedu, Long> {
     List<MemberWedu> findAllByMember(Member member);
     void deleteAllByWedu(Wedu wedu);
     int countAllByWedu(Wedu wedu);
-    boolean existsByMember(Member member);
+    boolean existsByMemberAndWedu(Member member, Wedu wedu);
 }

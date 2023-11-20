@@ -128,7 +128,7 @@ public class WeduService {
     public void enroll(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = findMember(username);
-        if(memberWeduRepository.existsByMember(member)) {
+        if(memberWeduRepository.existsByMemberAndWedu(member, wedu)) {
             throw new CustomException(ExceptionType.ALREADY_ENROLLED_WEDU);
         }
         memberWeduRepository.save(MemberWedu.builder().member(member).wedu(wedu).build());
