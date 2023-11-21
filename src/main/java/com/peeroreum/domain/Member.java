@@ -15,7 +15,6 @@ public class Member extends EntityTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false)
@@ -38,9 +37,6 @@ public class Member extends EntityTime {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private Set<MemberWedu> memberWedus;
 
     @Builder
     public Member(String username, String password, String nickname, String image, Long grade) {

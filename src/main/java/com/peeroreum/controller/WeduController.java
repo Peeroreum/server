@@ -5,12 +5,11 @@ import com.peeroreum.dto.wedu.InvitationDto;
 import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.dto.wedu.WeduUpdateDto;
 import com.peeroreum.service.WeduService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@Controller
+@RestController
 public class WeduController {
 
     private final WeduService weduService;

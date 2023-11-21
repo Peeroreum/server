@@ -13,7 +13,9 @@ import javax.persistence.*;
 public class RefreshToken {
 
     @Id
-    @Column(name = "refresh_token_id")
+    private Long id;
+
+    @Column
     private String refreshToken;
 
     @Column
