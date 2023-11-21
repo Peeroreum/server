@@ -1,7 +1,7 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Answer;
-import com.peeroreum.domain.Image;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
 import com.peeroreum.dto.Attachment.ImageDto;
@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional

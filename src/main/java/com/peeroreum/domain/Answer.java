@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

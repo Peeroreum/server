@@ -1,7 +1,7 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Answer;
-import com.peeroreum.domain.Image;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.Member;
 import com.peeroreum.dto.Attachment.ImageDto;

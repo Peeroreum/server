@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.peeroreum.domain.Image;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service

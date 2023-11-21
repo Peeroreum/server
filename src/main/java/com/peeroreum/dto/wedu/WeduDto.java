@@ -1,10 +1,12 @@
 package com.peeroreum.dto.wedu;
 
 import com.peeroreum.domain.Wedu;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+@Data
 public class WeduDto {
 
     private String title;

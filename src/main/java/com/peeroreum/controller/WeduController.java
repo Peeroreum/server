@@ -2,6 +2,7 @@ package com.peeroreum.controller;
 
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.dto.wedu.InvitationDto;
+import com.peeroreum.dto.wedu.ChallengeSaveDto;
 import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.dto.wedu.WeduUpdateDto;
 import com.peeroreum.service.WeduService;
@@ -73,5 +74,17 @@ public class WeduController {
     @GetMapping("/wedu/{id}/invitation")
     public ResponseDto getInvitation(@PathVariable Long id) {
         return ResponseDto.success(weduService.getInvitation(id));
+    }
+
+    @PostMapping("/wedu/{id}/challenge")
+    public ResponseDto uploadChallengeImage(@PathVariable Long id, @ModelAttribute ChallengeSaveDto challengeSaveDto, Principal principal) {
+        String username = principal.getName();
+        weduService.createChallengeImage(id, challengeSaveDto, username);
+        return ResponseDto.success();
+    }
+
+    @GetMapping("/wedu/{id}/challenge/{nickname}/{date}")
+    public ResponseDto getChallengeImage(@PathVariable Long id, @PathVariable String nickname, @PathVariable String date) {
+        return ResponseDto.success(weduService.readChallengeImages(id, nickname, date));
     }
 }

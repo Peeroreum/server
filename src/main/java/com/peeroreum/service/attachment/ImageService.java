@@ -1,6 +1,6 @@
 package com.peeroreum.service.attachment;
 
-import com.peeroreum.domain.Image;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.Attachment.ImageDto;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.repository.ImageRepository;

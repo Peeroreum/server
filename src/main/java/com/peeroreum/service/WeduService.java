@@ -1,12 +1,14 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.*;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.wedu.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.*;
 import com.peeroreum.service.attachment.S3Service;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -25,15 +27,17 @@ public class WeduService {
     private final InvitationRepository invitationRepository;
     private final ImageRepository imageRepository;
     private final HashTagService hashTagService;
+    private final ChallengeImageService challengeImageService;
     private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, S3Service s3Service) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, ChallengeImageService challengeImageService, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
         this.memberWeduRepository = memberWeduRepository;
         this.invitationRepository = invitationRepository;
         this.imageRepository = imageRepository;
         this.hashTagService = hashTagService;
+        this.challengeImageService = challengeImageService;
         this.s3Service = s3Service;
     }
 
@@ -165,5 +169,27 @@ public class WeduService {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Invitation invitation = invitationRepository.findByWedu(wedu);
         return new InvitationDto(invitation.getContent(), invitation.getBackgroundColor(), invitation.getTextColor());
+    }
+
+    public void createChallengeImage(Long id, ChallengeSaveDto challengeSaveDto, String username) {
+        Member member = findMember(username);
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        List<Image> proofImages = new ArrayList<>();
+        for(MultipartFile file : challengeSaveDto.getFiles()) {
+            Image proofImage = s3Service.uploadImage(file);
+            proofImages.add(imageRepository.save(proofImage));
+        }
+
+        challengeImageService.createChallengeImages(member, wedu, proofImages);
+
+    }
+
+    public ChallengeReadDto readChallengeImages(Long id, String nickname, String date) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate formattedDate = LocalDate.parse(date, formatter);
+
+        return challengeImageService.readChallengeImages(wedu, member, formattedDate);
     }
 }
