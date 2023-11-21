@@ -1,13 +1,11 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Member;
-import com.peeroreum.domain.RefreshToken;
 import com.peeroreum.dto.member.DurationTimeDto;
 import com.peeroreum.dto.member.SignInDto;
 import com.peeroreum.dto.member.SignUpDto;
 import com.peeroreum.dto.member.LogInDto;
 import com.peeroreum.repository.MemberRepository;
-import com.peeroreum.repository.RefreshTokenRepository;
 import com.peeroreum.security.jwt.JwtTokenProvider;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
@@ -22,7 +20,6 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -46,7 +43,6 @@ public class MemberService {
         }
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();
-        refreshTokenRepository.save(new RefreshToken(refreshToken, member.getId()));
         String nickname = member.getNickname();
         return new LogInDto(accessToken, refreshToken, nickname);
     }

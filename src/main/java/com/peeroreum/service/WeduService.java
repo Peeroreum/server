@@ -24,14 +24,16 @@ public class WeduService {
     private final MemberWeduRepository memberWeduRepository;
     private final InvitationRepository invitationRepository;
     private final ImageRepository imageRepository;
+    private final HashTagService hashTagService;
     private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, S3Service s3Service) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
         this.memberWeduRepository = memberWeduRepository;
         this.invitationRepository = invitationRepository;
         this.imageRepository = imageRepository;
+        this.hashTagService = hashTagService;
         this.s3Service = s3Service;
     }
 
@@ -87,6 +89,7 @@ public class WeduService {
                 .build();
         Wedu wedu = weduRepository.save(savingWedu);
         memberWeduRepository.save(MemberWedu.builder().member(host).wedu(wedu).build());
+        hashTagService.createHashTags(wedu, weduSaveDto.getHashTags());
         return wedu;
     }
 
@@ -105,6 +108,8 @@ public class WeduService {
             image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
         }
         existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.getGender(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
+        hashTagService.deleteHashTags(existingWedu);
+        hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
 
         return weduRepository.save(existingWedu);
     }
@@ -122,6 +127,7 @@ public class WeduService {
         imageRepository.delete(image);
 
         memberWeduRepository.deleteAllByWedu(existingWedu);
+        hashTagService.deleteHashTags(existingWedu);
         weduRepository.delete(existingWedu);
     }
 

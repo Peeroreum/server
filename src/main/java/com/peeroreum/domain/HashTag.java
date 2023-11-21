@@ -1,8 +1,13 @@
 package com.peeroreum.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class HashTag extends EntityTime {
 
     @Id
@@ -11,4 +16,13 @@ public class HashTag extends EntityTime {
 
     @Column
     private String tag;
+
+    @ManyToOne
+    private Wedu wedu;
+
+    public HashTag(String tag, Wedu wedu) {
+
+        this.tag = tag;
+        this.wedu = wedu;
+    }
 }
