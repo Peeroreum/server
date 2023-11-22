@@ -22,21 +22,20 @@ public class ChallengeImageService {
     }
 
     public void createChallengeImages(Member member, Wedu wedu, List<Image> proofImages) {
-        for(Image image : proofImages) {
-            ChallengeImage challengeImage = ChallengeImage.builder()
-                    .member(member)
-                    .wedu(wedu)
-                    .image(image)
-                    .challengeDate(LocalDate.now())
-                    .build();
-            challengeImageRepository.save(challengeImage);
-        }
+        ChallengeImage challengeImage = ChallengeImage.builder()
+                .member(member)
+                .wedu(wedu)
+                .image(proofImages)
+                .challengeDate(LocalDate.now())
+                .build();
+        challengeImageRepository.save(challengeImage);
     }
 
     public ChallengeReadDto readChallengeImages(Wedu wedu, Member member, LocalDate formattedDate) {
         List<String> imageUrls = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, formattedDate)
+                .getImage()
                 .stream()
-                .map(challengeImage -> challengeImage.getImage().getImagePath())
+                .map(Image::getImagePath)
                 .collect(Collectors.toList());
 
         return new ChallengeReadDto(imageUrls);

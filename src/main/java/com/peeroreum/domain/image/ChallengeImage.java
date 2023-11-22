@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,14 +26,14 @@ public class ChallengeImage {
     @JoinColumn(name = "wedu_id")
     private Wedu wedu;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
-    private Image image;
+    private List<Image> image;
 
     private LocalDate challengeDate;
 
     @Builder
-    public ChallengeImage(Member member, Wedu wedu, Image image, LocalDate challengeDate) {
+    public ChallengeImage(Member member, Wedu wedu, List<Image> image, LocalDate challengeDate) {
         this.member = member;
         this.wedu = wedu;
         this.image = image;
