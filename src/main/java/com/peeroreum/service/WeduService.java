@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,17 +28,17 @@ public class WeduService {
     private final InvitationRepository invitationRepository;
     private final ImageRepository imageRepository;
     private final HashTagService hashTagService;
-    private final ChallengeImageService challengeImageService;
+    private final ChallengeService challengeService;
     private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, ChallengeImageService challengeImageService, S3Service s3Service) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, ChallengeService challengeService, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
         this.memberWeduRepository = memberWeduRepository;
         this.invitationRepository = invitationRepository;
         this.imageRepository = imageRepository;
         this.hashTagService = hashTagService;
-        this.challengeImageService = challengeImageService;
+        this.challengeService = challengeService;
         this.s3Service = s3Service;
     }
 
@@ -180,7 +181,7 @@ public class WeduService {
             proofImages.add(imageRepository.save(proofImage));
         }
 
-        challengeImageService.createChallengeImages(member, wedu, proofImages);
+        challengeService.createChallengeImages(member, wedu, proofImages);
 
     }
 
@@ -190,6 +191,15 @@ public class WeduService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate formattedDate = LocalDate.parse(date, formatter);
 
-        return challengeImageService.readChallengeImages(wedu, member, formattedDate);
+        return challengeService.readChallengeImages(wedu, member, formattedDate);
+    }
+
+    public ChallengeMemberList readChallengeMembers(Long id, String date) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        List<MemberWedu> memberWedus = memberWeduRepository.findAllByWedu(wedu);
+        List<Member> allMembers = memberWedus.stream().map(MemberWedu::getMember).collect(Collectors.toList());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate formattedDate = LocalDate.parse(date, formatter);
+        return challengeService.readChallengeMembers(allMembers, wedu, formattedDate);
     }
 }

@@ -87,4 +87,9 @@ public class WeduController {
     public ResponseDto getChallengeImage(@PathVariable Long id, @PathVariable String nickname, @PathVariable String date) {
         return ResponseDto.success(weduService.readChallengeImages(id, nickname, date));
     }
+
+    @GetMapping("/wedu/{id}/challenge/{date}")
+    public ResponseDto getChallengeMembers(@PathVariable Long id, @PathVariable String date) {
+        return ResponseDto.success(weduService.readChallengeMembers(id, date));
+    }
 }

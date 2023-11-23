@@ -27,7 +27,7 @@ public class ChallengeImage {
     private Wedu wedu;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id")
+    @JoinColumn(name = "challenge_image_id")
     private List<Image> image;
 
     private LocalDate challengeDate;

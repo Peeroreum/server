@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface MemberWeduRepository extends JpaRepository<MemberWedu, Long> {
     List<MemberWedu> findAllByMember(Member member);
+    List<MemberWedu> findAllByWedu(Wedu wedu);
     void deleteAllByWedu(Wedu wedu);
     int countAllByWedu(Wedu wedu);
     boolean existsByMemberAndWedu(Member member, Wedu wedu);

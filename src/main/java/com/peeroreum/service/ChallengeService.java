@@ -4,6 +4,8 @@ import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Wedu;
 import com.peeroreum.domain.image.ChallengeImage;
 import com.peeroreum.domain.image.Image;
+import com.peeroreum.dto.member.MemberProfileDto;
+import com.peeroreum.dto.wedu.ChallengeMemberList;
 import com.peeroreum.dto.wedu.ChallengeReadDto;
 import com.peeroreum.repository.ChallengeImageRepository;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ChallengeImageService {
+public class ChallengeService {
     private final ChallengeImageRepository challengeImageRepository;
 
-    public ChallengeImageService(ChallengeImageRepository challengeImageRepository) {
+    public ChallengeService(ChallengeImageRepository challengeImageRepository) {
         this.challengeImageRepository = challengeImageRepository;
     }
 
@@ -40,4 +42,22 @@ public class ChallengeImageService {
 
         return new ChallengeReadDto(imageUrls);
     }
+
+    public ChallengeMemberList readChallengeMembers(List<Member> allMembers, Wedu wedu, LocalDate formattedDate) {
+        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWeduAndChallengeDate(wedu, formattedDate);
+        List<Member> successMembers = challengeImages.stream().map(ChallengeImage::getMember).collect(Collectors.toList());
+        List<MemberProfileDto> successMemberProfiles = new ArrayList<>();
+        for(Member member : successMembers) {
+            successMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage(), member.getNickname()));
+        }
+        List<MemberProfileDto> failMemberProfiles = new ArrayList<>();
+        for(Member member : allMembers) {
+            if(!successMembers.contains(member)) {
+                failMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage(), member.getNickname()));
+            }
+        }
+
+        return new ChallengeMemberList(successMemberProfiles, failMemberProfiles);
+    }
+
 }
