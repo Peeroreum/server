@@ -92,4 +92,9 @@ public class WeduController {
     public ResponseDto getChallengeMembers(@PathVariable Long id, @PathVariable String date) {
         return ResponseDto.success(weduService.readChallengeMembers(id, date));
     }
+
+    @GetMapping("/wedu/{id}/monthly/{date}")
+    public ResponseDto getMonthlyProgress(@PathVariable Long id, @PathVariable String date) {
+        return ResponseDto.success(weduService.readMonthlyProgress(id, date));
+    }
 }
