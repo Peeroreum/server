@@ -1,5 +1,6 @@
-package com.peeroreum.domain;
+package com.peeroreum.domain.image;
 
+import com.peeroreum.domain.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,6 @@ public class Image extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Answer answer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proof_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Proof proof;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wedu_id")
@@ -67,11 +64,5 @@ public class Image extends EntityTime {
             answer.getImages().add(this);
     }
 
-    public void setProof(Proof proof) {
-        this.proof = proof;
-
-        if(!proof.getImageList().contains(this))
-            answer.getImages().add(this);
-    }
 
 }

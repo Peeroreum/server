@@ -1,0 +1,63 @@
+package com.peeroreum.service;
+
+import com.peeroreum.domain.Member;
+import com.peeroreum.domain.Wedu;
+import com.peeroreum.domain.image.ChallengeImage;
+import com.peeroreum.domain.image.Image;
+import com.peeroreum.dto.member.MemberProfileDto;
+import com.peeroreum.dto.wedu.ChallengeMemberList;
+import com.peeroreum.dto.wedu.ChallengeReadDto;
+import com.peeroreum.repository.ChallengeImageRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ChallengeService {
+    private final ChallengeImageRepository challengeImageRepository;
+
+    public ChallengeService(ChallengeImageRepository challengeImageRepository) {
+        this.challengeImageRepository = challengeImageRepository;
+    }
+
+    public void createChallengeImages(Member member, Wedu wedu, List<Image> proofImages) {
+        ChallengeImage challengeImage = ChallengeImage.builder()
+                .member(member)
+                .wedu(wedu)
+                .image(proofImages)
+                .challengeDate(LocalDate.now())
+                .build();
+        challengeImageRepository.save(challengeImage);
+    }
+
+    public ChallengeReadDto readChallengeImages(Wedu wedu, Member member, LocalDate formattedDate) {
+        List<String> imageUrls = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, formattedDate)
+                .getImage()
+                .stream()
+                .map(Image::getImagePath)
+                .collect(Collectors.toList());
+
+        return new ChallengeReadDto(imageUrls);
+    }
+
+    public ChallengeMemberList readChallengeMembers(List<Member> allMembers, Wedu wedu, LocalDate formattedDate) {
+        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWeduAndChallengeDate(wedu, formattedDate);
+        List<Member> successMembers = challengeImages.stream().map(ChallengeImage::getMember).collect(Collectors.toList());
+        List<MemberProfileDto> successMemberProfiles = new ArrayList<>();
+        for(Member member : successMembers) {
+            successMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage(), member.getNickname()));
+        }
+        List<MemberProfileDto> failMemberProfiles = new ArrayList<>();
+        for(Member member : allMembers) {
+            if(!successMembers.contains(member)) {
+                failMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage(), member.getNickname()));
+            }
+        }
+
+        return new ChallengeMemberList(successMemberProfiles, failMemberProfiles);
+    }
+
+}

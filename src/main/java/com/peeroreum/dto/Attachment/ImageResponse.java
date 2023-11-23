@@ -1,6 +1,6 @@
 package com.peeroreum.dto.Attachment;
 
-import com.peeroreum.domain.Image;
+import com.peeroreum.domain.image.Image;
 import lombok.Data;
 import lombok.Getter;
 

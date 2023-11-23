@@ -1,6 +1,6 @@
 package com.peeroreum.repository;
 
-import com.peeroreum.domain.Image;
+import com.peeroreum.domain.image.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
