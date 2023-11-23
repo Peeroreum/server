@@ -202,4 +202,12 @@ public class WeduService {
         LocalDate formattedDate = LocalDate.parse(date, formatter);
         return challengeService.readChallengeMembers(allMembers, wedu, formattedDate);
     }
+
+    public MonthlyProgress readMonthlyProgress(Long id, String date) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        int total = memberWeduRepository.countAllByWedu(wedu);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate formattedDate = LocalDate.parse(date, formatter);
+        return challengeService.readMonthlyProgress(total, formattedDate);
+    }
 }
