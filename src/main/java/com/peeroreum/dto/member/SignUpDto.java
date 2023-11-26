@@ -23,6 +23,7 @@ public class SignUpDto {
                 .grade(signUpDto.grade)
                 .goodSubject(signUpDto.goodSubject)
                 .badSubject(signUpDto.badSubject)
+                .school(signUpDto.school)
                 .build();
     }
 }
