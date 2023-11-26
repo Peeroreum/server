@@ -19,10 +19,17 @@ public class WeduController {
         this.weduService = weduService;
     }
 
-//    @GetMapping("/wedu")
-//    public ResponseDto getAllWedus() {
-//        return ResponseDto.success(weduService.getAll());
-//    }
+    @GetMapping("/wedu")
+    public ResponseDto getAllWedus(@RequestParam("sort") String sort, @RequestParam("grade") Long grade, @RequestParam("subject") Long subject, Principal principal) {
+        String username = principal.getName();
+        if(sort.equals("recommend")) {
+            return ResponseDto.success(weduService.getAllRecommends(username));
+        } else if(sort.equals("popular")) {
+            return ResponseDto.success(weduService.getAllPopular(grade, subject));
+        } else {
+            return ResponseDto.success(weduService.getAll(grade, subject));
+        }
+    }
 
     @GetMapping("/wedu/{id}")
     public ResponseDto getWeduById(@PathVariable Long id) {

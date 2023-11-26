@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,16 +44,49 @@ public class WeduService {
         this.s3Service = s3Service;
     }
 
-//    public List<WeduDto> getAll() {
-//        List<Wedu> weduList = weduRepository.findAll();
-//        List<WeduDto> weduDtoList = new ArrayList<>();
-//        int dDay = 0;
-//        for(Wedu wedu : weduList) {
-//            weduDtoList.add(new WeduDto(wedu, dDay));
-//        }
-//
-//        return weduDtoList;
-//    }
+    public List<WeduDto> getAll(Long grade, Long subject) {
+        List<Wedu> weduList = getWedus(grade, subject);
+        weduList.sort((Comparator.comparing(EntityTime::getCreatedTime)).reversed());
+        return getWeduDtos(weduList);
+    }
+
+    public List<WeduDto> getAllRecommends(String username) {
+        Member member = findMember(username);
+        List<Wedu> weduList = getWedus(member.getGrade(), member.getGoodSubject());
+        weduList.addAll(getWedus(member.getGrade(), member.getBadSubject()));
+        weduList.sort((Comparator.comparing(EntityTime::getCreatedTime)).reversed());
+        return getWeduDtos(weduList);
+    }
+
+    public List<WeduDto> getAllPopular(Long grade, Long subject) {
+        List<Wedu> weduList = getWedus(grade, subject);
+        List<WeduDto> weduDtoList = getWeduDtos(weduList);
+        weduDtoList.sort(Comparator.comparing(WeduDto::getAttendingPeopleNum).reversed());
+        return weduDtoList;
+    }
+
+    private List<Wedu> getWedus(Long grade, Long subject) {
+        List<Wedu> weduList;
+        if(grade == 0 && subject == 0) {
+            weduList = weduRepository.findAll();
+        } else if(grade == 0) {
+            weduList = weduRepository.findAllBySubject(subject);
+        } else if(subject == 0) {
+            weduList = weduRepository.findAllByGrade(grade);
+        } else {
+            weduList = weduRepository.findAllByGradeAndSubject(grade, subject);
+        }
+        return weduList;
+    }
+
+    private List<WeduDto> getWeduDtos(List<Wedu> weduList) {
+        List<WeduDto> weduDtoList = new ArrayList<>();
+        for(Wedu wedu : weduList) {
+            int attendingPeople = memberWeduRepository.countAllByWedu(wedu);
+            weduDtoList.add(new WeduDto(wedu, attendingPeople));
+        }
+        return weduDtoList;
+    }
 
     public List<WeduDto> getAllMy(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
@@ -66,13 +101,12 @@ public class WeduService {
 
     public WeduReadDto getById(Long id) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        WeduReadDto weduReadDto = WeduReadDto.builder()
+        return WeduReadDto.builder()
                 .title(wedu.getTitle())
                 .imageUrl(wedu.getImage().getImagePath())
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
                 .build();
-        return weduReadDto;
     }
 
     public Wedu make(WeduSaveDto weduSaveDto, String username) {
@@ -84,7 +118,7 @@ public class WeduService {
                 .image(image)
                 .host(host)
                 .maximumPeople(weduSaveDto.getMaximumPeople())
-                .isLocked((weduSaveDto.getIsLocked() == 1)? true : false)
+                .isLocked(weduSaveDto.getIsLocked() == 1)
                 .password(weduSaveDto.getPassword())
                 .grade(weduSaveDto.getGrade())
                 .subject(weduSaveDto.getSubject())
