@@ -29,7 +29,7 @@ public class RankingService {
         rankingList = new ArrayList<>();
         HashMap<ScoreDto, Double> scoreMap = new HashMap<>();
         List<Member> memberList = memberRepository.findAll();
-        long questionCnt, answerCnt, answerLike = 0L, durationTime;
+        long questionCnt, answerCnt, answerLike = 0L;
         double score;
         ScoreDto scoreDto;
         for (Member member : memberList) {
@@ -43,10 +43,9 @@ public class RankingService {
                 }
             }
 
-            durationTime = member.getDurationTime();
-            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike, durationTime);
+            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike);
 
-            score = questionCnt + answerCnt + (durationTime / 30.0);
+            score = questionCnt + answerCnt;
             scoreMap.put(scoreDto, score);
         }
         List<Map.Entry<ScoreDto, Double>> scoreList = new LinkedList<>(scoreMap.entrySet());

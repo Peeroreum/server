@@ -1,14 +1,11 @@
 package com.peeroreum.controller;
 
-import com.peeroreum.dto.member.DurationTimeDto;
 import com.peeroreum.dto.member.SignInDto;
 import com.peeroreum.dto.member.SignUpDto;
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @CrossOrigin
 @RestController
@@ -27,9 +24,4 @@ public class MemberController {
         return ResponseDto.success(memberService.signIn(signInDto));
     }
 
-    @PutMapping("/member/dt")
-    public ResponseDto updateDT(@RequestBody DurationTimeDto durationTimeDto, Principal principal) {
-        memberService.updateDT(durationTimeDto, principal.getName());
-        return ResponseDto.success();
-    }
 }

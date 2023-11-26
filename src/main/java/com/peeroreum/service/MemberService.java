@@ -1,7 +1,6 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Member;
-import com.peeroreum.dto.member.DurationTimeDto;
 import com.peeroreum.dto.member.SignInDto;
 import com.peeroreum.dto.member.SignUpDto;
 import com.peeroreum.dto.member.LogInDto;
@@ -51,9 +50,4 @@ public class MemberService {
         return passwordEncoder.matches(signInDto.getPassword(), member.getPassword());
     }
 
-    public void updateDT(DurationTimeDto durationTimeDto, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        member.updateDurationTime(durationTimeDto.getDurationTime());
-        memberRepository.save(member);
-    }
 }

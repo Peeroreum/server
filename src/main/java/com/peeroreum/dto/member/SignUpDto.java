@@ -11,6 +11,9 @@ public class SignUpDto {
     private String password;
     private String nickname;
     private Long grade;
+    private Long goodSubject;
+    private Long badSubject;
+    private String school;
 
     public static Member toEntity(SignUpDto signUpDto) {
         return Member.builder()
@@ -18,6 +21,8 @@ public class SignUpDto {
                 .password(signUpDto.password)
                 .nickname(signUpDto.nickname)
                 .grade(signUpDto.grade)
+                .goodSubject(signUpDto.goodSubject)
+                .badSubject(signUpDto.badSubject)
                 .build();
     }
 }
