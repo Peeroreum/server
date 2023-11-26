@@ -13,4 +13,8 @@ public interface WeduRepository extends JpaRepository<Wedu, Long> {
     List<Wedu> findAll();
     Wedu save(Wedu wedu);
 
+    List<Wedu> findAllByGradeAndSubject(Long grade, Long subject);
+    List<Wedu> findAllByGrade(Long grade);
+    List<Wedu> findAllBySubject(Long subject);
+
 }
