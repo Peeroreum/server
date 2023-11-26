@@ -16,11 +16,11 @@ public class ResponseDto<T> {
 
 
     public static ResponseDto success() {
-        return new ResponseDto("success", 0, null);
+        return new ResponseDto("success", 200, null);
     }
 
     public static <T> ResponseDto success(T data) {
-        return new ResponseDto("success", 0, data);
+        return new ResponseDto("success", 200, data);
     }
 
     public static ResponseDto fail(int code, String message) {
