@@ -9,7 +9,6 @@ import java.util.List;
 public class WeduUpdateDto {
     private MultipartFile image;
     private int maximumPeople;
-    private Long gender;
     private boolean isLocked;
     private String password;
     private List<String> hashTags;

@@ -122,7 +122,6 @@ public class WeduService {
                 .password(weduSaveDto.getPassword())
                 .grade(weduSaveDto.getGrade())
                 .subject(weduSaveDto.getSubject())
-                .gender(weduSaveDto.getGender())
                 .challenge(weduSaveDto.getChallenge())
                 .targetDate(LocalDate.parse(weduSaveDto.getTargetDate(), formatter))
                 .build();
@@ -146,7 +145,7 @@ public class WeduService {
             imageRepository.delete(image);
             image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
         }
-        existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.getGender(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
+        existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
         hashTagService.deleteHashTags(existingWedu);
         hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
 
