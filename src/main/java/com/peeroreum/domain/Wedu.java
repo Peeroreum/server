@@ -33,7 +33,7 @@ public class Wedu extends EntityTime {
     private int maximumPeople;
 
     @Column
-    private Long challenge;
+    private String challenge;
 
     @Column
     private boolean isLocked;
@@ -49,7 +49,7 @@ public class Wedu extends EntityTime {
     private Member host;
 
     @Builder
-    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, LocalDate targetDate, Long challenge) {
+    public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, LocalDate targetDate, String challenge) {
         this.title = title;
         this.image = image;
         this.host = host;

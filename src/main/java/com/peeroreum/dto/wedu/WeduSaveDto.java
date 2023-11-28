@@ -14,7 +14,7 @@ public class WeduSaveDto {
     private String targetDate;
     private Long grade;
     private int maximumPeople;
-    private Long challenge;
+    private String challenge;
     private int isLocked;
     private String password;
     private MultipartFile file;

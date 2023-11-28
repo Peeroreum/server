@@ -8,10 +8,10 @@ public class WeduReadDto {
     String title;
     String imageUrl;
     Long dDay;
-    Long challenge;
+    String challenge;
 
     @Builder
-    WeduReadDto(String title, String imageUrl, Long dDay, Long challenge) {
+    WeduReadDto(String title, String imageUrl, Long dDay, String challenge) {
         this.title = title;
         this.imageUrl = imageUrl;
         this.dDay = dDay;
