@@ -16,7 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,18 +93,23 @@ public class WeduService {
         List<WeduDto> myWeduDtoList = new ArrayList<>();
         for(MemberWedu memberWedu : myWeduList) {
             Wedu myWedu = memberWedu.getWedu();
-            myWeduDtoList.add(new WeduDto(myWedu, memberWeduRepository.countAllByWedu(myWedu)));
+            int total = memberWeduRepository.countAllByWedu(myWedu);
+            Long progress = challengeService.getTodayProgress(myWedu, total);
+            myWeduDtoList.add(new WeduDto(myWedu, total, progress));
         }
         return myWeduDtoList;
     }
 
     public WeduReadDto getById(Long id) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        int total = memberWeduRepository.countAllByWedu(wedu);
+        Long progress = challengeService.getTodayProgress(wedu, total);
         return WeduReadDto.builder()
                 .title(wedu.getTitle())
                 .imageUrl(wedu.getImage().getImagePath())
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
+                .progress(progress)
                 .build();
     }
 
@@ -128,6 +132,7 @@ public class WeduService {
         Wedu wedu = weduRepository.save(savingWedu);
         memberWeduRepository.save(MemberWedu.builder().member(host).wedu(wedu).build());
         hashTagService.createHashTags(wedu, weduSaveDto.getHashTags());
+        makeInvitation(wedu.getId(), weduSaveDto.getInviFile());
         return wedu;
     }
 
@@ -154,19 +159,20 @@ public class WeduService {
 
     public void delete(Long id, String username) {
         Member member = findMember(username);
-        Wedu existingWedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
 
-        if(member != existingWedu.getHost()) {
+        if(member != wedu.getHost()) {
             throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
         }
 
-        Image image = existingWedu.getImage();
+        Image image = wedu.getImage();
         s3Service.deleteImage(image.getImageName());
         imageRepository.delete(image);
 
-        memberWeduRepository.deleteAllByWedu(existingWedu);
-        hashTagService.deleteHashTags(existingWedu);
-        weduRepository.delete(existingWedu);
+        memberWeduRepository.deleteAllByWedu(wedu);
+        hashTagService.deleteHashTags(wedu);
+        challengeService.deleteChallengeImages(wedu);
+        weduRepository.delete(wedu);
     }
 
     public void enroll(Long id, String username) {
@@ -182,27 +188,26 @@ public class WeduService {
         return memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
     }
 
-    public Invitation makeInvitation(Long id, InvitationDto invitationDto) {
+    public Invitation makeInvitation(Long id, MultipartFile file) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        Image image = s3Service.uploadImage(file);
+        imageRepository.save(image);
         Invitation invitation = Invitation.builder()
-                .backgroundColor(invitationDto.getBackgroundColor())
-                .content(invitationDto.getContent())
-                .textColor(invitationDto.getTextColor())
                 .wedu(wedu)
+                .image(image)
                 .build();
         return invitationRepository.save(invitation);
     }
 
-    public Invitation updateInvitation(Long id, InvitationDto invitationDto) {
-        Invitation invitation = invitationRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.INVITATION_NOT_FOUND_EXCEPTION));
-        invitation.update(invitationDto.getContent(), invitationDto.getBackgroundColor(), invitationDto.getTextColor());
-        return invitationRepository.save(invitation);
-    }
-
-    public InvitationDto getInvitation(Long id) {
+    public WeduAndInviDto getInvitation(Long id) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Invitation invitation = invitationRepository.findByWedu(wedu);
-        return new InvitationDto(invitation.getContent(), invitation.getBackgroundColor(), invitation.getTextColor());
+        List<String> hashTags = hashTagService.readHashTags(wedu);
+        return WeduAndInviDto.builder()
+                .challenge(wedu.getChallenge())
+                .invitation(invitation)
+                .hashTags(hashTags)
+                .build();
     }
 
     public void createChallengeImage(Long id, ChallengeSaveDto challengeSaveDto, String username) {
@@ -241,6 +246,6 @@ public class WeduService {
         int total = memberWeduRepository.countAllByWedu(wedu);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate formattedDate = LocalDate.parse(date, formatter);
-        return challengeService.readMonthlyProgress(total, formattedDate);
+        return challengeService.readMonthlyProgress(wedu, total, formattedDate);
     }
 }
