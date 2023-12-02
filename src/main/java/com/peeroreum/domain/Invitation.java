@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,25 +15,19 @@ public class Invitation extends EntityTime{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String content;
-    private String backgroundColor;
-    private String textColor;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "wedu_id")
     private Wedu wedu;
 
-    @Builder
-    Invitation(String content, String backgroundColor, String textColor, Wedu wedu) {
-        this.content = content;
-        this.backgroundColor = backgroundColor;
-        this.textColor = textColor;
-        this.wedu = wedu;
-    }
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
-    public void update(String content, String backgroundColor, String textColor) {
-        this.content = content;
-        this.backgroundColor = backgroundColor;
-        this.textColor = textColor;
+    @Builder
+    Invitation(Wedu wedu, Image image) {
+        this.wedu = wedu;
+        this.image = image;
     }
 
 }

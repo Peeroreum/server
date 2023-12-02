@@ -25,6 +25,9 @@ public class ChallengeService {
     }
 
     public void createChallengeImages(Member member, Wedu wedu, List<Image> proofImages) {
+        if(challengeImageRepository.existsByWeduAndMemberAndChallengeDate(wedu, member, LocalDate.now())) {
+            challengeImageRepository.deleteByWeduAndMemberAndChallengeDate(wedu, member, LocalDate.now());
+        }
         ChallengeImage challengeImage = ChallengeImage.builder()
                 .member(member)
                 .wedu(wedu)
@@ -61,15 +64,24 @@ public class ChallengeService {
         return new ChallengeMemberList(successMemberProfiles, failMemberProfiles);
     }
 
-    public MonthlyProgress readMonthlyProgress(int total, LocalDate formattedDate) {
+    public MonthlyProgress readMonthlyProgress(Wedu wedu, int total, LocalDate formattedDate) {
         int month = formattedDate.getMonthValue();
         int days = getDays(month);
         List<Long> progressList = new ArrayList<>();
         for(int i = 1; i <= days; i++) {
-            Long success = challengeImageRepository.countAllByChallengeDate(LocalDate.of(formattedDate.getYear(), month, i));
+            Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, LocalDate.of(formattedDate.getYear(), month, i));
             progressList.add(Math.round((double)success / (double)total * 100));
         }
         return new MonthlyProgress(progressList);
+    }
+
+    public void deleteChallengeImages(Wedu wedu) {
+        challengeImageRepository.deleteAllByWedu(wedu);
+    }
+
+    public Long getTodayProgress(Wedu wedu, int total) {
+        Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, LocalDate.now());
+        return Math.round((double)success / (double)total * 100);
     }
 
     private int getDays(int month) {

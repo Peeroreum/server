@@ -1,7 +1,6 @@
 package com.peeroreum.controller;
 
 import com.peeroreum.dto.response.ResponseDto;
-import com.peeroreum.dto.wedu.InvitationDto;
 import com.peeroreum.dto.wedu.ChallengeSaveDto;
 import com.peeroreum.dto.wedu.WeduSaveDto;
 import com.peeroreum.dto.wedu.WeduUpdateDto;
@@ -22,9 +21,9 @@ public class WeduController {
     @GetMapping("/wedu")
     public ResponseDto getAllWedus(@RequestParam("sort") String sort, @RequestParam("grade") Long grade, @RequestParam("subject") Long subject, Principal principal) {
         String username = principal.getName();
-        if(sort.equals("recommend")) {
+        if(sort.equals("추천순")) {
             return ResponseDto.success(weduService.getAllRecommends(username));
-        } else if(sort.equals("popular")) {
+        } else if(sort.equals("인기순")) {
             return ResponseDto.success(weduService.getAllPopular(grade, subject));
         } else {
             return ResponseDto.success(weduService.getAll(grade, subject));
@@ -68,15 +67,10 @@ public class WeduController {
         return ResponseDto.success(weduService.getAllMy(username));
     }
 
-    @PostMapping("/wedu/{id}/invitation")
-    public ResponseDto createInvitation(@PathVariable Long id, @ModelAttribute InvitationDto invitationDto) {
-        return ResponseDto.success(weduService.makeInvitation(id, invitationDto));
-    }
-
-    @PutMapping("/wedu/invitation/{id}")
-    public ResponseDto updateInvitation(@PathVariable Long id, @ModelAttribute InvitationDto invitationDto) {
-        return ResponseDto.success(weduService.updateInvitation(id, invitationDto));
-    }
+//    @PostMapping("/wedu/{id}/invitation")
+//    public ResponseDto createInvitation(@PathVariable Long id, @ModelAttribute InvitationDto invitationDto) {
+//        return ResponseDto.success(weduService.makeInvitation(id, invitationDto));
+//    }
 
     @GetMapping("/wedu/{id}/invitation")
     public ResponseDto getInvitation(@PathVariable Long id) {
