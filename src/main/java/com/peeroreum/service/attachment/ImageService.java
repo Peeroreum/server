@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
+    private final S3Service s3Service;
 
     @Transactional
     public ImageDto findByImageId(Long id) {
@@ -38,6 +40,7 @@ public class ImageService {
 
     public void deleteImage(Long id) {
         Image image = imageRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.IMAGE_NOT_FOUND_EXCEPTION));
+        s3Service.deleteImage(image.getImageName());
         imageRepository.delete(image);
     }
 

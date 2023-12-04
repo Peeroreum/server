@@ -30,9 +30,10 @@ public class WeduService {
     private final ImageRepository imageRepository;
     private final HashTagService hashTagService;
     private final ChallengeService challengeService;
+    private final InvitationService invitationService;
     private final S3Service s3Service;
 
-    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, ChallengeService challengeService, S3Service s3Service) {
+    public WeduService (WeduRepository weduRepository, MemberRepository memberRepository, MemberWeduRepository memberWeduRepository, InvitationRepository invitationRepository, ImageRepository imageRepository, HashTagService hashTagService, ChallengeService challengeService, InvitationService invitationService, S3Service s3Service) {
         this.weduRepository = weduRepository;
         this.memberRepository = memberRepository;
         this.memberWeduRepository = memberWeduRepository;
@@ -40,6 +41,7 @@ public class WeduService {
         this.imageRepository = imageRepository;
         this.hashTagService = hashTagService;
         this.challengeService = challengeService;
+        this.invitationService = invitationService;
         this.s3Service = s3Service;
     }
 
@@ -115,7 +117,10 @@ public class WeduService {
 
     public Wedu make(WeduSaveDto weduSaveDto, String username) {
         Member host = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Image image = imageRepository.save(s3Service.uploadImage(weduSaveDto.getFile()));
+        Image image = null;
+        if(weduSaveDto.getFile() != null) {
+            image = imageRepository.save(s3Service.uploadImage(weduSaveDto.getFile()));
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Wedu savingWedu = Wedu.builder()
                 .title(weduSaveDto.getTitle())
@@ -166,12 +171,12 @@ public class WeduService {
         }
 
         Image image = wedu.getImage();
-        s3Service.deleteImage(image.getImageName());
         imageRepository.delete(image);
 
         memberWeduRepository.deleteAllByWedu(wedu);
         hashTagService.deleteHashTags(wedu);
         challengeService.deleteChallengeImages(wedu);
+        invitationService.deleteInvitation(wedu);
         weduRepository.delete(wedu);
     }
 
@@ -182,6 +187,12 @@ public class WeduService {
             throw new CustomException(ExceptionType.ALREADY_ENROLLED_WEDU);
         }
         memberWeduRepository.save(MemberWedu.builder().member(member).wedu(wedu).build());
+    }
+
+    public void dropout(Long id, String username) {
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        Member member = findMember(username);
+        memberWeduRepository.deleteByWeduAndMember(wedu, member);
     }
 
     private Member findMember(String username) {
