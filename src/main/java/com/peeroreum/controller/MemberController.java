@@ -24,4 +24,8 @@ public class MemberController {
         return ResponseDto.success(memberService.signIn(signInDto));
     }
 
+    @GetMapping("/socialLogin")
+    public ResponseDto socialSignIn(@RequestParam String email) {
+        return ResponseDto.success(memberService.socialSignIn(email));
+    }
 }
