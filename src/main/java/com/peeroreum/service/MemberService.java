@@ -24,7 +24,9 @@ public class MemberService {
 
     public void signUp(SignUpDto signUpDto) {
         validateInfo(signUpDto);
-        signUpDto.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        if(signUpDto.getPassword() != null) {
+            signUpDto.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        }
         memberRepository.save(SignUpDto.toEntity(signUpDto));
     }
 
@@ -33,6 +35,15 @@ public class MemberService {
             throw new CustomException(ExceptionType.USERNAME_ALREADY_EXISTS_EXCEPTION);
         if(memberRepository.existsByNickname(signUpDto.getNickname()))
             throw new CustomException(ExceptionType.NICKNAME_ALREADY_EXISTS_EXCEPTION);
+    }
+
+    public String socialSignIn(String email) {
+        if(memberRepository.existsByUsername(email)) {
+            String accessToken = jwtTokenProvider.createAccessToken(email);
+            return accessToken;
+        } else {
+            throw new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION);
+        }
     }
 
     public LogInDto signIn(SignInDto signInDto) {
