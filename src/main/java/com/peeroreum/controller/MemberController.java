@@ -28,4 +28,14 @@ public class MemberController {
     public ResponseDto socialSignIn(@RequestParam String email) {
         return ResponseDto.success(memberService.socialSignIn(email));
     }
+
+    @GetMapping("/signup/email/{email}")
+    public ResponseDto checkEmail(@PathVariable String email) {
+        return ResponseDto.success(memberService.validateEmail(email));
+    }
+
+    @GetMapping("/signup/nickname/{nickname}")
+    public ResponseDto checkNickname(@PathVariable String nickname) {
+        return ResponseDto.success(memberService.validateNickname(nickname));
+    }
 }

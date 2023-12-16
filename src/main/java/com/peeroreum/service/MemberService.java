@@ -31,12 +31,25 @@ public class MemberService {
     }
 
     private void validateInfo(SignUpDto signUpDto) {
-        if(memberRepository.existsByUsername(signUpDto.getUsername()))
-            throw new CustomException(ExceptionType.USERNAME_ALREADY_EXISTS_EXCEPTION);
-        if(memberRepository.existsByNickname(signUpDto.getNickname()))
-            throw new CustomException(ExceptionType.NICKNAME_ALREADY_EXISTS_EXCEPTION);
+        validateEmail(signUpDto.getUsername());
+        validateNickname(signUpDto.getNickname());
     }
 
+    public boolean validateEmail(String email) {
+        if(memberRepository.existsByUsername(email))
+            throw new CustomException(ExceptionType.USERNAME_ALREADY_EXISTS_EXCEPTION);
+        else {
+            return true;
+        }
+    }
+
+    public boolean validateNickname(String nickname) {
+        if(memberRepository.existsByNickname(nickname))
+            throw new CustomException(ExceptionType.NICKNAME_ALREADY_EXISTS_EXCEPTION);
+        else {
+            return true;
+        }
+    }
     public String socialSignIn(String email) {
         if(memberRepository.existsByUsername(email)) {
             String accessToken = jwtTokenProvider.createAccessToken(email);
