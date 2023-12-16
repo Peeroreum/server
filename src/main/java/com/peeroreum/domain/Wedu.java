@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -48,6 +49,8 @@ public class Wedu extends EntityTime {
     @JoinColumn(name = "member_id", nullable = false)
     private Member host;
 
+    @OneToMany(mappedBy = "wedu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<HashTag> hashTags;
     @Builder
     public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, LocalDate targetDate, String challenge) {
         this.title = title;
@@ -69,4 +72,7 @@ public class Wedu extends EntityTime {
         this.password = password;
     }
 
+    public void setHashTags(Set<HashTag> hashTags) {
+        this.hashTags = hashTags;
+    }
 }

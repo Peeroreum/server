@@ -30,6 +30,11 @@ public class WeduController {
         }
     }
 
+    @GetMapping("/wedu/search/{keyword}")
+    public ResponseDto searchWedus(@PathVariable String keyword) {
+        return ResponseDto.success(weduService.getSearchResults(keyword));
+    }
+
     @GetMapping("/wedu/{id}")
     public ResponseDto getWeduById(@PathVariable Long id) {
         return ResponseDto.success(weduService.getById(id));

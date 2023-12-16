@@ -14,9 +14,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +47,15 @@ public class WeduService {
         List<Wedu> weduList = getWedus(grade, subject);
         weduList.sort((Comparator.comparing(EntityTime::getCreatedTime)).reversed());
         return getWeduDtos(weduList);
+    }
+
+    public List<WeduDto> getSearchResults(String keyword) {
+        Set<Wedu> searchedWedu = new HashSet<>();
+        searchedWedu.addAll(weduRepository.findAllByTitleContaining(keyword));
+        searchedWedu.addAll(hashTagService.searchHashTags(keyword));
+        List<WeduDto> searchResults = getWeduDtos(searchedWedu.stream().toList());
+        searchResults.sort((Comparator.comparing(WeduDto::getId)).reversed());
+        return searchResults;
     }
 
     public List<WeduDto> getAllRecommends(String username) {
@@ -134,9 +141,10 @@ public class WeduService {
                 .challenge(weduSaveDto.getChallenge())
                 .targetDate(LocalDate.parse(weduSaveDto.getTargetDate(), formatter))
                 .build();
+        Set<HashTag> hashTagSet = hashTagService.createHashTags(savingWedu, weduSaveDto.getHashTags());
+        savingWedu.setHashTags(hashTagSet);
         Wedu wedu = weduRepository.save(savingWedu);
         memberWeduRepository.save(MemberWedu.builder().member(host).wedu(wedu).build());
-        hashTagService.createHashTags(wedu, weduSaveDto.getHashTags());
         makeInvitation(wedu.getId(), weduSaveDto.getInviFile());
         return wedu;
     }
@@ -157,8 +165,8 @@ public class WeduService {
         }
         existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
         hashTagService.deleteHashTags(existingWedu);
-        hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
-
+        Set<HashTag> hashTagSet = hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
+        existingWedu.setHashTags(hashTagSet);
         return weduRepository.save(existingWedu);
     }
 
