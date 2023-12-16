@@ -18,6 +18,7 @@ public class HashTag extends EntityTime {
     private String tag;
 
     @ManyToOne
+    @JoinColumn(name = "wedu_id")
     private Wedu wedu;
 
     public HashTag(String tag, Wedu wedu) {
