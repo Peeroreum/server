@@ -33,9 +33,17 @@ public class Member extends EntityTime {
 
     @Column
     private Long goodSubject;
+    @Column
+    private Long goodDetailSubject;
+    @Column
+    private Long goodLevel;
 
     @Column
     private Long badSubject;
+    @Column
+    private Long badDetailSubject;
+    @Column
+    private Long badLevel;
 
     @Column
     private String school;
@@ -45,14 +53,18 @@ public class Member extends EntityTime {
     private List<Role> roles = new ArrayList<>();
 
     @Builder
-    public Member(String username, String password, String nickname, String image, Long grade, Long goodSubject, Long badSubject, String school) {
+    public Member(String username, String password, String nickname, String image, Long grade, Long goodSubject, Long goodDetailSubject, Long goodLevel, Long badSubject, Long badDetailSubject, Long badLevel, String school) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.image = image;
         this.grade = grade;
         this.goodSubject = goodSubject;
+        this.goodDetailSubject = goodDetailSubject;
+        this.goodLevel = goodLevel;
         this.badSubject = badSubject;
+        this.badDetailSubject = badDetailSubject;
+        this.badLevel = badLevel;
         this.school = school;
         this.roles = Collections.singletonList(Role.USER);
     }
