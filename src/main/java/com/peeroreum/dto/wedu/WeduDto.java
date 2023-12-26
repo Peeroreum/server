@@ -17,6 +17,8 @@ public class WeduDto {
     private int attendingPeopleNum;
     private Long dDay;
     private Long progress;
+    private boolean isLocked;
+    private String password;
 
     public WeduDto(Wedu wedu, int attendingPeopleNum) {
         this.id = wedu.getId();
@@ -24,6 +26,8 @@ public class WeduDto {
         this.imagePath = wedu.getImage().getImagePath();
         this.grade = wedu.getGrade();
         this.subject = wedu.getSubject();
+        this.isLocked = wedu.isLocked();
+        this.password = wedu.getPassword();
         this.attendingPeopleNum = attendingPeopleNum;
         this.dDay = LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS);
     }

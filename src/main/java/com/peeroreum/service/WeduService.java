@@ -118,6 +118,8 @@ public class WeduService {
                 .imageUrl(wedu.getImage().getImagePath())
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
+                .isLocked(wedu.isLocked())
+                .password(wedu.getPassword())
                 .progress(progress)
                 .build();
     }
