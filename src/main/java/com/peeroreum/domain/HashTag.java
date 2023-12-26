@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,7 @@ public class HashTag extends EntityTime {
     private String tag;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "wedu_id")
     private Wedu wedu;
 
