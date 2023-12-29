@@ -115,7 +115,7 @@ public class WeduService {
         Long progress = challengeService.getTodayProgress(wedu, total);
         return WeduReadDto.builder()
                 .title(wedu.getTitle())
-                .imageUrl(wedu.getImage().getImagePath())
+                .imageUrl(wedu.getImage() != null ? wedu.getImage().getImagePath() : null)
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
                 .isLocked(wedu.isLocked())
@@ -143,8 +143,10 @@ public class WeduService {
                 .challenge(weduSaveDto.getChallenge())
                 .targetDate(LocalDate.parse(weduSaveDto.getTargetDate(), formatter))
                 .build();
-        Set<HashTag> hashTagSet = hashTagService.createHashTags(savingWedu, weduSaveDto.getHashTags());
-        savingWedu.setHashTags(hashTagSet);
+        if(weduSaveDto.getHashTags() != null) {
+            Set<HashTag> hashTagSet = hashTagService.createHashTags(savingWedu, weduSaveDto.getHashTags());
+            savingWedu.setHashTags(hashTagSet);
+        }
         Wedu wedu = weduRepository.save(savingWedu);
         memberWeduRepository.save(MemberWedu.builder().member(host).wedu(wedu).build());
         makeInvitation(wedu.getId(), weduSaveDto.getInviFile());
