@@ -23,7 +23,7 @@ public class WeduDto {
     public WeduDto(Wedu wedu, int attendingPeopleNum) {
         this.id = wedu.getId();
         this.title = wedu.getTitle();
-        this.imagePath = wedu.getImage().getImagePath();
+        this.imagePath = (wedu.getImage() != null)? wedu.getImage().getImagePath() : null;
         this.grade = wedu.getGrade();
         this.subject = wedu.getSubject();
         this.isLocked = wedu.isLocked();
@@ -35,7 +35,7 @@ public class WeduDto {
     public WeduDto(Wedu wedu, int attendingPeopleNum, Long progress) {
         this.id = wedu.getId();
         this.title = wedu.getTitle();
-        this.imagePath = wedu.getImage().getImagePath();
+        this.imagePath = (wedu.getImage() != null)? wedu.getImage().getImagePath() : null;
         this.grade = wedu.getGrade();
         this.subject = wedu.getSubject();
         this.attendingPeopleNum = attendingPeopleNum;
