@@ -69,8 +69,8 @@ public class Member extends EntityTime {
         this.roles = Collections.singletonList(Role.USER);
     }
 
-    public void updatePassword(PasswordEncoder passwordEncoder, String password) {
-        this.password = passwordEncoder.encode(password);
+    public void updatePassword(String password) {
+        this.password = password;
     }
     public void updateNickname(String nickname) {
         this.nickname = nickname;

@@ -7,6 +7,8 @@ import com.peeroreum.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +39,10 @@ public class MemberController {
     @GetMapping("/signup/nickname/{nickname}")
     public ResponseDto checkNickname(@PathVariable String nickname) {
         return ResponseDto.success(memberService.validateNickname(nickname));
+    }
+
+    @PutMapping("/member/change/pw")
+    public ResponseDto putPassword(@RequestParam String password, Principal principal) {
+        return ResponseDto.success(memberService.changePassword(password, principal.getName()));
     }
 }

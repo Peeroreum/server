@@ -52,8 +52,7 @@ public class MemberService {
     }
     public String socialSignIn(String email) {
         if(memberRepository.existsByUsername(email)) {
-            String accessToken = jwtTokenProvider.createAccessToken(email);
-            return accessToken;
+            return jwtTokenProvider.createAccessToken(email);
         } else {
             throw new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION);
         }
@@ -74,4 +73,10 @@ public class MemberService {
         return passwordEncoder.matches(signInDto.getPassword(), member.getPassword());
     }
 
+    public String changePassword(String password, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        member.updatePassword(passwordEncoder.encode(password));
+        memberRepository.save(member);
+        return "비밀번호 변경 완료";
+    }
 }
