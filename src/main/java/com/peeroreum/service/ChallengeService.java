@@ -7,7 +7,7 @@ import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.dto.wedu.ChallengeMemberList;
 import com.peeroreum.dto.wedu.ChallengeReadDto;
-import com.peeroreum.dto.wedu.MonthlyProgress;
+import com.peeroreum.dto.wedu.WeduMonthlyProgressDto;
 import com.peeroreum.repository.ChallengeImageRepository;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +64,7 @@ public class ChallengeService {
         return new ChallengeMemberList(successMemberProfiles, failMemberProfiles);
     }
 
-    public MonthlyProgress readMonthlyProgress(Wedu wedu, int total, LocalDate formattedDate) {
+    public List<Long> readMonthlyProgress(Wedu wedu, int total, LocalDate formattedDate) {
         int month = formattedDate.getMonthValue();
         int days = getDays(month);
         List<Long> progressList = new ArrayList<>();
@@ -72,7 +72,7 @@ public class ChallengeService {
             Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, LocalDate.of(formattedDate.getYear(), month, i));
             progressList.add(Math.round((double)success / (double)total * 100));
         }
-        return new MonthlyProgress(progressList);
+        return progressList;
     }
 
     public void deleteChallengeImages(Wedu wedu) {
