@@ -87,6 +87,14 @@ public class MemberService {
         Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Member friend = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
+        if(member.getNickname().equals(friend.getNickname())) {
+            throw new CustomException(ExceptionType.SELF_FOLLOW_WRONG_EXCEPTION);
+        }
+
+        if(member.getFriends().contains(friend)) {
+            throw new CustomException(ExceptionType.FRIEND_ALREADY_EXISTS_EXCEPTION);
+        }
+
         member.addFriend(friend);
         friend.addFriend(member);
 
@@ -99,6 +107,10 @@ public class MemberService {
     public String unFollowFriend(String nickname, String name) {
         Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Member friend = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(!member.getFriends().contains(friend)) {
+            throw new CustomException(ExceptionType.FRIEND_NOT_FOUND_EXCEPTION);
+        }
 
         member.removeFriend(friend);
         friend.removeFriend(member);
