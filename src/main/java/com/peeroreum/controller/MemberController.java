@@ -45,4 +45,20 @@ public class MemberController {
     public ResponseDto putPassword(@RequestParam String password, Principal principal) {
         return ResponseDto.success(memberService.changePassword(password, principal.getName()));
     }
+
+    @PostMapping("/member/friend/follow")
+    public ResponseDto postFriends(@RequestParam String nickname, Principal principal) {
+        return ResponseDto.success(memberService.followFriend(nickname, principal.getName()));
+    }
+
+    @DeleteMapping("/member/friend/unfollow")
+    public ResponseDto deleteFriends(@RequestParam String nickname, Principal principal) {
+        return ResponseDto.success(memberService.unFollowFriend(nickname, principal.getName()));
+    }
+
+    @GetMapping("/member/friend")
+    public ResponseDto getFriends(Principal principal) {
+        return ResponseDto.success(memberService.getFriendsList(principal.getName()));
+    }
+
 }

@@ -49,15 +49,15 @@ public class ChallengeService {
 
     public ChallengeMemberList readChallengeMembers(List<Member> allMembers, Wedu wedu, LocalDate formattedDate) {
         List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWeduAndChallengeDate(wedu, formattedDate);
-        List<Member> successMembers = challengeImages.stream().map(ChallengeImage::getMember).collect(Collectors.toList());
+        List<Member> successMembers = challengeImages.stream().map(ChallengeImage::getMember).toList();
         List<MemberProfileDto> successMemberProfiles = new ArrayList<>();
         for(Member member : successMembers) {
-            successMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage(), member.getNickname()));
+            successMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), member.getNickname()));
         }
         List<MemberProfileDto> failMemberProfiles = new ArrayList<>();
         for(Member member : allMembers) {
             if(!successMembers.contains(member)) {
-                failMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage(), member.getNickname()));
+                failMemberProfiles.add(new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), member.getNickname()));
             }
         }
 
