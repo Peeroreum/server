@@ -7,6 +7,8 @@ import com.peeroreum.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -38,4 +40,30 @@ public class MemberController {
     public ResponseDto checkNickname(@PathVariable String nickname) {
         return ResponseDto.success(memberService.validateNickname(nickname));
     }
+
+    @PutMapping("/member/change/pw")
+    public ResponseDto putPassword(@RequestParam String password, Principal principal) {
+        return ResponseDto.success(memberService.changePassword(password, principal.getName()));
+    }
+
+    @PostMapping("/member/friend/follow")
+    public ResponseDto postFriends(@RequestParam String nickname, Principal principal) {
+        return ResponseDto.success(memberService.followFriend(nickname, principal.getName()));
+    }
+
+    @DeleteMapping("/member/friend/unfollow")
+    public ResponseDto deleteFriends(@RequestParam String nickname, Principal principal) {
+        return ResponseDto.success(memberService.unFollowFriend(nickname, principal.getName()));
+    }
+
+    @GetMapping("/member/friend")
+    public ResponseDto getFriends(Principal principal) {
+        return ResponseDto.success(memberService.getFriendsList(principal.getName()));
+    }
+
+    @GetMapping("/member/profile")
+    public ResponseDto findFriends(@RequestParam String nickname) {
+        return ResponseDto.success(memberService.findProfile(nickname));
+    }
+
 }

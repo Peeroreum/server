@@ -1,6 +1,7 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Member;
+import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.dto.member.SignInDto;
 import com.peeroreum.dto.member.SignUpDto;
 import com.peeroreum.dto.member.LogInDto;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -52,8 +55,7 @@ public class MemberService {
     }
     public String socialSignIn(String email) {
         if(memberRepository.existsByUsername(email)) {
-            String accessToken = jwtTokenProvider.createAccessToken(email);
-            return accessToken;
+            return jwtTokenProvider.createAccessToken(email);
         } else {
             throw new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION);
         }
@@ -74,4 +76,66 @@ public class MemberService {
         return passwordEncoder.matches(signInDto.getPassword(), member.getPassword());
     }
 
+    public String changePassword(String password, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        member.updatePassword(passwordEncoder.encode(password));
+        memberRepository.save(member);
+        return "비밀번호 변경 완료";
+    }
+
+    public String followFriend(String nickname, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Member friend = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(member.getNickname().equals(friend.getNickname())) {
+            throw new CustomException(ExceptionType.SELF_FOLLOW_WRONG_EXCEPTION);
+        }
+
+        if(member.getFriends().contains(friend)) {
+            throw new CustomException(ExceptionType.FRIEND_ALREADY_EXISTS_EXCEPTION);
+        }
+
+        member.addFriend(friend);
+        friend.addFriend(member);
+
+        memberRepository.save(member);
+        memberRepository.save(friend);
+
+        return "친구 팔로우 성공";
+    }
+
+    public String unFollowFriend(String nickname, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Member friend = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(!member.getFriends().contains(friend)) {
+            throw new CustomException(ExceptionType.FRIEND_NOT_FOUND_EXCEPTION);
+        }
+
+        member.removeFriend(friend);
+        friend.removeFriend(member);
+
+        memberRepository.save(member);
+        memberRepository.save(friend);
+
+        return "친구 언팔로우 성공";
+    }
+
+    public List<MemberProfileDto> getFriendsList(String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        List<Member> friends = member.getFriends();
+        List<MemberProfileDto> friendProfiles = new ArrayList<>();
+
+        for(Member friend : friends) {
+            MemberProfileDto friendProfile = new MemberProfileDto(friend.getGrade(), friend.getImage() == null? null : friend.getImage().getImagePath(), friend.getNickname());
+            friendProfiles.add(friendProfile);
+        }
+
+        return friendProfiles;
+    }
+
+    public MemberProfileDto findProfile(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), member.getNickname(), member.getFriends().size());
+    }
 }

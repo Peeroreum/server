@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,9 @@ public class Member extends EntityTime {
     @Column(nullable = false)
     private String nickname;
 
-    @Column
-    private String image;
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Column
     private Long grade;
@@ -48,12 +50,15 @@ public class Member extends EntityTime {
     @Column
     private String school;
 
+    @ManyToMany
+    private List<Member> friends = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Role> roles = new ArrayList<>();
 
     @Builder
-    public Member(String username, String password, String nickname, String image, Long grade, Long goodSubject, Long goodDetailSubject, Long goodLevel, Long badSubject, Long badDetailSubject, Long badLevel, String school) {
+    public Member(String username, String password, String nickname, Image image, Long grade, Long goodSubject, Long goodDetailSubject, Long goodLevel, Long badSubject, Long badDetailSubject, Long badLevel, String school) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -69,15 +74,23 @@ public class Member extends EntityTime {
         this.roles = Collections.singletonList(Role.USER);
     }
 
-    public void updatePassword(PasswordEncoder passwordEncoder, String password) {
-        this.password = passwordEncoder.encode(password);
+    public void updatePassword(String password) {
+        this.password = password;
     }
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void updateImage(String image){
+    public void updateImage(Image image){
         this.image = image;
+    }
+
+    public void addFriend(Member member) {
+        this.friends.add(member);
+    }
+
+    public void removeFriend(Member member) {
+        this.friends.remove(member);
     }
 
 }
