@@ -133,4 +133,9 @@ public class MemberService {
 
         return friendProfiles;
     }
+
+    public MemberProfileDto findProfile(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), member.getNickname(), member.getFriends().size());
+    }
 }

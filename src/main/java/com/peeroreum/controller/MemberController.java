@@ -61,4 +61,9 @@ public class MemberController {
         return ResponseDto.success(memberService.getFriendsList(principal.getName()));
     }
 
+    @GetMapping("/member/profile")
+    public ResponseDto findFriends(@RequestParam String nickname) {
+        return ResponseDto.success(memberService.findProfile(nickname));
+    }
+
 }
