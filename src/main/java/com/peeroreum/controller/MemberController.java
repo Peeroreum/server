@@ -1,5 +1,6 @@
 package com.peeroreum.controller;
 
+import com.peeroreum.dto.member.ProfileImageDto;
 import com.peeroreum.dto.member.SignInDto;
 import com.peeroreum.dto.member.SignUpDto;
 import com.peeroreum.dto.response.ResponseDto;
@@ -69,6 +70,12 @@ public class MemberController {
     @PutMapping("/member/change/nickname")
     public ResponseDto putNickname(@RequestParam String nickname, Principal principal) {
         return ResponseDto.success(memberService.changeNickname(nickname, principal.getName()));
+    }
+
+    @PutMapping("/member/change/profileImage")
+    public ResponseDto putProfileImage(@ModelAttribute ProfileImageDto profileImageDto, Principal principal) {
+        return ResponseDto.success(memberService.changeProfileImage(profileImageDto, principal.getName()));
+
     }
 
 }

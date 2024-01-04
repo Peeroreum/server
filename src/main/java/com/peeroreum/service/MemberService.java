@@ -1,14 +1,14 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Member;
-import com.peeroreum.dto.member.MemberProfileDto;
-import com.peeroreum.dto.member.SignInDto;
-import com.peeroreum.dto.member.SignUpDto;
-import com.peeroreum.dto.member.LogInDto;
+import com.peeroreum.domain.image.Image;
+import com.peeroreum.dto.member.*;
 import com.peeroreum.repository.MemberRepository;
 import com.peeroreum.security.jwt.JwtTokenProvider;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
+import com.peeroreum.service.attachment.ImageService;
+import com.peeroreum.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
+    private final S3Service s3Service;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -152,5 +154,23 @@ public class MemberService {
         }
         memberRepository.save(member);
         return "닉네임 변경 성공";
+    }
+
+    public Object changeProfileImage(ProfileImageDto profileImageDto, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(profileImageDto.getProfileImage() == null) {
+            throw new CustomException(ExceptionType.FILETYPE_WRONG_EXCEPTION);
+        }
+
+        if(member.getImage() != null) {
+            imageService.deleteImage(member.getImage().getId());
+        }
+
+        Image image = imageService.saveImage(profileImageDto.getProfileImage());
+        member.updateImage(image);
+        memberRepository.save(member);
+
+        return "프로필 이미지 변경 성공";
     }
 }

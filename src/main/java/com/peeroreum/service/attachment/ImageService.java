@@ -7,6 +7,7 @@ import com.peeroreum.repository.ImageRepository;
 import com.peeroreum.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -44,4 +45,7 @@ public class ImageService {
         imageRepository.delete(image);
     }
 
+    public Image saveImage(MultipartFile image) {
+        return imageRepository.save(s3Service.uploadImage(image));
+    }
 }
