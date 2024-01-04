@@ -66,4 +66,9 @@ public class MemberController {
         return ResponseDto.success(memberService.findProfile(nickname));
     }
 
+    @PutMapping("/member/change/nickname")
+    public ResponseDto putNickname(@RequestParam String nickname, Principal principal) {
+        return ResponseDto.success(memberService.changeNickname(nickname, principal.getName()));
+    }
+
 }
