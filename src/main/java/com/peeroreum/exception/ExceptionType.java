@@ -25,7 +25,8 @@ public enum ExceptionType {
     ALREADY_DISLIKED(HttpStatus.CONFLICT, "이미 싫어요를 눌렀습니다."),
     ALREADY_ENROLLED_WEDU(HttpStatus.CONFLICT, "이미 참여 중인 같이방입니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요 한 적 없는 글입니다."),
-    DO_NOT_HAVE_PERMISSION(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    DO_NOT_HAVE_PERMISSION(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    CANNOT_CHANGE_NICKNAME(HttpStatus.NOT_ACCEPTABLE, "마지막 닉네임 변경 이후 30일이 지나지 않았습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

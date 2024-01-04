@@ -1,19 +1,21 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Member;
-import com.peeroreum.dto.member.MemberProfileDto;
-import com.peeroreum.dto.member.SignInDto;
-import com.peeroreum.dto.member.SignUpDto;
-import com.peeroreum.dto.member.LogInDto;
+import com.peeroreum.domain.image.Image;
+import com.peeroreum.dto.member.*;
 import com.peeroreum.repository.MemberRepository;
 import com.peeroreum.security.jwt.JwtTokenProvider;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
+import com.peeroreum.service.attachment.ImageService;
+import com.peeroreum.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
+    private final S3Service s3Service;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -53,12 +57,12 @@ public class MemberService {
             return true;
         }
     }
-    public String socialSignIn(String email) {
-        if(memberRepository.existsByUsername(email)) {
-            return jwtTokenProvider.createAccessToken(email);
-        } else {
-            throw new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION);
-        }
+    public LogInDto socialSignIn(String email) {
+        Member member = memberRepository.findByUsername(email).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String nickname = member.getNickname();
+        return new LogInDto(accessToken, refreshToken, email, nickname);
     }
 
     public LogInDto signIn(SignInDto signInDto) {
@@ -69,7 +73,8 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         String nickname = member.getNickname();
-        return new LogInDto(accessToken, refreshToken, nickname);
+        String email = member.getUsername();
+        return new LogInDto(accessToken, refreshToken, email, nickname);
     }
 
     private boolean validatePassword(SignInDto signInDto, Member member) {
@@ -137,5 +142,35 @@ public class MemberService {
     public MemberProfileDto findProfile(String nickname) {
         Member member = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), member.getNickname(), member.getFriends().size());
+    }
+
+    public String changeNickname(String nickname, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        if(ChronoUnit.DAYS.between(LocalDateTime.now(), member.getModifiedTime()) < 30) {
+            throw new CustomException(ExceptionType.CANNOT_CHANGE_NICKNAME);
+        }
+        if(validateNickname(nickname)) {
+            member.updateNickname(nickname);
+        }
+        memberRepository.save(member);
+        return "닉네임 변경 성공";
+    }
+
+    public Object changeProfileImage(ProfileImageDto profileImageDto, String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(profileImageDto.getProfileImage() == null) {
+            throw new CustomException(ExceptionType.FILETYPE_WRONG_EXCEPTION);
+        }
+
+        if(member.getImage() != null) {
+            imageService.deleteImage(member.getImage().getId());
+        }
+
+        Image image = imageService.saveImage(profileImageDto.getProfileImage());
+        member.updateImage(image);
+        memberRepository.save(member);
+
+        return "프로필 이미지 변경 성공";
     }
 }
