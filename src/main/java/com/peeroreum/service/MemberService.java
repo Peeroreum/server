@@ -53,12 +53,12 @@ public class MemberService {
             return true;
         }
     }
-    public String socialSignIn(String email) {
-        if(memberRepository.existsByUsername(email)) {
-            return jwtTokenProvider.createAccessToken(email);
-        } else {
-            throw new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION);
-        }
+    public LogInDto socialSignIn(String email) {
+        Member member = memberRepository.findByUsername(email).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String nickname = member.getNickname();
+        return new LogInDto(accessToken, refreshToken, email, nickname);
     }
 
     public LogInDto signIn(SignInDto signInDto) {
@@ -69,7 +69,8 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         String nickname = member.getNickname();
-        return new LogInDto(accessToken, refreshToken, nickname);
+        String email = member.getUsername();
+        return new LogInDto(accessToken, refreshToken, email, nickname);
     }
 
     private boolean validatePassword(SignInDto signInDto, Member member) {
