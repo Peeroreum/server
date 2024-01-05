@@ -10,4 +10,6 @@ public class LogInDto {
     private String refreshToken;
     private String email;
     private String nickname;
+    private Long grade;
+    private String profileImage;
 }
