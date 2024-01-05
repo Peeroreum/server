@@ -146,9 +146,9 @@ public class MemberService {
 
     public String changeNickname(String nickname, String name) {
         Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        if(ChronoUnit.DAYS.between(LocalDateTime.now(), member.getModifiedTime()) < 30) {
-            throw new CustomException(ExceptionType.CANNOT_CHANGE_NICKNAME);
-        }
+//        if(ChronoUnit.DAYS.between(LocalDateTime.now(), member.getModifiedTime()) < 30) {
+//            throw new CustomException(ExceptionType.CANNOT_CHANGE_NICKNAME);
+//        }
         if(validateNickname(nickname)) {
             member.updateNickname(nickname);
         }
