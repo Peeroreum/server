@@ -74,7 +74,11 @@ public class MemberController {
     @PutMapping("/member/change/profileImage")
     public ResponseDto putProfileImage(@ModelAttribute ProfileImageDto profileImageDto, Principal principal) {
         return ResponseDto.success(memberService.changeProfileImage(profileImageDto, principal.getName()));
+    }
 
+    @PutMapping("/member/delete/profileImage")
+    public ResponseDto deleteProfileImage(Principal principal) {
+        return ResponseDto.success(memberService.deleteProfileImage(principal.getName()));
     }
 
 }
