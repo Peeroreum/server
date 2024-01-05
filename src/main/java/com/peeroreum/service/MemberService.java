@@ -156,7 +156,7 @@ public class MemberService {
         return member.getNickname();
     }
 
-    public Object changeProfileImage(ProfileImageDto profileImageDto, String name) {
+    public String changeProfileImage(ProfileImageDto profileImageDto, String name) {
         Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
         if(profileImageDto.getProfileImage() == null) {
@@ -172,5 +172,16 @@ public class MemberService {
         memberRepository.save(member);
 
         return member.getImage().getImagePath();
+    }
+
+    public MemberProfileDto deleteProfileImage(String name) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Image profileImage = member.getImage();
+        if(profileImage != null) {
+            imageService.deleteImage(profileImage.getId());
+        }
+
+        member.updateImage(null);
+        return new MemberProfileDto(member.getGrade(), null, member.getNickname());
     }
 }
