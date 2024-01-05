@@ -13,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,8 +86,8 @@ public class MemberService {
         return "비밀번호 변경 완료";
     }
 
-    public String followFriend(String nickname, String name) {
-        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public String followFriend(String nickname, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Member friend = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
         if(member.getNickname().equals(friend.getNickname())) {
@@ -106,8 +104,8 @@ public class MemberService {
         return "친구 팔로우 성공";
     }
 
-    public String unFollowFriend(String nickname, String name) {
-        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public String unFollowFriend(String nickname, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Member friend = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
         if(!member.getFriends().contains(friend)) {
@@ -120,8 +118,8 @@ public class MemberService {
         return "친구 언팔로우 성공";
     }
 
-    public List<MemberProfileDto> getFriendsList(String name) {
-        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public List<MemberProfileDto> getFriendsList(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         List<Member> friends = member.getFriends();
         List<MemberProfileDto> friendProfiles = new ArrayList<>();
 
@@ -133,13 +131,14 @@ public class MemberService {
         return friendProfiles;
     }
 
-    public MemberProfileDto findProfile(String nickname) {
-        Member member = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), member.getNickname(), member.getFriends().size());
+    public MemberProfileDto findProfile(String nickname, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Member findMember = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        return new MemberProfileDto(findMember.getGrade(), findMember.getImage() == null? null : findMember.getImage().getImagePath(), findMember.getNickname(), findMember.getFriends().size(), member.getFriends().contains(findMember));
     }
 
-    public String changeNickname(String nickname, String name) {
-        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public String changeNickname(String nickname, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 //        if(ChronoUnit.DAYS.between(LocalDateTime.now(), member.getModifiedTime()) < 30) {
 //            throw new CustomException(ExceptionType.CANNOT_CHANGE_NICKNAME);
 //        }
@@ -150,8 +149,8 @@ public class MemberService {
         return member.getNickname();
     }
 
-    public String changeProfileImage(ProfileImageDto profileImageDto, String name) {
-        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public String changeProfileImage(ProfileImageDto profileImageDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
         if(profileImageDto.getProfileImage() == null) {
             throw new CustomException(ExceptionType.FILETYPE_WRONG_EXCEPTION);
@@ -168,8 +167,8 @@ public class MemberService {
         return member.getImage().getImagePath();
     }
 
-    public MemberProfileDto deleteProfileImage(String name) {
-        Member member = memberRepository.findByUsername(name).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public MemberProfileDto deleteProfileImage(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Image profileImage = member.getImage();
         if(profileImage != null) {
             imageService.deleteImage(profileImage.getId());
