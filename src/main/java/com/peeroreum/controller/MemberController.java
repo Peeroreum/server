@@ -56,9 +56,9 @@ public class MemberController {
         return ResponseDto.success(memberService.unFollowFriend(nickname, principal.getName()));
     }
 
-    @GetMapping("/member/friend")
-    public ResponseDto getFriends(Principal principal) {
-        return ResponseDto.success(memberService.getFriendsList(principal.getName()));
+    @GetMapping("/member/friend/{nickname}")
+    public ResponseDto getFriends(@PathVariable String nickname) {
+        return ResponseDto.success(memberService.getFriendsList(nickname));
     }
 
     @GetMapping("/member/profile")
