@@ -101,10 +101,7 @@ public class MemberService {
         }
 
         member.addFriend(friend);
-        friend.addFriend(member);
-
         memberRepository.save(member);
-        memberRepository.save(friend);
 
         return "친구 팔로우 성공";
     }
@@ -118,10 +115,7 @@ public class MemberService {
         }
 
         member.removeFriend(friend);
-        friend.removeFriend(member);
-
         memberRepository.save(member);
-        memberRepository.save(friend);
 
         return "친구 언팔로우 성공";
     }
