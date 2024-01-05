@@ -122,8 +122,8 @@ public class MemberService {
         return "친구 언팔로우 성공";
     }
 
-    public List<MemberProfileDto> getFriendsList(String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+    public List<MemberProfileDto> getFriendsList(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         List<Member> friends = member.getFriends();
         List<MemberProfileDto> friendProfiles = new ArrayList<>();
 
