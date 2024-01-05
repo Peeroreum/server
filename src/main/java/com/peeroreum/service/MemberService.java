@@ -8,7 +8,6 @@ import com.peeroreum.security.jwt.JwtTokenProvider;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.service.attachment.ImageService;
-import com.peeroreum.service.attachment.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,16 +24,17 @@ import java.util.List;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final ImageService imageService;
-    private final S3Service s3Service;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void signUp(SignUpDto signUpDto) {
+    public LogInDto signUp(SignUpDto signUpDto) {
         validateInfo(signUpDto);
         if(signUpDto.getPassword() != null) {
             signUpDto.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
         }
         memberRepository.save(SignUpDto.toEntity(signUpDto));
+
+        return socialSignIn(signUpDto.getUsername());
     }
 
     private void validateInfo(SignUpDto signUpDto) {

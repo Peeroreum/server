@@ -18,8 +18,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseDto signUp(@RequestBody SignUpDto signUpDto) {
-        memberService.signUp(signUpDto);
-        return ResponseDto.success();
+        return ResponseDto.success(memberService.signUp(signUpDto));
     }
 
     @PostMapping("/login")
