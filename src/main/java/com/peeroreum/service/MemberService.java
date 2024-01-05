@@ -153,7 +153,7 @@ public class MemberService {
             member.updateNickname(nickname);
         }
         memberRepository.save(member);
-        return "닉네임 변경 성공";
+        return member.getNickname();
     }
 
     public Object changeProfileImage(ProfileImageDto profileImageDto, String name) {
@@ -171,6 +171,6 @@ public class MemberService {
         member.updateImage(image);
         memberRepository.save(member);
 
-        return "프로필 이미지 변경 성공";
+        return member.getImage().getImagePath();
     }
 }
