@@ -60,7 +60,9 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         String nickname = member.getNickname();
-        return new LogInDto(accessToken, refreshToken, email, nickname);
+        Long grade = member.getGrade();
+        String profileImage = member.getImage() == null? null : member.getImage().getImagePath();
+        return new LogInDto(accessToken, refreshToken, email, nickname, grade, profileImage);
     }
 
     public LogInDto signIn(SignInDto signInDto) {
@@ -72,7 +74,9 @@ public class MemberService {
         String refreshToken = jwtTokenProvider.createRefreshToken();
         String nickname = member.getNickname();
         String email = member.getUsername();
-        return new LogInDto(accessToken, refreshToken, email, nickname);
+        Long grade = member.getGrade();
+        String profileImage = member.getImage() == null? null : member.getImage().getImagePath();
+        return new LogInDto(accessToken, refreshToken, email, nickname, grade, profileImage);
     }
 
     private boolean validatePassword(SignInDto signInDto, Member member) {
