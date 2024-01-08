@@ -1,6 +1,7 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Member;
+import com.peeroreum.domain.MemberWedu;
 import com.peeroreum.domain.Wedu;
 import com.peeroreum.domain.image.ChallengeImage;
 import com.peeroreum.domain.image.Image;
@@ -13,6 +14,7 @@ import com.peeroreum.repository.MemberWeduRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +52,9 @@ public class ChallengeService {
         return new ChallengeReadDto(imageUrls);
     }
 
-    public ChallengeMemberList readChallengeMembers(List<Member> allMembers, Wedu wedu, LocalDate formattedDate) {
+    public ChallengeMemberList readChallengeMembers(Wedu wedu, LocalDate formattedDate) {
+        List<MemberWedu> memberWedus = memberWeduRepository.findAllByWeduAndCreatedTimeBefore(wedu, formattedDate.atTime(LocalTime.of(23, 59)));
+        List<Member> allMembers = memberWedus.stream().map(MemberWedu::getMember).toList();
         List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWeduAndChallengeDate(wedu, formattedDate);
         List<Member> successMembers = challengeImages.stream().map(ChallengeImage::getMember).toList();
         List<MemberProfileDto> successMemberProfiles = new ArrayList<>();
@@ -73,7 +77,7 @@ public class ChallengeService {
         List<Long> progressList = new ArrayList<>();
         for(int i = 1; i <= days; i++) {
             LocalDate searchDate = LocalDate.of(formattedDate.getYear(), month, i);
-            int total = memberWeduRepository.countAllByWeduAndCreatedTime(wedu, searchDate.atStartOfDay());
+            int total = memberWeduRepository.countAllByWeduAndCreatedTimeBefore(wedu, searchDate.atTime(LocalTime.of(23, 59)));
             Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, searchDate);
             progressList.add(Math.round((double)success / (double)total * 100));
         }

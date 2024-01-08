@@ -257,11 +257,9 @@ public class WeduService {
 
     public ChallengeMemberList readChallengeMembers(Long id, String date) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        List<MemberWedu> memberWedus = memberWeduRepository.findAllByWedu(wedu);
-        List<Member> allMembers = memberWedus.stream().map(MemberWedu::getMember).collect(Collectors.toList());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate formattedDate = LocalDate.parse(date, formatter);
-        return challengeService.readChallengeMembers(allMembers, wedu, formattedDate);
+        return challengeService.readChallengeMembers(wedu, formattedDate);
     }
 
     public WeduMonthlyProgressDto readMonthlyProgress(Long id, String date) {
