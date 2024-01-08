@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,11 +45,11 @@ public class ChallengeService {
     }
 
     public ChallengeReadDto readChallengeImages(Wedu wedu, Member member, LocalDate formattedDate) {
-        List<String> imageUrls = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, formattedDate)
-                .getImage()
-                .stream()
-                .map(Image::getImagePath)
-                .collect(Collectors.toList());
+        List<String> imageUrls = Optional.ofNullable(challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, formattedDate))
+                .map(ChallengeImage::getImage)
+                .map(images -> images.stream().map(Image::getImagePath).collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
 
         return new ChallengeReadDto(imageUrls);
     }
