@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +52,7 @@ public class Member extends EntityTime {
     private String school;
 
     @ManyToMany
+    @JsonIgnore
     private List<Member> friends = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
