@@ -269,4 +269,18 @@ public class WeduService {
         List<Long> monthlyProgress = challengeService.readMonthlyProgress(wedu, formattedDate);
         return new WeduMonthlyProgressDto(monthlyProgress, wedu.getCreatedTime().toLocalDate(), wedu.getTargetDate());
     }
+
+    public List<WeduDto> getInWedus(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        List<Wedu> allInWeduList = memberWeduRepository.findAllByMember(member).stream().map(MemberWedu::getWedu).toList();
+        List<WeduDto> inWeduDtoList = new ArrayList<>();
+        for(Wedu wedu : allInWeduList) {
+            if (!wedu.getTargetDate().isBefore(LocalDate.now())) {
+                int total = memberWeduRepository.countAllByWedu(wedu);
+                Long progress = challengeService.getTodayProgress(wedu, total);
+                inWeduDtoList.add(new WeduDto(wedu, total, progress));
+            }
+        }
+        return inWeduDtoList;
+    }
 }
