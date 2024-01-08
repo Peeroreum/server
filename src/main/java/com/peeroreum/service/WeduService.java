@@ -96,17 +96,24 @@ public class WeduService {
         return weduDtoList;
     }
 
-    public List<WeduDto> getAllMy(String username) {
+    public MyInWeduDto getAllMy(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        List<MemberWedu> myWeduList = memberWeduRepository.findAllByMember(member);
-        List<WeduDto> myWeduDtoList = new ArrayList<>();
-        for(MemberWedu memberWedu : myWeduList) {
-            Wedu myWedu = memberWedu.getWedu();
+        List<Wedu> myWeduList = memberWeduRepository.findAllByMember(member).stream().map(MemberWedu::getWedu).toList();
+        List<WeduDto> myIngWedus = new ArrayList<>();
+        List<WeduDto> myEndWedus = new ArrayList<>();
+        for(Wedu myWedu : myWeduList) {
             int total = memberWeduRepository.countAllByWedu(myWedu);
-            Long progress = challengeService.getTodayProgress(myWedu, total);
-            myWeduDtoList.add(new WeduDto(myWedu, total, progress));
+            Long progress = 0L;
+            if(myWedu.getTargetDate().isBefore(LocalDate.now())) {
+                progress = challengeService.getTheDayProgress(myWedu, total);
+                myEndWedus.add(new WeduDto(myWedu, total, progress));
+            } else {
+                progress = challengeService.getTodayProgress(myWedu, total);
+                myIngWedus.add(new WeduDto(myWedu, total, progress));
+            }
+
         }
-        return myWeduDtoList;
+        return new MyInWeduDto(myIngWedus, myEndWedus);
     }
 
     public WeduReadDto getById(Long id) {
@@ -257,19 +264,30 @@ public class WeduService {
 
     public ChallengeMemberList readChallengeMembers(Long id, String date) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        List<MemberWedu> memberWedus = memberWeduRepository.findAllByWedu(wedu);
-        List<Member> allMembers = memberWedus.stream().map(MemberWedu::getMember).collect(Collectors.toList());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate formattedDate = LocalDate.parse(date, formatter);
-        return challengeService.readChallengeMembers(allMembers, wedu, formattedDate);
+        return challengeService.readChallengeMembers(wedu, formattedDate);
     }
 
     public WeduMonthlyProgressDto readMonthlyProgress(Long id, String date) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        int total = memberWeduRepository.countAllByWedu(wedu);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate formattedDate = LocalDate.parse(date, formatter);
-        List<Long> monthlyProgress = challengeService.readMonthlyProgress(wedu, total, formattedDate);
+        List<Long> monthlyProgress = challengeService.readMonthlyProgress(wedu, formattedDate);
         return new WeduMonthlyProgressDto(monthlyProgress, wedu.getCreatedTime().toLocalDate(), wedu.getTargetDate());
+    }
+
+    public List<WeduDto> getInWedus(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        List<Wedu> allInWeduList = memberWeduRepository.findAllByMember(member).stream().map(MemberWedu::getWedu).toList();
+        List<WeduDto> inWeduDtoList = new ArrayList<>();
+        for(Wedu wedu : allInWeduList) {
+            if (!wedu.getTargetDate().isBefore(LocalDate.now())) {
+                int total = memberWeduRepository.countAllByWedu(wedu);
+                Long progress = challengeService.getTodayProgress(wedu, total);
+                inWeduDtoList.add(new WeduDto(wedu, total, progress));
+            }
+        }
+        return inWeduDtoList;
     }
 }

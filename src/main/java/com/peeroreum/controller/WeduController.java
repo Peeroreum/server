@@ -7,6 +7,7 @@ import com.peeroreum.dto.wedu.WeduUpdateDto;
 import com.peeroreum.service.WeduService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.security.Principal;
 
 @RestController
@@ -70,6 +71,11 @@ public class WeduController {
     public ResponseDto getMyWedus(Principal principal) {
         String username = principal.getName();
         return ResponseDto.success(weduService.getAllMy(username));
+    }
+
+    @GetMapping("/wedu/in")
+    public ResponseDto getInWedus(@PathParam("nickname") String nickname) {
+        return ResponseDto.success(weduService.getInWedus(nickname));
     }
 
 //    @PostMapping("/wedu/{id}/invitation")
