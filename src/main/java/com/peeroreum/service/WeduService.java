@@ -96,17 +96,24 @@ public class WeduService {
         return weduDtoList;
     }
 
-    public List<WeduDto> getAllMy(String username) {
+    public MyInWeduDto getAllMy(String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        List<MemberWedu> myWeduList = memberWeduRepository.findAllByMember(member);
-        List<WeduDto> myWeduDtoList = new ArrayList<>();
-        for(MemberWedu memberWedu : myWeduList) {
-            Wedu myWedu = memberWedu.getWedu();
+        List<Wedu> myWeduList = memberWeduRepository.findAllByMember(member).stream().map(MemberWedu::getWedu).toList();
+        List<WeduDto> myIngWedus = new ArrayList<>();
+        List<WeduDto> myEndWedus = new ArrayList<>();
+        for(Wedu myWedu : myWeduList) {
             int total = memberWeduRepository.countAllByWedu(myWedu);
-            Long progress = challengeService.getTodayProgress(myWedu, total);
-            myWeduDtoList.add(new WeduDto(myWedu, total, progress));
+            Long progress = 0L;
+            if(myWedu.getTargetDate().isBefore(LocalDate.now())) {
+                progress = challengeService.getTheDayProgress(myWedu, total);
+                myEndWedus.add(new WeduDto(myWedu, total, progress));
+            } else {
+                progress = challengeService.getTodayProgress(myWedu, total);
+                myIngWedus.add(new WeduDto(myWedu, total, progress));
+            }
+
         }
-        return myWeduDtoList;
+        return new MyInWeduDto(myIngWedus, myEndWedus);
     }
 
     public WeduReadDto getById(Long id) {

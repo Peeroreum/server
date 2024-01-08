@@ -95,6 +95,11 @@ public class ChallengeService {
         return Math.round((double)success / (double)total * 100);
     }
 
+    public Long getTheDayProgress(Wedu wedu, int total) {
+        Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, wedu.getTargetDate());
+        return Math.round((double)success / (double)total * 100);
+    }
+
     private int getDays(int month) {
         if(month == 2) {
             return 28;
