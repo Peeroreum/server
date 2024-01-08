@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class MemberWedu {
+public class MemberWedu extends EntityTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -266,10 +266,9 @@ public class WeduService {
 
     public WeduMonthlyProgressDto readMonthlyProgress(Long id, String date) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
-        int total = memberWeduRepository.countAllByWedu(wedu);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate formattedDate = LocalDate.parse(date, formatter);
-        List<Long> monthlyProgress = challengeService.readMonthlyProgress(wedu, total, formattedDate);
+        List<Long> monthlyProgress = challengeService.readMonthlyProgress(wedu, formattedDate);
         return new WeduMonthlyProgressDto(monthlyProgress, wedu.getCreatedTime().toLocalDate(), wedu.getTargetDate());
     }
 }

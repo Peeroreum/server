@@ -9,6 +9,7 @@ import com.peeroreum.dto.wedu.ChallengeMemberList;
 import com.peeroreum.dto.wedu.ChallengeReadDto;
 import com.peeroreum.dto.wedu.WeduMonthlyProgressDto;
 import com.peeroreum.repository.ChallengeImageRepository;
+import com.peeroreum.repository.MemberWeduRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 @Service
 public class ChallengeService {
     private final ChallengeImageRepository challengeImageRepository;
+    private final MemberWeduRepository memberWeduRepository;
 
-    public ChallengeService(ChallengeImageRepository challengeImageRepository) {
+    public ChallengeService(ChallengeImageRepository challengeImageRepository, MemberWeduRepository memberWeduRepository) {
         this.challengeImageRepository = challengeImageRepository;
+        this.memberWeduRepository = memberWeduRepository;
     }
 
     public void createChallengeImages(Member member, Wedu wedu, List<Image> proofImages) {
@@ -64,12 +67,14 @@ public class ChallengeService {
         return new ChallengeMemberList(successMemberProfiles, failMemberProfiles);
     }
 
-    public List<Long> readMonthlyProgress(Wedu wedu, int total, LocalDate formattedDate) {
+    public List<Long> readMonthlyProgress(Wedu wedu, LocalDate formattedDate) {
         int month = formattedDate.getMonthValue();
         int days = getDays(month);
         List<Long> progressList = new ArrayList<>();
         for(int i = 1; i <= days; i++) {
-            Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, LocalDate.of(formattedDate.getYear(), month, i));
+            LocalDate searchDate = LocalDate.of(formattedDate.getYear(), month, i);
+            int total = memberWeduRepository.countAllByWeduAndCreatedTime(wedu, searchDate.atStartOfDay());
+            Long success = challengeImageRepository.countAllByWeduAndChallengeDate(wedu, searchDate);
             progressList.add(Math.round((double)success / (double)total * 100));
         }
         return progressList;
