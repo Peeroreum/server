@@ -3,6 +3,7 @@ package com.peeroreum.service;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.member.*;
+import com.peeroreum.dto.notification.FirebaseTokenDto;
 import com.peeroreum.repository.MemberRepository;
 import com.peeroreum.security.jwt.JwtTokenProvider;
 import com.peeroreum.exception.CustomException;
@@ -180,5 +181,13 @@ public class MemberService {
 
         member.updateImage(null);
         return new MemberProfileDto(member.getGrade(), null, member.getNickname());
+    }
+
+    public Member setFirebaseToken(FirebaseTokenDto firebaseTokenDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        member.updateFirebaseToken(firebaseTokenDto.getFirebaseToken());
+        memberRepository.save(member);
+
+        return member;
     }
 }

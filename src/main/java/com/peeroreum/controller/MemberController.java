@@ -3,6 +3,7 @@ package com.peeroreum.controller;
 import com.peeroreum.dto.member.ProfileImageDto;
 import com.peeroreum.dto.member.SignInDto;
 import com.peeroreum.dto.member.SignUpDto;
+import com.peeroreum.dto.notification.FirebaseTokenDto;
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,10 @@ public class MemberController {
         return ResponseDto.success(memberService.socialSignIn(email));
     }
 
+    @PostMapping("/member/firebasetoken")
+    public ResponseDto postFirebaseToken(@RequestBody FirebaseTokenDto firebaseTokenDto, Principal principal) {
+        return ResponseDto.success(memberService.setFirebaseToken(firebaseTokenDto, principal.getName()));
+    }
     @GetMapping("/signup/email/{email}")
     public ResponseDto checkEmail(@PathVariable String email) {
         return ResponseDto.success(memberService.validateEmail(email));

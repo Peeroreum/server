@@ -24,6 +24,8 @@ public class Member extends EntityTime {
 
     private String password;
 
+    private String firebaseToken;
+
     @Column(nullable = false)
     private String nickname;
 
@@ -74,6 +76,10 @@ public class Member extends EntityTime {
         this.badLevel = badLevel;
         this.school = school;
         this.roles = Collections.singletonList(Role.USER);
+    }
+
+    public void updateFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
     }
 
     public void updatePassword(String password) {
