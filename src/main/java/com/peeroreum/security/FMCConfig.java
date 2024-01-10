@@ -17,7 +17,7 @@ public class FMCConfig {
 
     @Bean
     FirebaseMessaging firebaseMessaging() throws IOException {
-        ClassPathResource resource = new ClassPathResource("resources/peeroreum-firebase-adminsdk.json");
+        ClassPathResource resource = new ClassPathResource("peeroreum-firebase-adminsdk.json");
         InputStream refreshToken = resource.getInputStream();
         FirebaseApp firebaseApp = null;
         List<FirebaseApp> firebaseAppList = FirebaseApp.getApps();
