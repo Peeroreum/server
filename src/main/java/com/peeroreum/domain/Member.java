@@ -34,7 +34,7 @@ public class Member extends EntityTime {
     private Image image;
 
     @OneToOne
-    @JoinColumn(name = "image_id")
+    @JoinColumn(name = "background_image_id")
     private Image backgroundImage;
 
     @Column
