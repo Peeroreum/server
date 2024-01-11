@@ -98,7 +98,7 @@ public class Member extends EntityTime {
     }
 
     public void updateBackgroundImage(Image image) {
-
+        this.backgroundImage = image;
     }
 
     public void addFriend(Member member) {
