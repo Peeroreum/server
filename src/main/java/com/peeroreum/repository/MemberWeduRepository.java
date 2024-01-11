@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface MemberWeduRepository extends JpaRepository<MemberWedu, Long> {
     List<MemberWedu> findAllByMember(Member member);
+    MemberWedu findByMemberAndWedu(Member member, Wedu wedu);
     List<MemberWedu> findAllByWedu(Wedu wedu);
     List<MemberWedu> findAllByWeduAndCreatedTimeBefore(Wedu wedu, LocalDateTime localDateTime);
     void deleteAllByWedu(Wedu wedu);
