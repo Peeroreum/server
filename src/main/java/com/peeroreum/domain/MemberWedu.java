@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -23,10 +24,17 @@ public class MemberWedu extends EntityTime {
     @JoinColumn(name = "wedu_id")
     private Wedu wedu;
 
+    @Column
+    private int continuousDate;
+
     @Builder
     public MemberWedu(Member member, Wedu wedu) {
         this.member = member;
         this.wedu = wedu;
+        this.continuousDate = 0;
     }
 
+    public void updateContinuousDate(int continuousDate) {
+        this.continuousDate = continuousDate;
+    }
 }

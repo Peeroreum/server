@@ -11,6 +11,7 @@ import com.peeroreum.dto.wedu.ChallengeReadDto;
 import com.peeroreum.dto.wedu.WeduMonthlyProgressDto;
 import com.peeroreum.repository.ChallengeImageRepository;
 import com.peeroreum.repository.MemberWeduRepository;
+import com.peeroreum.service.attachment.ImageService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,15 +26,26 @@ import java.util.stream.Collectors;
 public class ChallengeService {
     private final ChallengeImageRepository challengeImageRepository;
     private final MemberWeduRepository memberWeduRepository;
+    private final ImageService imageService;
 
-    public ChallengeService(ChallengeImageRepository challengeImageRepository, MemberWeduRepository memberWeduRepository) {
+    public ChallengeService(ChallengeImageRepository challengeImageRepository, MemberWeduRepository memberWeduRepository, ImageService imageService) {
         this.challengeImageRepository = challengeImageRepository;
         this.memberWeduRepository = memberWeduRepository;
+        this.imageService = imageService;
     }
 
     public void createChallengeImages(Member member, Wedu wedu, List<Image> proofImages) {
-        if(challengeImageRepository.existsByWeduAndMemberAndChallengeDate(wedu, member, LocalDate.now())) {
-            challengeImageRepository.deleteByWeduAndMemberAndChallengeDate(wedu, member, LocalDate.now());
+        int continuity = 1;
+        LocalDate now = LocalDate.now();
+        MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
+        if(challengeImageRepository.existsByWeduAndMemberAndChallengeDate(wedu, member, now)) {
+            deleteChallengeImages(member, wedu);
+            challengeImageRepository.deleteByWeduAndMemberAndChallengeDate(wedu, member, now);
+        }
+
+        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByMemberAndWeduOrderByChallengeDateDesc(member, wedu);
+        if(!challengeImages.isEmpty() && challengeImages.get(0).getChallengeDate().plusDays(1).equals(now)) {
+            continuity = memberWedu.getContinuousDate() + 1;
         }
         ChallengeImage challengeImage = ChallengeImage.builder()
                 .member(member)
@@ -41,6 +53,9 @@ public class ChallengeService {
                 .image(proofImages)
                 .challengeDate(LocalDate.now())
                 .build();
+
+        memberWedu.updateContinuousDate(continuity);
+        memberWeduRepository.save(memberWedu);
         challengeImageRepository.save(challengeImage);
     }
 
@@ -52,6 +67,14 @@ public class ChallengeService {
 
 
         return new ChallengeReadDto(imageUrls);
+    }
+
+    public void deleteChallengeImages(Member member, Wedu wedu) {
+        ChallengeImage challengeImage = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, LocalDate.now());
+        List<Image> images = challengeImage.getImage();
+        for(Image image : images) {
+            imageService.deleteImage(image.getId());
+        }
     }
 
     public ChallengeMemberList readChallengeMembers(Wedu wedu, LocalDate formattedDate) {

@@ -37,8 +37,8 @@ public class WeduController {
     }
 
     @GetMapping("/wedu/{id}")
-    public ResponseDto getWeduById(@PathVariable Long id) {
-        return ResponseDto.success(weduService.getById(id));
+    public ResponseDto getWeduById(@PathVariable Long id, Principal principal) {
+        return ResponseDto.success(weduService.getById(id, principal.getName()));
     }
 
     @PostMapping("/wedu")
