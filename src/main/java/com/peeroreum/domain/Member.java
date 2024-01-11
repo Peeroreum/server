@@ -33,6 +33,10 @@ public class Member extends EntityTime {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image backgroundImage;
+
     @Column
     private Long grade;
 
@@ -91,6 +95,10 @@ public class Member extends EntityTime {
 
     public void updateImage(Image image){
         this.image = image;
+    }
+
+    public void updateBackgroundImage(Image image) {
+
     }
 
     public void addFriend(Member member) {

@@ -139,7 +139,7 @@ public class MemberService {
     public MemberProfileDto findProfile(String nickname, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Member findMember = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        return new MemberProfileDto(findMember.getGrade(), findMember.getImage() == null? null : findMember.getImage().getImagePath(), findMember.getNickname(), findMember.getFriends().size(), member.getFriends().contains(findMember));
+        return new MemberProfileDto(findMember.getGrade(), findMember.getImage() == null? null : findMember.getImage().getImagePath(), findMember.getBackgroundImage() == null? null : findMember.getBackgroundImage().getImagePath(), findMember.getNickname(), findMember.getFriends().size(), member.getFriends().contains(findMember));
     }
 
     public String changeNickname(String nickname, String username) {
@@ -180,6 +180,7 @@ public class MemberService {
         }
 
         member.updateImage(null);
+        memberRepository.save(member);
         return new MemberProfileDto(member.getGrade(), null, member.getNickname());
     }
 
@@ -189,5 +190,35 @@ public class MemberService {
         memberRepository.save(member);
 
         return member;
+    }
+
+    public Object changeBackgroundImage(ProfileImageDto profileImageDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(profileImageDto.getProfileImage() == null) {
+            throw new CustomException(ExceptionType.FILETYPE_WRONG_EXCEPTION);
+        }
+
+        if(member.getBackgroundImage() != null) {
+            imageService.deleteImage(member.getBackgroundImage().getId());
+        }
+
+        Image image = imageService.saveImage(profileImageDto.getProfileImage());
+        member.updateBackgroundImage(image);
+        memberRepository.save(member);
+
+        return member.getBackgroundImage().getImagePath();
+    }
+
+    public MemberProfileDto deleteBackgroundImage(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Image backgroundImage = member.getBackgroundImage();
+        if(backgroundImage != null) {
+            imageService.deleteImage(backgroundImage.getId());
+        }
+
+        member.updateBackgroundImage(null);
+        memberRepository.save(member);
+        return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), null, member.getNickname());
     }
 }
