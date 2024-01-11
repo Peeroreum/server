@@ -3,6 +3,7 @@ package com.peeroreum.service;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.member.*;
+import com.peeroreum.dto.notification.FCMNotificationRequestDto;
 import com.peeroreum.dto.notification.FirebaseTokenDto;
 import com.peeroreum.repository.MemberRepository;
 import com.peeroreum.security.jwt.JwtTokenProvider;
@@ -25,6 +26,7 @@ public class MemberService {
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final FCMNotificationService notificationService;
 
     public LogInDto signUp(SignUpDto signUpDto) {
         validateInfo(signUpDto);
@@ -102,11 +104,16 @@ public class MemberService {
         if(member.getFriends().contains(friend)) {
             throw new CustomException(ExceptionType.FRIEND_ALREADY_EXISTS_EXCEPTION);
         }
-
         member.addFriend(friend);
         memberRepository.save(member);
 
+        friendNotification(member, friend);
         return "친구 팔로우 성공";
+    }
+
+    private void friendNotification(Member member, Member friend) {
+        FCMNotificationRequestDto notificationRequestDto = new FCMNotificationRequestDto(friend.getNickname(), "마이페이지", member.getNickname() + " 님이 회원님을 친구로 추가했어요.");
+        notificationService.sendNotificationByToken(notificationRequestDto);
     }
 
     public String unFollowFriend(String nickname, String username) {

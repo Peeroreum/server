@@ -17,6 +17,6 @@ public class FCMNotificationController {
 
     @PostMapping("/member/notification")
     public ResponseDto sendNotificationByToken(@RequestBody FCMNotificationRequestDto fcmNotificationRequestDto, Principal principal) {
-        return ResponseDto.success(fcmNotificationService.sendNotificationByToken(fcmNotificationRequestDto, principal.getName()));
+        return ResponseDto.success(fcmNotificationService.sendNotificationByToken(fcmNotificationRequestDto));
     }
 }
