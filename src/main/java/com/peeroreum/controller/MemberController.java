@@ -87,4 +87,14 @@ public class MemberController {
         return ResponseDto.success(memberService.deleteProfileImage(principal.getName()));
     }
 
+    @PutMapping("/member/change/backgroundImage")
+    public ResponseDto putBackgroundImage(@ModelAttribute ProfileImageDto profileImageDto, Principal principal) {
+        return ResponseDto.success(memberService.changeBackgroundImage(profileImageDto, principal.getName()));
+    }
+
+    @PutMapping("/member/delete/backgroundImage")
+    public ResponseDto deleteBackgroundImage(Principal principal) {
+        return ResponseDto.success(memberService.deleteBackgroundImage(principal.getName()));
+    }
+
 }
