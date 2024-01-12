@@ -15,6 +15,10 @@ import java.security.Principal;
 public class FCMNotificationController {
     private FCMNotificationService fcmNotificationService;
 
+    FCMNotificationController(FCMNotificationService fcmNotificationService) {
+        this.fcmNotificationService = fcmNotificationService;
+    }
+
     @PostMapping("/member/notification")
     public ResponseDto sendNotificationByToken(@RequestBody FCMNotificationRequestDto fcmNotificationRequestDto, Principal principal) {
         return ResponseDto.success(fcmNotificationService.sendNotificationByToken(fcmNotificationRequestDto));
