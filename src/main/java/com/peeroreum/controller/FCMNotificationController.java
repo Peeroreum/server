@@ -13,11 +13,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @RestController
 public class FCMNotificationController {
-    private FCMNotificationService fcmNotificationService;
-
-    FCMNotificationController(FCMNotificationService fcmNotificationService) {
-        this.fcmNotificationService = fcmNotificationService;
-    }
+    private final FCMNotificationService fcmNotificationService;
 
     @PostMapping("/member/notification")
     public ResponseDto sendNotificationByToken(@RequestBody FCMNotificationRequestDto fcmNotificationRequestDto, Principal principal) {
