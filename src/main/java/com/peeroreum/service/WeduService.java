@@ -1,7 +1,6 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.*;
-import com.peeroreum.domain.image.ChallengeImage;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.wedu.*;
 import com.peeroreum.exception.CustomException;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -195,11 +193,13 @@ public class WeduService {
         }
 
         Image image = wedu.getImage();
-        imageRepository.delete(image);
+        if(image != null) {
+            imageRepository.delete(image);
+        }
 
         memberWeduRepository.deleteAllByWedu(wedu);
         hashTagService.deleteHashTags(wedu);
-        challengeService.deleteChallengeImages(wedu);
+        challengeService.deleteAllChallengeImages(wedu);
         invitationService.deleteInvitation(wedu);
         weduRepository.delete(wedu);
     }
@@ -295,4 +295,6 @@ public class WeduService {
         }
         return inWeduDtoList;
     }
+
+
 }

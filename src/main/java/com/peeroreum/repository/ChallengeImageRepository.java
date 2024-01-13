@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface ChallengeImageRepository extends JpaRepository<ChallengeImage, Long> {
     ChallengeImage findAllByMemberAndWeduAndChallengeDate(Member member, Wedu wedu, LocalDate challengeDate);
+    List<ChallengeImage> findAllByWedu(Wedu wedu);
     List<ChallengeImage> findAllByMemberAndWeduOrderByChallengeDateDesc(Member member, Wedu wedu);
     List<ChallengeImage> findAllByWeduAndChallengeDate(Wedu wedu, LocalDate challengeDate);
     Long countAllByWeduAndChallengeDate(Wedu wedu, LocalDate challengeDate);

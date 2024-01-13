@@ -67,6 +67,12 @@ public class WeduController {
         return ResponseDto.success();
     }
 
+    @DeleteMapping("/wedu/{id}/out")
+    public ResponseDto dropoutWedu(@PathVariable Long id, Principal principal) {
+        weduService.dropout(id, principal.getName());
+        return ResponseDto.success();
+    }
+
     @GetMapping("/wedu/my")
     public ResponseDto getMyWedus(Principal principal) {
         String username = principal.getName();

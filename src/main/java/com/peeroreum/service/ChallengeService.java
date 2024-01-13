@@ -8,7 +8,6 @@ import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.dto.wedu.ChallengeMemberList;
 import com.peeroreum.dto.wedu.ChallengeReadDto;
-import com.peeroreum.dto.wedu.WeduMonthlyProgressDto;
 import com.peeroreum.repository.ChallengeImageRepository;
 import com.peeroreum.repository.MemberWeduRepository;
 import com.peeroreum.service.attachment.ImageService;
@@ -39,7 +38,7 @@ public class ChallengeService {
         LocalDate now = LocalDate.now();
         MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
         if(challengeImageRepository.existsByWeduAndMemberAndChallengeDate(wedu, member, now)) {
-            deleteChallengeImages(member, wedu);
+            deleteAllChallengeImages(member, wedu);
             challengeImageRepository.deleteByWeduAndMemberAndChallengeDate(wedu, member, now);
         }
 
@@ -69,7 +68,7 @@ public class ChallengeService {
         return new ChallengeReadDto(imageUrls);
     }
 
-    public void deleteChallengeImages(Member member, Wedu wedu) {
+    public void deleteAllChallengeImages(Member member, Wedu wedu) {
         ChallengeImage challengeImage = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, LocalDate.now());
         List<Image> images = challengeImage.getImage();
         for(Image image : images) {
@@ -109,8 +108,21 @@ public class ChallengeService {
         return progressList;
     }
 
-    public void deleteChallengeImages(Wedu wedu) {
-        challengeImageRepository.deleteAllByWedu(wedu);
+    public void deleteAllChallengeImages(Wedu wedu) {
+        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWedu(wedu);
+        if(!challengeImages.isEmpty()) {
+            deleteChallengeImages(challengeImages);
+            challengeImageRepository.deleteAllByWedu(wedu);
+        }
+    }
+
+    public void deleteChallengeImages(List<ChallengeImage> challengeImages) {
+        for(ChallengeImage challengeImage : challengeImages) {
+            List<Image> images = challengeImage.getImage();
+            for(Image image : images) {
+                imageService.deleteImage(image.getId());
+            }
+        }
     }
 
     public Long getTodayProgress(Wedu wedu, int total) {
