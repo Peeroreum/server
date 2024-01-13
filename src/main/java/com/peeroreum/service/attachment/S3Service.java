@@ -22,7 +22,7 @@ import java.util.UUID;
 public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private final String baseurl = "https://peeroreum-bucket.s3.ap-northeast-2.amazonaws.com/";
+    private final String baseurl = "http://peeroreum-bucket.s3.ap-northeast-2.amazonaws.com/";
     private final AmazonS3 amazonS3;
 
     public Image uploadImage(MultipartFile file) {
