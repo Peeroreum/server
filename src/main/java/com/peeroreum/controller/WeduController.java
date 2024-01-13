@@ -67,6 +67,12 @@ public class WeduController {
         return ResponseDto.success();
     }
 
+    @DeleteMapping("/wedu/{id}/out")
+    public ResponseDto dropoutWedu(@PathVariable Long id, Principal principal) {
+        weduService.dropout(id, principal.getName());
+        return ResponseDto.success();
+    }
+
     @GetMapping("/wedu/my")
     public ResponseDto getMyWedus(Principal principal) {
         String username = principal.getName();
@@ -92,6 +98,13 @@ public class WeduController {
     public ResponseDto uploadChallengeImage(@PathVariable Long id, @ModelAttribute ChallengeSaveDto challengeSaveDto, Principal principal) {
         String username = principal.getName();
         weduService.createChallengeImage(id, challengeSaveDto, username);
+        return ResponseDto.success();
+    }
+
+    @DeleteMapping("/wedu/{id}/challenge")
+    public ResponseDto deleteChallengeImage(@PathVariable Long id, Principal principal) {
+        String username = principal.getName();
+        weduService.deleteChallengeImages(id, username);
         return ResponseDto.success();
     }
 

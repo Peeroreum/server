@@ -44,7 +44,10 @@ public class HashTagService {
     }
 
     public void deleteHashTags(Wedu wedu) {
-        hashTagRepository.deleteAllByWedu(wedu);
+        List<HashTag> hashTags = hashTagRepository.getAllByWedu(wedu);
+        if(!hashTags.isEmpty()) {
+            hashTagRepository.deleteAllByWedu(wedu);
+        }
     }
 
 }

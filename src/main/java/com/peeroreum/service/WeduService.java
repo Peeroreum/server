@@ -1,7 +1,6 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.*;
-import com.peeroreum.domain.image.ChallengeImage;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.wedu.*;
 import com.peeroreum.exception.CustomException;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -132,6 +130,7 @@ public class WeduService {
                 .continuousDate(memberWedu.getContinuousDate())
                 .isLocked(wedu.isLocked())
                 .progress(progress)
+                .hostMail(wedu.getHost().getUsername())
                 .build();
     }
 
@@ -194,11 +193,13 @@ public class WeduService {
         }
 
         Image image = wedu.getImage();
-        imageRepository.delete(image);
+        if(image != null) {
+            imageRepository.delete(image);
+        }
 
         memberWeduRepository.deleteAllByWedu(wedu);
         hashTagService.deleteHashTags(wedu);
-        challengeService.deleteChallengeImages(wedu);
+        challengeService.deleteTodayChallengeImages(wedu);
         invitationService.deleteInvitation(wedu);
         weduRepository.delete(wedu);
     }
@@ -215,6 +216,8 @@ public class WeduService {
     public void dropout(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = findMember(username);
+
+        challengeService.deleteByWeduAndMember(wedu, member);
         memberWeduRepository.deleteByWeduAndMember(wedu, member);
     }
 
@@ -257,6 +260,12 @@ public class WeduService {
 
     }
 
+    public void deleteChallengeImages(Long id, String username) {
+        Member member = findMember(username);
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        challengeService.deleteTodayChallengeImages(member, wedu);
+    }
+
     public ChallengeReadDto readChallengeImages(Long id, String nickname, String date) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
@@ -294,4 +303,6 @@ public class WeduService {
         }
         return inWeduDtoList;
     }
+
+
 }

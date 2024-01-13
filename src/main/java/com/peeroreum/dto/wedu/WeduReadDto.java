@@ -13,9 +13,10 @@ public class WeduReadDto {
     boolean isLocked;
     String password;
     int continuousDate;
+    String hostMail;
 
     @Builder
-    WeduReadDto(String title, String imageUrl, Long dDay, boolean isLocked, String password, String challenge, Long progress, int continuousDate) {
+    WeduReadDto(String title, String imageUrl, Long dDay, boolean isLocked, String password, String challenge, Long progress, int continuousDate, String hostMail) {
         this.title = title;
         this.imageUrl = imageUrl;
         this.dDay = dDay;
@@ -24,6 +25,7 @@ public class WeduReadDto {
         this.isLocked = isLocked;
         this.password = password;
         this.continuousDate = continuousDate;
+        this.hostMail = hostMail;
     }
 
 }
