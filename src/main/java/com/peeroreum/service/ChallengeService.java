@@ -38,7 +38,7 @@ public class ChallengeService {
         LocalDate now = LocalDate.now();
         MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
         if(challengeImageRepository.existsByWeduAndMemberAndChallengeDate(wedu, member, now)) {
-            deleteAllChallengeImages(member, wedu);
+            deleteTodayChallengeImages(member, wedu);
             challengeImageRepository.deleteByWeduAndMemberAndChallengeDate(wedu, member, now);
         }
 
@@ -68,12 +68,14 @@ public class ChallengeService {
         return new ChallengeReadDto(imageUrls);
     }
 
-    public void deleteAllChallengeImages(Member member, Wedu wedu) {
-        ChallengeImage challengeImage = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, LocalDate.now());
+    public void deleteTodayChallengeImages(Member member, Wedu wedu) {
+        LocalDate now = LocalDate.now();
+        ChallengeImage challengeImage = challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, now);
         List<Image> images = challengeImage.getImage();
         for(Image image : images) {
             imageService.deleteImage(image.getId());
         }
+        challengeImageRepository.deleteAllByMemberAndWeduAndChallengeDate(member, wedu, now);
     }
 
     public ChallengeMemberList readChallengeMembers(Wedu wedu, LocalDate formattedDate) {
@@ -108,7 +110,7 @@ public class ChallengeService {
         return progressList;
     }
 
-    public void deleteAllChallengeImages(Wedu wedu) {
+    public void deleteTodayChallengeImages(Wedu wedu) {
         List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWedu(wedu);
         if(!challengeImages.isEmpty()) {
             deleteChallengeImages(challengeImages);

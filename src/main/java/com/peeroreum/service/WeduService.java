@@ -199,7 +199,7 @@ public class WeduService {
 
         memberWeduRepository.deleteAllByWedu(wedu);
         hashTagService.deleteHashTags(wedu);
-        challengeService.deleteAllChallengeImages(wedu);
+        challengeService.deleteTodayChallengeImages(wedu);
         invitationService.deleteInvitation(wedu);
         weduRepository.delete(wedu);
     }
@@ -258,6 +258,12 @@ public class WeduService {
 
         challengeService.createChallengeImages(member, wedu, proofImages);
 
+    }
+
+    public void deleteChallengeImages(Long id, String username) {
+        Member member = findMember(username);
+        Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
+        challengeService.deleteTodayChallengeImages(member, wedu);
     }
 
     public ChallengeReadDto readChallengeImages(Long id, String nickname, String date) {

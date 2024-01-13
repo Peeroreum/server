@@ -101,6 +101,13 @@ public class WeduController {
         return ResponseDto.success();
     }
 
+    @DeleteMapping("/wedu/{id}/challenge")
+    public ResponseDto deleteChallengeImage(@PathVariable Long id, Principal principal) {
+        String username = principal.getName();
+        weduService.deleteChallengeImages(id, username);
+        return ResponseDto.success();
+    }
+
     @GetMapping("/wedu/{id}/challenge/{nickname}/{date}")
     public ResponseDto getChallengeImage(@PathVariable Long id, @PathVariable String nickname, @PathVariable String date) {
         return ResponseDto.success(weduService.readChallengeImages(id, nickname, date));

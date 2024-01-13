@@ -20,5 +20,6 @@ public interface ChallengeImageRepository extends JpaRepository<ChallengeImage, 
     void deleteByWeduAndMemberAndChallengeDate(Wedu wedu, Member member, LocalDate challengeDate);
     void deleteAllByWeduAndMember(Wedu wedu, Member member);
     void deleteAllByWedu(Wedu wedu);
+    void deleteAllByMemberAndWeduAndChallengeDate(Member member, Wedu wedu, LocalDate now);
     boolean existsByWeduAndMemberAndChallengeDate(Wedu wedu, Member member, LocalDate challengeDate);
 }
