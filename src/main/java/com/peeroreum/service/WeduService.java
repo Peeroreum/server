@@ -132,6 +132,7 @@ public class WeduService {
                 .continuousDate(memberWedu.getContinuousDate())
                 .isLocked(wedu.isLocked())
                 .progress(progress)
+                .hostMail(wedu.getHost().getUsername())
                 .build();
     }
 
