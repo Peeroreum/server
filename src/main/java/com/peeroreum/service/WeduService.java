@@ -216,6 +216,8 @@ public class WeduService {
     public void dropout(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = findMember(username);
+
+        challengeService.deleteByWeduAndMember(wedu, member);
         memberWeduRepository.deleteByWeduAndMember(wedu, member);
     }
 

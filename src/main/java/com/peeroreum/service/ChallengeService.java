@@ -116,6 +116,14 @@ public class ChallengeService {
         }
     }
 
+    public void deleteByWeduAndMember(Wedu wedu, Member member) {
+        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByWeduAndMember(wedu, member);
+        if(!challengeImages.isEmpty()) {
+            deleteChallengeImages(challengeImages);
+            challengeImageRepository.deleteAllByWeduAndMember(wedu, member);
+        }
+    }
+
     public void deleteChallengeImages(List<ChallengeImage> challengeImages) {
         for(ChallengeImage challengeImage : challengeImages) {
             List<Image> images = challengeImage.getImage();
