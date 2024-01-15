@@ -2,6 +2,8 @@ package com.peeroreum.repository;
 
 import com.peeroreum.domain.HashTag;
 import com.peeroreum.domain.Wedu;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,14 +14,12 @@ import java.util.Set;
 @Repository
 public interface WeduRepository extends JpaRepository<Wedu, Long> {
 
-    @Override
-    List<Wedu> findAll();
+    List<Wedu> findAllByOrderByIdDesc(Pageable pageable);
     Wedu save(Wedu wedu);
 
-    List<Wedu> findAllByGradeAndSubject(Long grade, Long subject);
-    List<Wedu> findAllByGrade(Long grade);
-    List<Wedu> findAllBySubject(Long subject);
+    List<Wedu> findAllByGradeAndSubjectOrderByIdDesc(Long grade, Long subject, Pageable pageable);
+    List<Wedu> findAllByGradeOrderByIdDesc(Long grade, Pageable pageable);
+    List<Wedu> findAllBySubjectOrderByIdDesc(Long subject, Pageable pageable);
 
-//    @Query("SELECT w FROM Wedu w LEFT JOIN w.hashTags h WHERE LOWER(w.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(h.tag) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Wedu> findAllByTitleContaining(String title);
 }

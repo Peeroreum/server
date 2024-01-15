@@ -7,6 +7,7 @@ import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.*;
 import com.peeroreum.service.attachment.S3Service;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,9 +43,8 @@ public class WeduService {
         this.s3Service = s3Service;
     }
 
-    public List<WeduDto> getAll(Long grade, Long subject) {
-        List<Wedu> weduList = getWedus(grade, subject);
-        weduList.sort((Comparator.comparing(EntityTime::getCreatedTime)).reversed());
+    public List<WeduDto> getAll(Long grade, Long subject, int page) {
+        List<Wedu> weduList = getWedus(grade, subject, page);
         return getWeduDtos(weduList);
     }
 
@@ -57,31 +57,30 @@ public class WeduService {
         return searchResults;
     }
 
-    public List<WeduDto> getAllRecommends(String username) {
+    public List<WeduDto> getAllRecommends(String username, int page) {
         Member member = findMember(username);
-        List<Wedu> weduList = getWedus(member.getGrade(), member.getGoodSubject());
-        weduList.addAll(getWedus(member.getGrade(), member.getBadSubject()));
-        weduList.sort((Comparator.comparing(EntityTime::getCreatedTime)).reversed());
+        List<Wedu> weduList = getWedus(member.getGrade(), member.getGoodSubject(), page);
+        weduList.addAll(getWedus(member.getGrade(), member.getBadSubject(), page));
         return getWeduDtos(weduList);
     }
 
-    public List<WeduDto> getAllPopular(Long grade, Long subject) {
-        List<Wedu> weduList = getWedus(grade, subject);
+    public List<WeduDto> getAllPopular(Long grade, Long subject, int page) {
+        List<Wedu> weduList = getWedus(grade, subject, page);
         List<WeduDto> weduDtoList = getWeduDtos(weduList);
         weduDtoList.sort(Comparator.comparing(WeduDto::getAttendingPeopleNum).reversed());
         return weduDtoList;
     }
 
-    private List<Wedu> getWedus(Long grade, Long subject) {
+    private List<Wedu> getWedus(Long grade, Long subject, int page) {
         List<Wedu> weduList;
         if(grade == 0 && subject == 0) {
-            weduList = weduRepository.findAll();
+            weduList = weduRepository.findAllByOrderByIdDesc(PageRequest.of(page, 15));
         } else if(grade == 0) {
-            weduList = weduRepository.findAllBySubject(subject);
+            weduList = weduRepository.findAllBySubjectOrderByIdDesc(subject, PageRequest.of(page, 15));
         } else if(subject == 0) {
-            weduList = weduRepository.findAllByGrade(grade);
+            weduList = weduRepository.findAllByGradeOrderByIdDesc(grade, PageRequest.of(page, 15));
         } else {
-            weduList = weduRepository.findAllByGradeAndSubject(grade, subject);
+            weduList = weduRepository.findAllByGradeAndSubjectOrderByIdDesc(grade, subject, PageRequest.of(page, 15));
         }
         return weduList;
     }
