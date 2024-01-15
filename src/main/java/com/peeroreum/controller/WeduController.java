@@ -20,14 +20,14 @@ public class WeduController {
     }
 
     @GetMapping("/wedu")
-    public ResponseDto getAllWedus(@RequestParam("sort") String sort, @RequestParam("grade") Long grade, @RequestParam("subject") Long subject, Principal principal) {
+    public ResponseDto getAllWedus(@RequestParam("sort") String sort, @RequestParam("grade") Long grade, @RequestParam("subject") Long subject, @RequestParam(defaultValue = "0") int page, Principal principal) {
         String username = principal.getName();
         if(sort.equals("추천순")) {
-            return ResponseDto.success(weduService.getAllRecommends(username));
+            return ResponseDto.success(weduService.getAllRecommends(username, page));
         } else if(sort.equals("인기순")) {
-            return ResponseDto.success(weduService.getAllPopular(grade, subject));
+            return ResponseDto.success(weduService.getAllPopular(grade, subject, page));
         } else {
-            return ResponseDto.success(weduService.getAll(grade, subject));
+            return ResponseDto.success(weduService.getAll(grade, subject, page));
         }
     }
 
