@@ -58,6 +58,17 @@ public class ChallengeService {
         challengeImageRepository.save(challengeImage);
     }
 
+    public int getContinuousDate(Member member, Wedu wedu) {
+        LocalDate now = LocalDate.now();
+        MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
+        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByMemberAndWeduOrderByChallengeDateDesc(member, wedu);
+        if(!challengeImages.isEmpty() && (challengeImages.get(0).getChallengeDate().plusDays(1).equals(now) || challengeImages.get(0).getChallengeDate().equals(now))) {
+            return memberWedu.getContinuousDate();
+        } else {
+            return 0;
+        }
+    }
+
     public ChallengeReadDto readChallengeImages(Wedu wedu, Member member, LocalDate formattedDate) {
         List<String> imageUrls = Optional.ofNullable(challengeImageRepository.findAllByMemberAndWeduAndChallengeDate(member, wedu, formattedDate))
                 .map(ChallengeImage::getImage)
