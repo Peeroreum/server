@@ -1,6 +1,7 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.*;
+import com.peeroreum.domain.image.ChallengeImage;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.wedu.*;
 import com.peeroreum.exception.CustomException;
@@ -117,7 +118,6 @@ public class WeduService {
     public WeduReadDto getById(Long id, String username) {
         Wedu wedu = weduRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.WEDU_NOT_FOUND_EXCEPTION));
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
         int total = memberWeduRepository.countAllByWedu(wedu);
         Long progress = challengeService.getTodayProgress(wedu, total);
 
@@ -126,7 +126,7 @@ public class WeduService {
                 .imageUrl(wedu.getImage() != null ? wedu.getImage().getImagePath() : null)
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
-                .continuousDate(memberWedu.getContinuousDate())
+                .continuousDate(challengeService.getContinuousDate(member, wedu))
                 .isLocked(wedu.isLocked())
                 .progress(progress)
                 .hostMail(wedu.getHost().getUsername())
