@@ -120,9 +120,13 @@ public class WeduService {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         int total = memberWeduRepository.countAllByWedu(wedu);
         Long progress = challengeService.getTodayProgress(wedu, total);
+        List<String> hashTags = hashTagService.readHashTags(wedu);
+        int attendingPeopleNum = memberWeduRepository.countAllByWedu(wedu);
 
         return WeduReadDto.builder()
                 .title(wedu.getTitle())
+                .subject(wedu.getSubject())
+                .grade(wedu.getGrade())
                 .imageUrl(wedu.getImage() != null ? wedu.getImage().getImagePath() : null)
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
@@ -130,6 +134,8 @@ public class WeduService {
                 .isLocked(wedu.isLocked())
                 .progress(progress)
                 .hostMail(wedu.getHost().getUsername())
+                .hashTags(hashTags)
+                .attendingPeopleNum(attendingPeopleNum)
                 .build();
     }
 
