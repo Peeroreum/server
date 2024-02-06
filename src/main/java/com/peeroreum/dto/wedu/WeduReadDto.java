@@ -19,11 +19,12 @@ public class WeduReadDto { // 인원, 학년, 해시태크
     String hostMail;
     Long subject;
     Long grade;
+    int maxPeopleNum;
     int attendingPeopleNum;
     List<String> hashTags;
 
     @Builder
-    WeduReadDto(String title, Long subject, Long grade, String imageUrl, Long dDay, boolean isLocked, String password, String challenge, Long progress, int continuousDate, String hostMail, int attendingPeopleNum, List<String> hashTags) {
+    WeduReadDto(String title, Long subject, Long grade, String imageUrl, int maxPeopleNum, Long dDay, boolean isLocked, String password, String challenge, Long progress, int continuousDate, String hostMail, int attendingPeopleNum, List<String> hashTags) {
         this.title = title;
         this.imageUrl = imageUrl;
         this.dDay = dDay;
@@ -33,6 +34,7 @@ public class WeduReadDto { // 인원, 학년, 해시태크
         this.password = password;
         this.continuousDate = continuousDate;
         this.hostMail = hostMail;
+        this.maxPeopleNum = maxPeopleNum;
         this.subject = subject;
         this.grade = grade;
         this.attendingPeopleNum = attendingPeopleNum;
