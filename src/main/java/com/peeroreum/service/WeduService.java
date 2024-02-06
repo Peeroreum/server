@@ -177,16 +177,44 @@ public class WeduService {
             throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
         }
 
-        Image image = existingWedu.getImage();
-        if(!weduUpdateDto.getImage().isEmpty()) {
-            s3Service.deleteImage(image.getImageName());
-            imageRepository.delete(image);
-            image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
+        if(weduUpdateDto.getImage() != null) {
+            Image image = existingWedu.getImage();
+            if(image != null) {
+                s3Service.deleteImage(image.getImageName());
+                imageRepository.delete(image);
+            }
+            if(weduUpdateDto.getImage().isEmpty()) {
+                image = null;
+            } else {
+                image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
+            }
+            existingWedu.updateImage(image);
         }
-//        existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
-        hashTagService.deleteHashTags(existingWedu);
-        Set<HashTag> hashTagSet = hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
-        existingWedu.setHashTags(hashTagSet);
+
+        if(weduUpdateDto.getMaximumPeople() != null) {
+            existingWedu.updateMaximum(weduUpdateDto.getMaximumPeople());
+        }
+
+        if(weduUpdateDto.getIsLocked() != null) {
+            existingWedu.updateLocked(weduUpdateDto.getIsLocked());
+            if(weduUpdateDto.getIsLocked()) {
+                existingWedu.updatePassword(weduUpdateDto.getPassword());
+            } else {
+                existingWedu.updatePassword(null);
+            }
+        }
+
+        if(weduUpdateDto.getHashTags() != null) {
+            List<HashTag> hashTags = existingWedu.getHashTags().stream().toList();
+            Set<HashTag> newHashTags = hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
+
+            if(!hashTags.isEmpty()) {
+                hashTagService.deleteAllHashTags(hashTags);
+            }
+
+            existingWedu.updateHashTags(newHashTags);
+        }
+
         return weduRepository.save(existingWedu);
     }
 

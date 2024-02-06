@@ -50,4 +50,8 @@ public class HashTagService {
         }
     }
 
+    public void deleteAllHashTags(List<HashTag> hashTags) {
+        hashTagRepository.deleteAll(hashTags);
+    }
+
 }

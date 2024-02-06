@@ -4,9 +4,11 @@ import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -49,8 +51,9 @@ public class Wedu extends EntityTime {
     @JoinColumn(name = "member_id", nullable = false)
     private Member host;
 
+    @Setter
     @OneToMany(mappedBy = "wedu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<HashTag> hashTags;
+    private Set<HashTag> hashTags = new HashSet<>();
     @Builder
     public Wedu(String title, Image image, Member host, int maximumPeople, boolean isLocked, String password, Long grade, Long subject, LocalDate targetDate, String challenge) {
         this.title = title;
@@ -65,14 +68,24 @@ public class Wedu extends EntityTime {
         this.challenge = challenge;
     }
 
-    public void update(Image image, int maximumPeople, boolean isLocked, String password) {
+    public void updateImage(Image image) {
         this.image = image;
+    }
+
+    public void updateMaximum(int maximumPeople) {
         this.maximumPeople = maximumPeople;
+    }
+
+    public void updateLocked(boolean isLocked) {
         this.isLocked = isLocked;
+    }
+
+    public void updatePassword(String password) {
         this.password = password;
     }
 
-    public void setHashTags(Set<HashTag> hashTags) {
-        this.hashTags = hashTags;
+    public void updateHashTags(Set<HashTag> hashTags) {
+        this.getHashTags().clear();
+        this.getHashTags().addAll(hashTags);
     }
 }
