@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class WeduUpdateDto {
     private MultipartFile image;
-    private int maximumPeople;
-    private boolean isLocked;
+    private Integer maximumPeople;
+    private Boolean isLocked;
     private String password;
     private List<String> hashTags;
 

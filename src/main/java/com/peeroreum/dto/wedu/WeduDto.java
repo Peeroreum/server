@@ -19,6 +19,7 @@ public class WeduDto {
     private Long progress;
     private boolean isLocked;
     private String password;
+    private int maxPeopleNum;
 
     public WeduDto(Wedu wedu, int attendingPeopleNum) {
         this.id = wedu.getId();
@@ -30,6 +31,7 @@ public class WeduDto {
         this.password = wedu.getPassword();
         this.attendingPeopleNum = attendingPeopleNum;
         this.dDay = LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS);
+        this.maxPeopleNum = wedu.getMaximumPeople();
     }
 
     public WeduDto(Wedu wedu, int attendingPeopleNum, Long progress) {
@@ -41,6 +43,7 @@ public class WeduDto {
         this.attendingPeopleNum = attendingPeopleNum;
         this.dDay = LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS);
         this.progress = progress;
+        this.maxPeopleNum = wedu.getMaximumPeople();
     }
 
 }

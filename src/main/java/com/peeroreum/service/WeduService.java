@@ -120,9 +120,14 @@ public class WeduService {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         int total = memberWeduRepository.countAllByWedu(wedu);
         Long progress = challengeService.getTodayProgress(wedu, total);
+        List<String> hashTags = hashTagService.readHashTags(wedu);
+        int attendingPeopleNum = memberWeduRepository.countAllByWedu(wedu);
 
         return WeduReadDto.builder()
                 .title(wedu.getTitle())
+                .subject(wedu.getSubject())
+                .grade(wedu.getGrade())
+                .maxPeopleNum(wedu.getMaximumPeople())
                 .imageUrl(wedu.getImage() != null ? wedu.getImage().getImagePath() : null)
                 .dDay(LocalDate.now().until(wedu.getTargetDate(), ChronoUnit.DAYS))
                 .challenge(wedu.getChallenge())
@@ -130,6 +135,8 @@ public class WeduService {
                 .isLocked(wedu.isLocked())
                 .progress(progress)
                 .hostMail(wedu.getHost().getUsername())
+                .hashTags(hashTags)
+                .attendingPeopleNum(attendingPeopleNum)
                 .build();
     }
 
@@ -170,16 +177,44 @@ public class WeduService {
             throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
         }
 
-        Image image = existingWedu.getImage();
-        if(!weduUpdateDto.getImage().isEmpty()) {
-            s3Service.deleteImage(image.getImageName());
-            imageRepository.delete(image);
-            image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
+        if(weduUpdateDto.getImage() != null) {
+            Image image = existingWedu.getImage();
+            if(image != null) {
+                s3Service.deleteImage(image.getImageName());
+                imageRepository.delete(image);
+            }
+            if(weduUpdateDto.getImage().isEmpty()) {
+                image = null;
+            } else {
+                image = imageRepository.save(s3Service.uploadImage(weduUpdateDto.getImage()));
+            }
+            existingWedu.updateImage(image);
         }
-        existingWedu.update(image, weduUpdateDto.getMaximumPeople(), weduUpdateDto.isLocked(), weduUpdateDto.getPassword());
-        hashTagService.deleteHashTags(existingWedu);
-        Set<HashTag> hashTagSet = hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
-        existingWedu.setHashTags(hashTagSet);
+
+        if(weduUpdateDto.getMaximumPeople() != null) {
+            existingWedu.updateMaximum(weduUpdateDto.getMaximumPeople());
+        }
+
+        if(weduUpdateDto.getIsLocked() != null) {
+            existingWedu.updateLocked(weduUpdateDto.getIsLocked());
+            if(weduUpdateDto.getIsLocked()) {
+                existingWedu.updatePassword(weduUpdateDto.getPassword());
+            } else {
+                existingWedu.updatePassword(null);
+            }
+        }
+
+        if(weduUpdateDto.getHashTags() != null) {
+            List<HashTag> hashTags = existingWedu.getHashTags().stream().toList();
+            Set<HashTag> newHashTags = hashTagService.createHashTags(existingWedu, weduUpdateDto.getHashTags());
+
+            if(!hashTags.isEmpty()) {
+                hashTagService.deleteAllHashTags(hashTags);
+            }
+
+            existingWedu.updateHashTags(newHashTags);
+        }
+
         return weduRepository.save(existingWedu);
     }
 
