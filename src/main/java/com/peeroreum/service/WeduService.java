@@ -133,6 +133,7 @@ public class WeduService {
                 .challenge(wedu.getChallenge())
                 .continuousDate(challengeService.getContinuousDate(member, wedu))
                 .isLocked(wedu.isLocked())
+                .password(wedu.getPassword())
                 .progress(progress)
                 .hostMail(wedu.getHost().getUsername())
                 .hashTags(hashTags)
