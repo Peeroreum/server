@@ -146,7 +146,8 @@ public class MemberService {
     public MemberProfileDto findProfile(String nickname, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Member findMember = memberRepository.findByNickname(nickname).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        return new MemberProfileDto(findMember.getGrade(), findMember.getImage() == null? null : findMember.getImage().getImagePath(), findMember.getBackgroundImage() == null? null : findMember.getBackgroundImage().getImagePath(), findMember.getNickname(), findMember.getFriends().size(), member.getFriends().contains(findMember));
+        findMember.checkActiveDaysCount();
+        return new MemberProfileDto(findMember.getGrade(), findMember.getImage() == null? null : findMember.getImage().getImagePath(), findMember.getBackgroundImage() == null? null : findMember.getBackgroundImage().getImagePath(), findMember.getNickname(), findMember.getFriends().size(), member.getFriends().contains(findMember), findMember.getActiveDaysCount());
     }
 
     public String changeNickname(String nickname, String username) {
@@ -225,7 +226,16 @@ public class MemberService {
         }
 
         member.updateBackgroundImage(null);
+        member.checkActiveDaysCount();
         memberRepository.save(member);
-        return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), null, member.getNickname());
+        return new MemberProfileDto(member.getGrade(), member.getImage() == null? null : member.getImage().getImagePath(), null, member.getNickname(), member.getActiveDaysCount());
+    }
+
+    public Long updateActiveDays(String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        member.checkActiveDaysCount();
+        member.updateActiveDaysCount();
+        memberRepository.save(member);
+        return member.getActiveDaysCount();
     }
 }

@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Entity
@@ -25,6 +28,9 @@ public class Member extends EntityTime {
     private String password;
 
     private String firebaseToken;
+
+    private Long activeDaysCount;
+    private LocalDate lastVisit;
 
     @Column(nullable = false)
     private String nickname;
@@ -109,4 +115,16 @@ public class Member extends EntityTime {
         this.friends.remove(member);
     }
 
+    public void checkActiveDaysCount() {
+        if (this.activeDaysCount == null) {
+            this.activeDaysCount = ChronoUnit.DAYS.between(this.getCreatedTime(), LocalDateTime.now()) + 1;
+        }
+    }
+
+    public void updateActiveDaysCount() {
+        if(lastVisit == null || !LocalDate.now().isEqual(lastVisit)) {
+            this.lastVisit = LocalDate.now();
+            this.activeDaysCount += 1;
+        }
+    }
 }

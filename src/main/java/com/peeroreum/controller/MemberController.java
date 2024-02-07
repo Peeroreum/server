@@ -97,4 +97,9 @@ public class MemberController {
         return ResponseDto.success(memberService.deleteBackgroundImage(principal.getName()));
     }
 
+    @PutMapping("/member/activeDays")
+    public ResponseDto updateActiveDays(Principal principal) {
+        return ResponseDto.success(memberService.updateActiveDays(principal.getName()));
+    }
+
 }
