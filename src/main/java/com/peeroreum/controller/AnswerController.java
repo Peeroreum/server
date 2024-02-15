@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@CrossOrigin
 @RestController
-@RequiredArgsConstructor
 public class AnswerController {
     private final AnswerService answerService;
+
+    public AnswerController(AnswerService answerService) {
+        this.answerService = answerService;
+    }
 
     @PostMapping("/answer")
     @ResponseStatus(HttpStatus.OK)
@@ -27,17 +29,17 @@ public class AnswerController {
 
     @PostMapping("/answer/read")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest, Principal principal) {
+    public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest, @RequestParam(defaultValue = "0") int page, Principal principal) {
         String username = principal.getName();
-        return ResponseDto.success(answerService.readAll(answerReadRequest, username));
+        return ResponseDto.success(answerService.readAll(answerReadRequest, page, username));
     }
 
-    @PutMapping("/answer/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseDto updateAnswer(@PathVariable Long id, @ModelAttribute AnswerUpdateDto answerUpdateDto) {
-        answerService.update(id, answerUpdateDto);
-        return ResponseDto.success();
-    }
+//    @PutMapping("/answer/{id}")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResponseDto updateAnswer(@PathVariable Long id, @ModelAttribute AnswerUpdateDto answerUpdateDto) {
+//        answerService.update(id, answerUpdateDto);
+//        return ResponseDto.success();
+//    }
 
     @DeleteMapping("/answer/{id}")
     @ResponseStatus(HttpStatus.OK)
