@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-public class QuestionImage extends EntityTime {
+public class QuestionImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
