@@ -3,9 +3,14 @@ package com.peeroreum.domain.bookmark;
 import com.peeroreum.domain.EntityTime;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Entity
+@Getter
+@NoArgsConstructor
 public class QuestionBookMark extends EntityTime {
 
     @Id
