@@ -1,30 +1,32 @@
 package com.peeroreum.controller;
 
 import com.peeroreum.dto.question.QuestionSaveDto;
-import com.peeroreum.dto.question.QuestionSearchRequest;
 import com.peeroreum.dto.question.QuestionUpdateDto;
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.service.QuestionService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@CrossOrigin
 @RestController
-@RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
 
-    @PostMapping("home/question")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseDto searchQuestion(@RequestBody QuestionSearchRequest searchRequest) {
-        return ResponseDto.success(questionService.search(searchRequest));
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
+    }
+
+    @GetMapping("/question")
+    public ResponseDto getQuestions(@RequestParam("grade") Long grade, @RequestParam("subject") Long subject, @RequestParam("detailSubject") Long detailSubject, @RequestParam(defaultValue = "0") int page) {
+        return ResponseDto.success(questionService.getQuestions(grade, subject, detailSubject, page));
+    }
+
+    @GetMapping("/question/search/{keyword}")
+    public ResponseDto searchQuestions(@PathVariable String keyword) {
+        return ResponseDto.success(questionService.getSearchResults(keyword));
     }
 
     @PostMapping("/question")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
         String username = principal.getName();
         questionService.create(saveDto, username);
@@ -32,21 +34,18 @@ public class QuestionController {
     }
 
     @GetMapping("/question/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseDto readQuestion(@PathVariable Long id, Principal principal){
         String username = principal.getName();
         return ResponseDto.success(questionService.read(id, username));
     }
 
     @PutMapping("/question/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseDto updateQuestion(@PathVariable Long id, @ModelAttribute QuestionUpdateDto questionUpdateDto) {
         questionService.update(id, questionUpdateDto);
         return ResponseDto.success();
     }
 
     @DeleteMapping("/question/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseDto deleteQuestion(@PathVariable Long id){
         questionService.delete(id);
         return ResponseDto.success();
