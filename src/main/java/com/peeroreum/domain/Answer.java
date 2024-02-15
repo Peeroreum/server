@@ -1,6 +1,5 @@
 package com.peeroreum.domain;
 
-import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -33,42 +30,33 @@ public class Answer extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
-    @OneToMany(mappedBy = "answer", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
+    private String groupId;
 
-    private Long likes = 0L;
-    private boolean isDeleted;
+    private Long parentAnswerId;
+
+    private boolean isSelected = false;
+
+    private boolean isDeleted = false;
 
     @Builder
-    public Answer(String content, Member member, Question question) {
+    public Answer(String content, Member member, Question question, Long parentAnswerId) {
         this.content = content;
         this.member = member;
         this.question = question;
-        this.isDeleted = false;
+        this.parentAnswerId = parentAnswerId;
+    }
+
+    public void updateGroupId(Long parentId) {
+        this.groupId = "groupId" + parentId;
     }
 
     public void update(String content) {
         this.content = content;
     }
 
-    public void updateLikes(int like) {
-        this.likes += like;
-    }
-
-    public void addImage(Image image) {
-        this.images.add(image);
-
-        if(image.getAnswer() != this) {
-            image.setAnswer(this);
-        }
-    }
-
-    public void clearImage() {
-        this.images.clear();
-    }
-
     public void delete() {
         this.content = "";
         isDeleted = true;
     }
+
 }
