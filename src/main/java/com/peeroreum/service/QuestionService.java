@@ -76,4 +76,21 @@ public class QuestionService {
 
         return questionRepository.save(question);
     }
+
+    public void delete(Long id, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
+
+        if(question.getMember() != member) {
+            throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
+        }
+
+        if(!question.getImages().isEmpty()) {
+            for(Image image : question.getImages()) {
+                imageService.deleteImage(image.getId());
+            }
+        }
+
+        questionRepository.delete(question);
+    }
 }

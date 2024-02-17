@@ -43,8 +43,8 @@ public class QuestionController {
     }
 
     @DeleteMapping("/question/{id}")
-    public ResponseDto deleteQuestion(@PathVariable Long id){
-        questionService.delete(id);
+    public ResponseDto deleteQuestion(@PathVariable Long id, Principal principal){
+        questionService.delete(id, principal.getName());
         return ResponseDto.success();
     }
 }
