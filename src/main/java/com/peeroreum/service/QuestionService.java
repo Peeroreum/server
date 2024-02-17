@@ -1,11 +1,8 @@
 package com.peeroreum.service;
 
-import com.peeroreum.domain.Answer;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.Member;
-import com.peeroreum.domain.image.QuestionImage;
-import com.peeroreum.dto.Attachment.ImageDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.service.attachment.ImageService;
@@ -14,12 +11,10 @@ import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,8 +23,6 @@ import java.util.List;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
-    private final AnswerRepository answerRepository;
-    private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final S3Service s3Service;
 
@@ -55,82 +48,32 @@ public class QuestionService {
         return questionRepository.save(question);
     }
 
-    public QuestionReadDto read(Long id, String username) {
-        List<ImageDto> imageList = imageService.findAllByQuestion(id);
-        List<String> imagePaths = new ArrayList<>();
-        boolean liked = heartRepository.existsByMemberAndQuestionId(memberRepository.findByUsername(username).get(), id);
-        for(ImageDto image : imageList)
-            imagePaths.add(image.getImagePath());
+    public Question update(Long id, QuestionUpdateDto updateDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
-        return new QuestionReadDto(username, liked, question, imagePaths, answerRepository.countByQuestionId(id));
-    }
 
-    public void update(Long id, QuestionUpdateDto updateDto) {
-        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
-        List<Image> images = question.getImages(); //기존 저장 이미지 삭제
-        if(!images.isEmpty()) {
-            for(Image image : images) {
-                s3Service.deleteImage(image.getImageName());
-                imageRepository.delete(image);
-            }
+        if(question.getMember() != member) {
+            throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
         }
-        question.clearImage();
 
-        if(!CollectionUtils.isEmpty(updateDto.getFiles())) {
-            List<Image> imageList = new ArrayList<>();
+        if(updateDto.getContent() != null) {
+            question.updateContent(updateDto.getContent());
+        }
+
+        if(updateDto.getFiles() != null) {
+            if(!question.getImages().isEmpty()) {
+                for(Image image : question.getImages()) {
+                    imageService.deleteImage(image.getId());
+                }
+            }
+
+            List<Image> images = new ArrayList<>();
             for(MultipartFile file : updateDto.getFiles()) {
-                imageList.add(s3Service.uploadImage(file));
+                images.add(imageService.saveImage(file));
             }
-            for(Image image : imageList)
-                question.addImage(imageRepository.save(image));
+            question.updateImages(images);
         }
 
-
-        question.update(updateDto.getContent(), updateDto.getSubject(), updateDto.getGrade());
-        questionRepository.save(question);
-    }
-
-    public void delete(Long id) {
-        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
-
-        List<Image> images = question.getImages();
-        if(!images.isEmpty()) {
-            for(Image image : images) {
-                s3Service.deleteImage(image.getImageName());
-                imageRepository.delete(image);
-            }
-        }
-
-        List<Answer> answers = answerRepository.findAllByQuestionId(id);
-        if(!answers.isEmpty()) {
-            answerRepository.deleteAll(answers);
-        }
-
-        questionRepository.delete(question);
-    }
-
-    public List<QuestionListDto> search(QuestionSearchRequest searchRequest) {
-        List<Question> searchedQuestions;
-        List<QuestionListDto> results = new ArrayList<>();
-        if(searchRequest.getSubject() == 0 && searchRequest.getGrade() == 0) {
-            searchedQuestions = questionRepository.findAll();
-        }
-        else {
-            if(searchRequest.getSubject() == 0) {
-                searchedQuestions = questionRepository.findAllByGrade(searchRequest.getGrade());
-            }
-            else if(searchRequest.getGrade() == 0) {
-                searchedQuestions = questionRepository.findAllBySubject(searchRequest.getSubject());
-            }
-            else {
-                searchedQuestions = questionRepository.findAllBySubjectAndGrade(searchRequest.getSubject(), searchRequest.getGrade());
-            }
-        }
-        Collections.reverse(searchedQuestions);
-
-        for(Question question : searchedQuestions) {
-            results.add(new QuestionListDto(question, answerRepository.countByQuestionId(question.getId())));
-        }
-        return results;
+        return questionRepository.save(question);
     }
 }

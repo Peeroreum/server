@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,7 +40,7 @@ public class Question extends EntityTime {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_image_id")
-    private List<Image> images;
+    private List<Image> images = new ArrayList<>();
 
     @Builder
     public Question(String title, String content, Long subject, Long detailSubject, Long grade, Member member) {
@@ -56,7 +57,8 @@ public class Question extends EntityTime {
     }
 
     public void updateImages(List<Image> images) {
-        this.images = images;
+        this.images.clear();
+        this.images.addAll(images);
     }
 
 }

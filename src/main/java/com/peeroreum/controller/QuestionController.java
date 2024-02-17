@@ -16,6 +16,11 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+    @PostMapping("/question")
+    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
+        return ResponseDto.success(questionService.create(saveDto, principal.getName()));
+    }
+
     @GetMapping("/question")
     public ResponseDto getQuestions(@RequestParam("grade") Long grade, @RequestParam("subject") Long subject, @RequestParam("detailSubject") Long detailSubject, @RequestParam(defaultValue = "0") int page) {
         return ResponseDto.success(questionService.getQuestions(grade, subject, detailSubject, page));
@@ -26,11 +31,6 @@ public class QuestionController {
         return ResponseDto.success(questionService.getSearchResults(keyword, page));
     }
 
-    @PostMapping("/question")
-    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
-        return ResponseDto.success(questionService.create(saveDto, principal.getName()));
-    }
-
     @GetMapping("/question/{id}")
     public ResponseDto readQuestion(@PathVariable Long id, Principal principal){
         String username = principal.getName();
@@ -38,9 +38,8 @@ public class QuestionController {
     }
 
     @PutMapping("/question/{id}")
-    public ResponseDto updateQuestion(@PathVariable Long id, @ModelAttribute QuestionUpdateDto questionUpdateDto) {
-        questionService.update(id, questionUpdateDto);
-        return ResponseDto.success();
+    public ResponseDto updateQuestion(@PathVariable Long id, @ModelAttribute QuestionUpdateDto questionUpdateDto, Principal principal) {
+        return ResponseDto.success(questionService.update(id, questionUpdateDto, principal.getName()));
     }
 
     @DeleteMapping("/question/{id}")

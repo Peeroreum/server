@@ -1,6 +1,5 @@
 package com.peeroreum.dto.question;
 
-import com.peeroreum.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
