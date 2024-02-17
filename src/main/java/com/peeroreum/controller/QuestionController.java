@@ -22,15 +22,13 @@ public class QuestionController {
     }
 
     @GetMapping("/question/search/{keyword}")
-    public ResponseDto searchQuestions(@PathVariable String keyword) {
-        return ResponseDto.success(questionService.getSearchResults(keyword));
+    public ResponseDto searchQuestions(@PathVariable String keyword, @RequestParam(defaultValue = "0") int page) {
+        return ResponseDto.success(questionService.getSearchResults(keyword, page));
     }
 
     @PostMapping("/question")
     public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
-        String username = principal.getName();
-        questionService.create(saveDto, username);
-        return ResponseDto.success();
+        return ResponseDto.success(questionService.create(saveDto, principal.getName()));
     }
 
     @GetMapping("/question/{id}")

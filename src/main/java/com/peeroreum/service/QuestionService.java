@@ -4,6 +4,7 @@ import com.peeroreum.domain.Answer;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.Member;
+import com.peeroreum.domain.image.QuestionImage;
 import com.peeroreum.dto.Attachment.ImageDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
@@ -29,29 +30,29 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final AnswerRepository answerRepository;
     private final ImageRepository imageRepository;
-    private final HeartRepository heartRepository;
     private final ImageService imageService;
     private final S3Service s3Service;
 
-    public void create(QuestionSaveDto saveDto, String username) {
+    public Question create(QuestionSaveDto saveDto, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Question question = Question.builder()
+                .title(saveDto.getTitle())
                 .content(saveDto.getContent())
-                .member(member)
                 .subject(saveDto.getSubject())
-                .grade(saveDto.getGrade())
+                .detailSubject(saveDto.getDetailSubject())
+                .grade(member.getGrade())
+                .member(member)
                 .build();
 
-        if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
-            List<Image> imageList = new ArrayList<>();
+        List<Image> images = new ArrayList<>();
+        if(!saveDto.getFiles().isEmpty()) {
             for(MultipartFile file : saveDto.getFiles()) {
-                imageList.add(s3Service.uploadImage(file));
+                images.add(s3Service.uploadImage(file));
             }
-            for(Image image : imageList)
-                question.addImage(imageRepository.save(image));
         }
+        question.updateImages(images);
 
-        questionRepository.save(question);
+        return questionRepository.save(question);
     }
 
     public QuestionReadDto read(Long id, String username) {
