@@ -1,22 +1,16 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Answer;
-import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
-import com.peeroreum.dto.Attachment.ImageDto;
-import com.peeroreum.dto.answer.AnswerReadDto;
-import com.peeroreum.dto.answer.AnswerReadRequest;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.answer.AnswerSaveDto;
-import com.peeroreum.dto.answer.AnswerUpdateDto;
 import com.peeroreum.exception.CustomException;
-import com.peeroreum.service.attachment.ImageService;
-import com.peeroreum.service.attachment.S3Service;
 import com.peeroreum.exception.ExceptionType;
+import com.peeroreum.service.attachment.ImageService;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -30,85 +24,30 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
-    private final ImageRepository imageRepository;
-    private final HeartRepository heartRepository;
     private final ImageService imageService;
-    private final S3Service s3Service;
-
-    public void create(AnswerSaveDto saveDto, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
-
-        Answer answer = Answer.builder()
-                .content(saveDto.getContent())
-                .member(member)
-                .question(question)
-                .build();
-
-        if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
-            List<Image> imageList = new ArrayList<>();
-            for(MultipartFile file : saveDto.getFiles()) {
-                imageList.add(s3Service.uploadImage(file));
-            }
-            for(Image image : imageList)
-                answer.addImage(imageRepository.save(image));
-        }
-
-        questionRepository.save(question);
-        answerRepository.save(answer);
-    }
-
-    public List<AnswerReadDto> readAll(AnswerReadRequest readRequest, String username) {
-        List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
-        List<AnswerReadDto> result = new ArrayList<>();
-
-        for(Answer answer : answers) {
-            boolean liked = heartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
-            List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
-            List<String> imagePaths = new ArrayList<>();
-            for(ImageDto image : imageDtoList)
-                imagePaths.add(image.getImagePath());
-            result.add(new AnswerReadDto(username, liked, answer, imagePaths));
-        }
-
-        return result;
-    }
 
 
-    public void update(Long id, AnswerUpdateDto answerUpdateDto) {
-        Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
-        List<Image> images = answer.getImages(); //기존 저장 이미지 삭제
-        if(!images.isEmpty()) {
-            for(Image image : images) {
-                s3Service.deleteImage(image.getImageName());
-                imageRepository.delete(image);
+    public Answer create(AnswerSaveDto answerSaveDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Question question = questionRepository.findById(answerSaveDto.getQuestionId()).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
+
+        Answer answer = new Answer(
+                answerSaveDto.getContent(),
+                member, question,
+                answerSaveDto.getParentAnswerId()
+        );
+
+        List<Image> images = new ArrayList<>();
+        if(!answerSaveDto.getFiles().isEmpty()) {
+            for(MultipartFile file : answerSaveDto.getFiles()) {
+                images.add(imageService.saveImage(file));
             }
         }
-        answer.clearImage();
+        answer.updateImages(images);
 
-        if(!CollectionUtils.isEmpty(answerUpdateDto.getFiles())) {
-            List<Image> imageList = new ArrayList<>();
-            for(MultipartFile file : answerUpdateDto.getFiles()) {
-                imageList.add(s3Service.uploadImage(file));
-            }
-            for(Image image : imageList)
-                answer.addImage(imageRepository.save(image));
-        }
-        answer.update(answerUpdateDto.getContent());
-        answerRepository.save(answer);
+        answer = answerRepository.save(answer);
+        answer.updateGroupId();
+
+        return answerRepository.save(answer);
     }
-
-    public void delete(Long id) {
-        Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
-        List<Image> images = answer.getImages();
-
-        answerRepository.delete(answer);
-
-        if(!images.isEmpty()) {
-            for(Image image : images) {
-                s3Service.deleteImage(image.getImageName());
-            }
-        }
-    }
-
 }

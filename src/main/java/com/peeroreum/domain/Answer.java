@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,7 +33,11 @@ public class Answer extends EntityTime {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
-    private String groupId;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "answer_image_id")
+    private List<Image> images = new ArrayList<>();
+
+    private Long groupId;
 
     private Long parentAnswerId;
 
@@ -46,12 +53,21 @@ public class Answer extends EntityTime {
         this.parentAnswerId = parentAnswerId;
     }
 
-    public void updateGroupId(Long parentId) {
-        this.groupId = "groupId" + parentId;
+    public void updateGroupId() {
+        if(this.parentAnswerId == -1) {
+            this.groupId = this.id;
+        } else {
+            this.groupId = this.parentAnswerId;
+        }
     }
 
-    public void update(String content) {
+    public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void updateImages(List<Image> images) {
+        this.images.clear();
+        this.images.addAll(images);
     }
 
     public void delete() {

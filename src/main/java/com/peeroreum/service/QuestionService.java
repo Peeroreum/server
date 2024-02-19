@@ -7,7 +7,6 @@ import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.service.attachment.ImageService;
-import com.peeroreum.service.attachment.S3Service;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final AnswerService answerService;
     private final ImageService imageService;
-    private final S3Service s3Service;
     private final LikeService likeService;
     private final BookmarkService bookmarkService;
 
@@ -46,7 +44,7 @@ public class QuestionService {
         List<Image> images = new ArrayList<>();
         if(!saveDto.getFiles().isEmpty()) {
             for(MultipartFile file : saveDto.getFiles()) {
-                images.add(s3Service.uploadImage(file));
+                images.add(imageService.saveImage(file));
             }
         }
         question.updateImages(images);
