@@ -38,5 +38,4 @@ public class LikeController {
     public ResponseDto deleteAnswerLike(@PathVariable Long id, Principal principal) {
         return ResponseDto.success(likeService.cancelAnswerLike(id, principal.getName()));
     }
-
 }

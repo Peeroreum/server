@@ -1,6 +1,5 @@
 package com.peeroreum.controller;
 
-import com.peeroreum.dto.answer.AnswerReadRequest;
 import com.peeroreum.dto.answer.AnswerSaveDto;
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.service.AnswerService;
@@ -21,10 +20,9 @@ public class AnswerController {
         return ResponseDto.success(answerService.create(answerSaveDto, principal.getName()));
     }
 
-    @PostMapping("/answer/read")
-    public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest, @RequestParam(defaultValue = "0") int page, Principal principal) {
-        String username = principal.getName();
-        return ResponseDto.success(answerService.readAll(answerReadRequest, page, username));
+    @GetMapping("/answer")
+    public ResponseDto readAllAnswer(@RequestParam("questionId") Long questionId, @RequestParam(defaultValue = "0") int page, Principal principal) {
+        return ResponseDto.success(answerService.readAll(questionId, page, principal.getName()));
     }
 
     @DeleteMapping("/answer/{id}")

@@ -61,10 +61,6 @@ public class Answer extends EntityTime {
         }
     }
 
-    public void updateContent(String content) {
-        this.content = content;
-    }
-
     public void updateImages(List<Image> images) {
         this.images.clear();
         this.images.addAll(images);

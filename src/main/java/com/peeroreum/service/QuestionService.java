@@ -104,7 +104,7 @@ public class QuestionService {
             Member writer = question.getMember();
             QuestionListReadDto questionListReadDto = new QuestionListReadDto(
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
-                    question.getTitle(), answerService.checkSelectedAnswer(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
+                    question.getTitle(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
             );
             questionListReadDtos.add(questionListReadDto);
         }
