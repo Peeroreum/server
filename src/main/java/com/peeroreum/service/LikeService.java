@@ -55,4 +55,8 @@ public class LikeService {
     public Long countByQuestion(Question question) {
         return questionLikeRepository.countAllByQuestion(question);
     }
+
+    public void deleteAllByQuestion(Question question) {
+        questionLikeRepository.deleteAllByQuestion(question);
+    }
 }

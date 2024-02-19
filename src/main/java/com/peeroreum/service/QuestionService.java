@@ -95,7 +95,7 @@ public class QuestionService {
                 new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
                 question.getTitle(), question.getContent(), question.getImages().stream().map(Image::getImagePath).toList(), question.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 likeService.countByQuestion(question), answerService.countByQuestion(question),
-                answerService.checkSelectedAnswer(question), likeService.isLikedQuestion(question, member), bookmarkService.isBookmarkedQuestion(question, member)
+                likeService.isLikedQuestion(question, member), bookmarkService.isBookmarkedQuestion(question, member)
         );
         return questionReadDto;
     }
@@ -157,6 +157,8 @@ public class QuestionService {
             }
         }
 
+        bookmarkService.deleteAllByQuestion(question);
+        likeService.deleteAllByQuestion(question);
         questionRepository.delete(question);
     }
 }

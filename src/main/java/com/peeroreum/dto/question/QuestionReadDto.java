@@ -16,7 +16,6 @@ public class QuestionReadDto {
     private String createdTime;
     private Long likes;
     private Long comments;
-    private boolean isSelected;
     private boolean isLiked;
     private boolean isBookmarked;
 }
