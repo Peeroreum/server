@@ -5,11 +5,15 @@ import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-    List<Answer> findAllByQuestionIdOrderByGroupIdAscIdAsc(Long questionId, Pageable pageable);
+    List<Answer> findAllByQuestionOrderByGroupIdAscIdAsc(Question question, Pageable pageable);
     List<Answer> findAllByMember(Member member, Pageable pageable);
+    boolean existsByQuestionAndIsSelected(Question question, boolean isSelected);
     Long countAllByQuestion(Question question);
+    Long countAllByParentAnswerId(Long parentAnswerId);
 }

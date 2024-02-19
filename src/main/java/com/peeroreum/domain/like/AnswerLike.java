@@ -25,7 +25,7 @@ public class AnswerLike extends EntityTime {
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
-    AnswerLike(Member member, Answer answer) {
+    public AnswerLike(Member member, Answer answer) {
         this.member = member;
         this.answer = answer;
     }

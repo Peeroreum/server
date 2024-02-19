@@ -1,25 +1,23 @@
 package com.peeroreum.service;
 
 import com.peeroreum.domain.Answer;
-import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
-import com.peeroreum.dto.Attachment.ImageDto;
+import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.answer.AnswerReadDto;
-import com.peeroreum.dto.answer.AnswerReadRequest;
 import com.peeroreum.dto.answer.AnswerSaveDto;
-import com.peeroreum.dto.answer.AnswerUpdateDto;
+import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.exception.CustomException;
-import com.peeroreum.service.attachment.ImageService;
-import com.peeroreum.service.attachment.S3Service;
 import com.peeroreum.exception.ExceptionType;
+import com.peeroreum.service.attachment.ImageService;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,85 +28,66 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
-    private final ImageRepository imageRepository;
-    private final HeartRepository heartRepository;
     private final ImageService imageService;
-    private final S3Service s3Service;
+    private final LikeService likeService;
 
-    public void create(AnswerSaveDto saveDto, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Question question = questionRepository.findById(saveDto.getQuestionId()).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
 
-        Answer answer = Answer.builder()
-                .content(saveDto.getContent())
-                .member(member)
-                .question(question)
-                .build();
+    public Answer create(AnswerSaveDto answerSaveDto, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Question question = questionRepository.findById(answerSaveDto.getQuestionId()).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
 
-        if(!CollectionUtils.isEmpty(saveDto.getFiles())) {
-            List<Image> imageList = new ArrayList<>();
-            for(MultipartFile file : saveDto.getFiles()) {
-                imageList.add(s3Service.uploadImage(file));
+        Answer answer = new Answer(
+                answerSaveDto.getContent(),
+                member, question,
+                answerSaveDto.getParentAnswerId()
+        );
+
+        List<Image> images = new ArrayList<>();
+        if(!answerSaveDto.getFiles().isEmpty()) {
+            for(MultipartFile file : answerSaveDto.getFiles()) {
+                images.add(imageService.saveImage(file));
             }
-            for(Image image : imageList)
-                answer.addImage(imageRepository.save(image));
         }
+        answer.updateImages(images);
 
-        questionRepository.save(question);
-        answerRepository.save(answer);
+        answer = answerRepository.save(answer);
+        answer.updateGroupId();
+
+        return answerRepository.save(answer);
     }
 
-    public List<AnswerReadDto> readAll(AnswerReadRequest readRequest, String username) {
-        List<Answer> answers = answerRepository.findAllByQuestionId(readRequest.getQuestionId());
-        List<AnswerReadDto> result = new ArrayList<>();
+    public List<AnswerReadDto> readAll(Long questionId, int page, String username) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        List<Answer> answers = answerRepository.findAllByQuestionOrderByGroupIdAscIdAsc(question, PageRequest.of(page, 10));
+        return toAnswerReadList(answers, member);
+    }
+
+    public List<AnswerReadDto> toAnswerReadList(List<Answer> answers, Member member) {
+        List<AnswerReadDto> answerReadDtos = new ArrayList<>();
 
         for(Answer answer : answers) {
-            boolean liked = heartRepository.existsByMemberAndAnswerId(memberRepository.findByUsername(username).get(), answer.getId());
-            List<ImageDto> imageDtoList = imageService.findAllByAnswer(answer.getId());
-            List<String> imagePaths = new ArrayList<>();
-            for(ImageDto image : imageDtoList)
-                imagePaths.add(image.getImagePath());
-            result.add(new AnswerReadDto(username, liked, answer, imagePaths));
+            Member writer = answer.getMember();
+            AnswerReadDto answerReadDto = new AnswerReadDto(
+                    new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
+                    answer.getId(), answer.getContent(), answer.getImages().stream().map(Image::getImagePath).toList(), answer.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                    answer.isSelected(), answer.isDeleted(), likeService.isLikedAnswer(answer, member), answer.getParentAnswerId(), likeService.countByAnswer(answer), answerRepository.countAllByParentAnswerId(answer.getParentAnswerId())
+            );
+            answerReadDtos.add(answerReadDto);
         }
 
-        return result;
+        return answerReadDtos;
     }
 
-
-    public void update(Long id, AnswerUpdateDto answerUpdateDto) {
-        Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
-        List<Image> images = answer.getImages(); //기존 저장 이미지 삭제
-        if(!images.isEmpty()) {
-            for(Image image : images) {
-                s3Service.deleteImage(image.getImageName());
-                imageRepository.delete(image);
-            }
-        }
-        answer.clearImage();
-
-        if(!CollectionUtils.isEmpty(answerUpdateDto.getFiles())) {
-            List<Image> imageList = new ArrayList<>();
-            for(MultipartFile file : answerUpdateDto.getFiles()) {
-                imageList.add(s3Service.uploadImage(file));
-            }
-            for(Image image : imageList)
-                answer.addImage(imageRepository.save(image));
-        }
-        answer.update(answerUpdateDto.getContent());
-        answerRepository.save(answer);
+    public Long countByQuestion(Question question) {
+        return answerRepository.countAllByQuestion(question);
     }
 
-    public void delete(Long id) {
-        Answer answer = answerRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
-        List<Image> images = answer.getImages();
-
-        answerRepository.delete(answer);
-
-        if(!images.isEmpty()) {
-            for(Image image : images) {
-                s3Service.deleteImage(image.getImageName());
-            }
-        }
+    public boolean checkIfSelected(Question question) {
+        return answerRepository.existsByQuestionAndIsSelected(question, true);
     }
 
+    public void delete(Long id, String name) {
+    }
 }

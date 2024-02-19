@@ -1,12 +1,8 @@
 package com.peeroreum.controller;
 
-import com.peeroreum.dto.answer.AnswerReadRequest;
 import com.peeroreum.dto.answer.AnswerSaveDto;
-import com.peeroreum.dto.answer.AnswerUpdateDto;
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.service.AnswerService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -20,31 +16,18 @@ public class AnswerController {
     }
 
     @PostMapping("/answer")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseDto createAnswer(@ModelAttribute AnswerSaveDto answerSaveDto, Principal principal) {
-        String username = principal.getName();
-        answerService.create(answerSaveDto, username);
-        return ResponseDto.success();
+        return ResponseDto.success(answerService.create(answerSaveDto, principal.getName()));
     }
 
-    @PostMapping("/answer/read")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseDto readAllAnswer(@RequestBody AnswerReadRequest answerReadRequest, @RequestParam(defaultValue = "0") int page, Principal principal) {
-        String username = principal.getName();
-        return ResponseDto.success(answerService.readAll(answerReadRequest, page, username));
+    @GetMapping("/answer")
+    public ResponseDto readAllAnswer(@RequestParam("questionId") Long questionId, @RequestParam(defaultValue = "0") int page, Principal principal) {
+        return ResponseDto.success(answerService.readAll(questionId, page, principal.getName()));
     }
-
-//    @PutMapping("/answer/{id}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ResponseDto updateAnswer(@PathVariable Long id, @ModelAttribute AnswerUpdateDto answerUpdateDto) {
-//        answerService.update(id, answerUpdateDto);
-//        return ResponseDto.success();
-//    }
 
     @DeleteMapping("/answer/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseDto deleteAnswer(@PathVariable Long id) {
-        answerService.delete(id);
+    public ResponseDto deleteAnswer(@PathVariable Long id, Principal principal) {
+        answerService.delete(id, principal.getName());
         return ResponseDto.success();
     }
 }

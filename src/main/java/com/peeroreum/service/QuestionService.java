@@ -7,7 +7,6 @@ import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.service.attachment.ImageService;
-import com.peeroreum.service.attachment.S3Service;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class QuestionService {
     private final MemberRepository memberRepository;
     private final AnswerService answerService;
     private final ImageService imageService;
-    private final S3Service s3Service;
     private final LikeService likeService;
     private final BookmarkService bookmarkService;
 
@@ -46,7 +44,7 @@ public class QuestionService {
         List<Image> images = new ArrayList<>();
         if(!saveDto.getFiles().isEmpty()) {
             for(MultipartFile file : saveDto.getFiles()) {
-                images.add(s3Service.uploadImage(file));
+                images.add(imageService.saveImage(file));
             }
         }
         question.updateImages(images);
@@ -59,20 +57,20 @@ public class QuestionService {
 
         if(subject == 0) {
             if(grade == 0) {
-                questions = questionRepository.findAllByOrderByIdDes(PageRequest.of(page, 15));
+                questions = questionRepository.findAllByOrderByIdDesc(PageRequest.of(page, 15));
             } else {
-                questions = questionRepository.findAllByGradeOrderByIdDes(grade, PageRequest.of(page, 15));
+                questions = questionRepository.findAllByGradeOrderByIdDesc(grade, PageRequest.of(page, 15));
             }
         } else {
             if(detailSubject == 0) {
                 if(grade == 0) {
-                    questions = questionRepository.findAllBySubjectOrderByIdDes(subject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectOrderByIdDesc(subject, PageRequest.of(page, 15));
                 } else {
                     questions = questionRepository.findAllBySubjectAndGradeOrderByIdDesc(subject, grade, PageRequest.of(page, 15));
                 }
             } else {
                 if(grade == 0) {
-                    questions = questionRepository.findAllBySubjectAndDetailSubjectOrderByIdDes(subject, detailSubject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectAndDetailSubjectOrderByIdDesc(subject, detailSubject, PageRequest.of(page, 15));
                 } else {
                     questions = questionRepository.findAllByGradeAndSubjectAndDetailSubjectOrderByIdDesc(grade, subject, detailSubject, PageRequest.of(page, 15));
                 }
@@ -83,7 +81,7 @@ public class QuestionService {
     }
 
     public List<QuestionListReadDto> getSearchResults(String keyword, int page) {
-        List<Question> questions = questionRepository.findAllByTitleAndContentContainingOrderByIdDesc(keyword, PageRequest.of(page, 15));
+        List<Question> questions = questionRepository.findAllByTitleContainingOrContentContaining(keyword, keyword, PageRequest.of(page, 15));
         return makeToQuestionReadDto(questions);
     }
 
@@ -106,7 +104,7 @@ public class QuestionService {
             Member writer = question.getMember();
             QuestionListReadDto questionListReadDto = new QuestionListReadDto(
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
-                    question.getTitle(), answerService.checkSelectedAnswer(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
+                    question.getTitle(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
             );
             questionListReadDtos.add(questionListReadDto);
         }
