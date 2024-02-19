@@ -6,10 +6,9 @@ import com.peeroreum.domain.like.AnswerLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface AnswerLikeRepository extends JpaRepository<AnswerLike, Long> {
-    Optional<AnswerLike> findByAnswerAndMember(Answer answer, Member member);
+    Long countAllByAnswer(Answer answer);
+    boolean existsByAnswerAndMember(Answer answer, Member member);
     void deleteByAnswerAndMember(Answer answer, Member member);
 }

@@ -23,19 +23,20 @@ public class LikeController {
         return ResponseDto.success(likeService.makeQuestionLike(id, principal.getName()));
     }
 
-    @PostMapping("/like/answer/{id}")
-    public ResponseDto createAnswerLike(@PathVariable Long id, Principal principal) {
-        return ResponseDto.success(likeService.makeAnswerLike(id, principal.getName()));
-    }
-
     @DeleteMapping("/like/question/{id}")
     public ResponseDto deleteQuestionLike(@PathVariable Long id, Principal principal) {
         likeService.cancelQuestionLike(id, principal.getName());
         return ResponseDto.success();
     }
 
+    @PostMapping("/like/answer/{id}")
+    public ResponseDto createAnswerLike(@PathVariable Long id, Principal principal) {
+        return ResponseDto.success(likeService.makeAnswerLike(id, principal.getName()));
+    }
+
     @DeleteMapping("/like/answer/{id}")
     public ResponseDto deleteAnswerLike(@PathVariable Long id, Principal principal) {
-        return ResponseDto.success(likeService.cancelAnswerLike(id, principal.getName()));
+        likeService.cancelAnswerLike(id, principal.getName());
+        return ResponseDto.success();
     }
 }
