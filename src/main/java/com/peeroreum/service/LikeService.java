@@ -29,7 +29,7 @@ public class LikeService {
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
 
-        if(questionLikeRepository.existsByQuestionAndMember(question, member)) {
+        if(isLikedQuestion(question, member)) {
             throw new CustomException(ExceptionType.ALREADY_LIKED);
         }
 
@@ -41,11 +41,15 @@ public class LikeService {
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
 
-        if(!questionLikeRepository.existsByQuestionAndMember(question, member)) {
+        if(!isLikedQuestion(question, member)) {
             throw new CustomException(ExceptionType.LIKE_NOT_FOUND);
         }
 
         questionLikeRepository.deleteByQuestionAndMember(question, member);
+    }
+
+    public boolean isLikedQuestion(Question question, Member member) {
+        return questionLikeRepository.existsByQuestionAndMember(question, member);
     }
 
     public Long countByQuestion(Question question) {

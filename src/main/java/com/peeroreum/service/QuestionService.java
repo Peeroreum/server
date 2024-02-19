@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,13 +87,26 @@ public class QuestionService {
         return makeToQuestionReadDto(questions);
     }
 
+    public QuestionReadDto readById(Long id, String username) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
+        Member writer = question.getMember();
+        QuestionReadDto questionReadDto = new QuestionReadDto(
+                new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
+                question.getTitle(), question.getContent(), question.getImages().stream().map(Image::getImagePath).toList(), question.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                likeService.countByQuestion(question), answerService.countByQuestion(question),
+                answerService.checkSelectedAnswer(question), likeService.isLikedQuestion(question, member), bookmarkService.isBookmarkedQuestion(question, member)
+        );
+        return questionReadDto;
+    }
+
     public List<QuestionListReadDto> makeToQuestionReadDto(List<Question> questions) {
         List<QuestionListReadDto> questionListReadDtos = new ArrayList<>();
         for(Question question : questions) {
             Member writer = question.getMember();
             QuestionListReadDto questionListReadDto = new QuestionListReadDto(
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
-                    question.getTitle(), answerService.checkSelectedAnswer(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime() // 채택여부, 좋아요수, 댓글 수 수정
+                    question.getTitle(), answerService.checkSelectedAnswer(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
             );
             questionListReadDtos.add(questionListReadDto);
         }

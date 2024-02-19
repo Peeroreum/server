@@ -30,7 +30,7 @@ public class BookmarkService {
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
-        if(questionBookmarkRepository.existsByQuestionAndMember(question, member)) {
+        if(isBookmarkedQuestion(question, member)) {
             throw new CustomException(ExceptionType.ALREADY_BOOKMARKED);
         }
 
@@ -42,7 +42,7 @@ public class BookmarkService {
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
-        if(!questionBookmarkRepository.existsByQuestionAndMember(question, member)) {
+        if(!isBookmarkedQuestion(question, member)) {
             throw new CustomException(ExceptionType.BOOKMARK_NOT_FOUND);
         }
 
@@ -55,5 +55,9 @@ public class BookmarkService {
 
     public void deleteAllByMember(Member member) {
         questionBookmarkRepository.deleteAllByMember(member);
+    }
+
+    public boolean isBookmarkedQuestion(Question question, Member member) {
+        return questionBookmarkRepository.existsByQuestionAndMember(question, member);
     }
 }
