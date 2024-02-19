@@ -4,18 +4,20 @@ import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllByGradeAndSubjectAndDetailSubjectOrderByIdDesc(Long grade, Long subject, Long detailSubject, Pageable pageable);
     List<Question> findAllBySubjectAndGradeOrderByIdDesc(Long subject, Long grade, Pageable pageable);
-    List<Question> findAllBySubjectAndDetailSubjectOrderByIdDes(Long subject, Long detailSubject, Pageable pageable);
-    List<Question> findAllBySubjectOrderByIdDes(Long subject, Pageable pageable);
-    List<Question> findAllByGradeOrderByIdDes(Long grade, Pageable pageable);
-    List<Question> findAllByOrderByIdDes(Pageable pageable);
+    List<Question> findAllBySubjectAndDetailSubjectOrderByIdDesc(Long subject, Long detailSubject, Pageable pageable);
+    List<Question> findAllBySubjectOrderByIdDesc(Long subject, Pageable pageable);
+    List<Question> findAllByGradeOrderByIdDesc(Long grade, Pageable pageable);
+    List<Question> findAllByOrderByIdDesc(Pageable pageable);
 
-    List<Question> findAllByMemberOrderByIdDes(Member member, Pageable pageable);
+    List<Question> findAllByMemberOrderByIdDesc(Member member, Pageable pageable);
 
-    List<Question> findAllByTitleAndContentContainingOrderByIdDesc(String keyword, Pageable pageable);
+    List<Question> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 }

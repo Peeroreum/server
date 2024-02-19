@@ -26,8 +26,8 @@ public class AnswerController {
     }
 
     @DeleteMapping("/answer/{id}")
-    public ResponseDto deleteAnswer(@PathVariable Long id) {
-        answerService.delete(id);
+    public ResponseDto deleteAnswer(@PathVariable Long id, Principal principal) {
+        answerService.delete(id, principal.getName());
         return ResponseDto.success();
     }
 }

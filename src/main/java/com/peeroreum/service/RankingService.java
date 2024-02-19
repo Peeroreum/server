@@ -26,43 +26,43 @@ public class RankingService {
 
     //    @Scheduled(cron = "* * * * * *")
     public void init() {
-        rankingList = new ArrayList<>();
-        HashMap<ScoreDto, Double> scoreMap = new HashMap<>();
-        List<Member> memberList = memberRepository.findAll();
-        long questionCnt, answerCnt, answerLike = 0L;
-        double score;
-        ScoreDto scoreDto;
-        for (Member member : memberList) {
-            questionCnt = questionRepository.countByMemberId(member.getId());
-
-            List<Answer> answers = answerRepository.findAllByMemberId(member.getId());
-            answerCnt = answers.size();
-            if(answerCnt > 0) {
-                for (Answer answer : answers) {
-                    answerLike += answer.getLikes();
-                }
-            }
-
-            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike);
-
-            score = questionCnt + answerCnt;
-            scoreMap.put(scoreDto, score);
-        }
-        List<Map.Entry<ScoreDto, Double>> scoreList = new LinkedList<>(scoreMap.entrySet());
-        scoreList.sort((o1, o2) -> {
-            double value = o2.getValue() - o1.getValue();
-            if(value > 0)
-                return 1;
-            else if (value == 0)
-                return 0;
-            else return -1;
-        });
-
-        int size = scoreList.size();
-        for (int i = 0; i < size; i++) {
-            ScoreDto scores = scoreList.get(i).getKey();
-            rankingList.add(new RankingDto(scores.getMember(), scores.getQuestionCnt(), scores.getAnswerCnt(), i + 1));
-        }
+//        rankingList = new ArrayList<>();
+//        HashMap<ScoreDto, Double> scoreMap = new HashMap<>();
+//        List<Member> memberList = memberRepository.findAll();
+//        long questionCnt, answerCnt, answerLike = 0L;
+//        double score;
+//        ScoreDto scoreDto;
+//        for (Member member : memberList) {
+//            questionCnt = questionRepository.countByMemberId(member.getId());
+//
+//            List<Answer> answers = answerRepository.findAllByMemberId(member.getId());
+//            answerCnt = answers.size();
+//            if(answerCnt > 0) {
+//                for (Answer answer : answers) {
+//                    answerLike += answer.getLikes();
+//                }
+//            }
+//
+//            scoreDto = new ScoreDto(member, questionCnt, answerCnt, answerLike);
+//
+//            score = questionCnt + answerCnt;
+//            scoreMap.put(scoreDto, score);
+//        }
+//        List<Map.Entry<ScoreDto, Double>> scoreList = new LinkedList<>(scoreMap.entrySet());
+//        scoreList.sort((o1, o2) -> {
+//            double value = o2.getValue() - o1.getValue();
+//            if(value > 0)
+//                return 1;
+//            else if (value == 0)
+//                return 0;
+//            else return -1;
+//        });
+//
+//        int size = scoreList.size();
+//        for (int i = 0; i < size; i++) {
+//            ScoreDto scores = scoreList.get(i).getKey();
+//            rankingList.add(new RankingDto(scores.getMember(), scores.getQuestionCnt(), scores.getAnswerCnt(), i + 1));
+//        }
     }
 
 

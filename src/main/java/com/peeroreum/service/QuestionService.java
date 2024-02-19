@@ -57,20 +57,20 @@ public class QuestionService {
 
         if(subject == 0) {
             if(grade == 0) {
-                questions = questionRepository.findAllByOrderByIdDes(PageRequest.of(page, 15));
+                questions = questionRepository.findAllByOrderByIdDesc(PageRequest.of(page, 15));
             } else {
-                questions = questionRepository.findAllByGradeOrderByIdDes(grade, PageRequest.of(page, 15));
+                questions = questionRepository.findAllByGradeOrderByIdDesc(grade, PageRequest.of(page, 15));
             }
         } else {
             if(detailSubject == 0) {
                 if(grade == 0) {
-                    questions = questionRepository.findAllBySubjectOrderByIdDes(subject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectOrderByIdDesc(subject, PageRequest.of(page, 15));
                 } else {
                     questions = questionRepository.findAllBySubjectAndGradeOrderByIdDesc(subject, grade, PageRequest.of(page, 15));
                 }
             } else {
                 if(grade == 0) {
-                    questions = questionRepository.findAllBySubjectAndDetailSubjectOrderByIdDes(subject, detailSubject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectAndDetailSubjectOrderByIdDesc(subject, detailSubject, PageRequest.of(page, 15));
                 } else {
                     questions = questionRepository.findAllByGradeAndSubjectAndDetailSubjectOrderByIdDesc(grade, subject, detailSubject, PageRequest.of(page, 15));
                 }
@@ -81,7 +81,7 @@ public class QuestionService {
     }
 
     public List<QuestionListReadDto> getSearchResults(String keyword, int page) {
-        List<Question> questions = questionRepository.findAllByTitleAndContentContainingOrderByIdDesc(keyword, PageRequest.of(page, 15));
+        List<Question> questions = questionRepository.findAllByTitleContainingOrContentContaining(keyword, keyword, PageRequest.of(page, 15));
         return makeToQuestionReadDto(questions);
     }
 

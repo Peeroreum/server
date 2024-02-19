@@ -85,6 +85,9 @@ public class AnswerService {
     }
 
     public boolean checkIfSelected(Question question) {
-        return answerRepository.existsByQuestionAndSelected(question, true);
+        return answerRepository.existsByQuestionAndIsSelected(question, true);
+    }
+
+    public void delete(Long id, String name) {
     }
 }
