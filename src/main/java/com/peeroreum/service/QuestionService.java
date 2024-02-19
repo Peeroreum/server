@@ -3,6 +3,7 @@ package com.peeroreum.service;
 import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.Member;
+import com.peeroreum.dto.member.MemberProfileDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.service.attachment.ImageService;
@@ -10,6 +11,7 @@ import com.peeroreum.service.attachment.S3Service;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,8 +25,11 @@ import java.util.List;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final AnswerService answerService;
     private final ImageService imageService;
     private final S3Service s3Service;
+    private final LikeService likeService;
+    private final BookmarkService bookmarkService;
 
     public Question create(QuestionSaveDto saveDto, String username) {
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
@@ -46,6 +51,53 @@ public class QuestionService {
         question.updateImages(images);
 
         return questionRepository.save(question);
+    }
+
+    public List<QuestionListReadDto> getQuestions(Long grade, Long subject, Long detailSubject, int page) {
+        List<Question> questions;
+
+        if(subject == 0) {
+            if(grade == 0) {
+                questions = questionRepository.findAllByOrderByIdDes(PageRequest.of(page, 15));
+            } else {
+                questions = questionRepository.findAllByGradeOrderByIdDes(grade, PageRequest.of(page, 15));
+            }
+        } else {
+            if(detailSubject == 0) {
+                if(grade == 0) {
+                    questions = questionRepository.findAllBySubjectOrderByIdDes(subject, PageRequest.of(page, 15));
+                } else {
+                    questions = questionRepository.findAllBySubjectAndGradeOrderByIdDesc(subject, grade, PageRequest.of(page, 15));
+                }
+            } else {
+                if(grade == 0) {
+                    questions = questionRepository.findAllBySubjectAndDetailSubjectOrderByIdDes(subject, detailSubject, PageRequest.of(page, 15));
+                } else {
+                    questions = questionRepository.findAllByGradeAndSubjectAndDetailSubjectOrderByIdDesc(grade, subject, detailSubject, PageRequest.of(page, 15));
+                }
+            }
+        }
+
+        return makeToQuestionReadDto(questions);
+    }
+
+    public List<QuestionListReadDto> getSearchResults(String keyword, int page) {
+        List<Question> questions = questionRepository.findAllByTitleAndContentContainingOrderByIdDesc(keyword, PageRequest.of(page, 15));
+        return makeToQuestionReadDto(questions);
+    }
+
+    public List<QuestionListReadDto> makeToQuestionReadDto(List<Question> questions) {
+        List<QuestionListReadDto> questionListReadDtos = new ArrayList<>();
+        for(Question question : questions) {
+            Member writer = question.getMember();
+            QuestionListReadDto questionListReadDto = new QuestionListReadDto(
+                    new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
+                    question.getTitle(), answerService.checkSelectedAnswer(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime() // 채택여부, 좋아요수, 댓글 수 수정
+            );
+            questionListReadDtos.add(questionListReadDto);
+        }
+
+        return questionListReadDtos;
     }
 
     public Question update(Long id, QuestionUpdateDto updateDto, String username) {
@@ -78,15 +130,15 @@ public class QuestionService {
     }
 
     public void delete(Long id, String username) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
-        Question question = questionRepository.findById(id).orElseThrow(()->new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
 
-        if(question.getMember() != member) {
+        if (question.getMember() != member) {
             throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
         }
 
-        if(!question.getImages().isEmpty()) {
-            for(Image image : question.getImages()) {
+        if (!question.getImages().isEmpty()) {
+            for (Image image : question.getImages()) {
                 imageService.deleteImage(image.getId());
             }
         }

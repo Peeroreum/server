@@ -25,7 +25,7 @@ public class BookmarkController {
 
     @DeleteMapping("/bookmark/question/{id}")
     public ResponseDto deleteQuestionBookmark(@PathVariable Long id, Principal principal) {
-        bookmarkService.cancelQuestionBookmark(id, principal.getName())
+        bookmarkService.cancelQuestionBookmark(id, principal.getName());
         return ResponseDto.success();
     }
 

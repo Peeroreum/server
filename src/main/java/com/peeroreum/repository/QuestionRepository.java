@@ -13,6 +13,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllBySubjectAndDetailSubjectOrderByIdDes(Long subject, Long detailSubject, Pageable pageable);
     List<Question> findAllBySubjectOrderByIdDes(Long subject, Pageable pageable);
     List<Question> findAllByGradeOrderByIdDes(Long grade, Pageable pageable);
+    List<Question> findAllByOrderByIdDes(Pageable pageable);
+
     List<Question> findAllByMemberOrderByIdDes(Member member, Pageable pageable);
+
     List<Question> findAllByTitleAndContentContainingOrderByIdDesc(String keyword, Pageable pageable);
 }

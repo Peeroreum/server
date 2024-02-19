@@ -30,7 +30,7 @@ public class LikeController {
 
     @DeleteMapping("/like/question/{id}")
     public ResponseDto deleteQuestionLike(@PathVariable Long id, Principal principal) {
-        likeService.cancelQuestionLike(id, principal.getName())
+        likeService.cancelQuestionLike(id, principal.getName());
         return ResponseDto.success();
     }
 

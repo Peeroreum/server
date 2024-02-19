@@ -47,4 +47,8 @@ public class LikeService {
 
         questionLikeRepository.deleteByQuestionAndMember(question, member);
     }
+
+    public Long countByQuestion(Question question) {
+        return questionLikeRepository.countAllByQuestion(question);
+    }
 }
