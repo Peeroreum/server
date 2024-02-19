@@ -9,9 +9,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class QuestionSaveDto {
+    private String title;
     private String content;
     private Long subject;
-    private Long grade;
+    private Long detailSubject;
     private List<MultipartFile> files;
-
 }

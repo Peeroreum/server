@@ -16,38 +16,34 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+    @PostMapping("/question")
+    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
+        return ResponseDto.success(questionService.create(saveDto, principal.getName()));
+    }
+
     @GetMapping("/question")
     public ResponseDto getQuestions(@RequestParam("grade") Long grade, @RequestParam("subject") Long subject, @RequestParam("detailSubject") Long detailSubject, @RequestParam(defaultValue = "0") int page) {
         return ResponseDto.success(questionService.getQuestions(grade, subject, detailSubject, page));
     }
 
     @GetMapping("/question/search/{keyword}")
-    public ResponseDto searchQuestions(@PathVariable String keyword) {
-        return ResponseDto.success(questionService.getSearchResults(keyword));
-    }
-
-    @PostMapping("/question")
-    public ResponseDto createQuestion(@ModelAttribute QuestionSaveDto saveDto, Principal principal) {
-        String username = principal.getName();
-        questionService.create(saveDto, username);
-        return ResponseDto.success();
+    public ResponseDto searchQuestions(@PathVariable String keyword, @RequestParam(defaultValue = "0") int page) {
+        return ResponseDto.success(questionService.getSearchResults(keyword, page));
     }
 
     @GetMapping("/question/{id}")
     public ResponseDto readQuestion(@PathVariable Long id, Principal principal){
-        String username = principal.getName();
-        return ResponseDto.success(questionService.read(id, username));
+        return ResponseDto.success(questionService.readById(id, principal.getName()));
     }
 
     @PutMapping("/question/{id}")
-    public ResponseDto updateQuestion(@PathVariable Long id, @ModelAttribute QuestionUpdateDto questionUpdateDto) {
-        questionService.update(id, questionUpdateDto);
-        return ResponseDto.success();
+    public ResponseDto updateQuestion(@PathVariable Long id, @ModelAttribute QuestionUpdateDto questionUpdateDto, Principal principal) {
+        return ResponseDto.success(questionService.update(id, questionUpdateDto, principal.getName()));
     }
 
     @DeleteMapping("/question/{id}")
-    public ResponseDto deleteQuestion(@PathVariable Long id){
-        questionService.delete(id);
+    public ResponseDto deleteQuestion(@PathVariable Long id, Principal principal){
+        questionService.delete(id, principal.getName());
         return ResponseDto.success();
     }
 }

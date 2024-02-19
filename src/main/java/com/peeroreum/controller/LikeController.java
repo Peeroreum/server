@@ -1,6 +1,7 @@
 package com.peeroreum.controller;
 
 import com.peeroreum.dto.response.ResponseDto;
+import com.peeroreum.service.LikeService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,8 @@ public class LikeController {
 
     @DeleteMapping("/like/question/{id}")
     public ResponseDto deleteQuestionLike(@PathVariable Long id, Principal principal) {
-        return ResponseDto.success(likeService.cancelQuestionLike(id, principal.getName()));
+        likeService.cancelQuestionLike(id, principal.getName());
+        return ResponseDto.success();
     }
 
     @DeleteMapping("/like/answer/{id}")

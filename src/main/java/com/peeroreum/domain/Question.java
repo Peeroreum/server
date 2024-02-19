@@ -1,10 +1,13 @@
 package com.peeroreum.domain;
 
+import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,6 +38,10 @@ public class Question extends EntityTime {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_image_id")
+    private List<Image> images = new ArrayList<>();
+
     @Builder
     public Question(String title, String content, Long subject, Long detailSubject, Long grade, Member member) {
         this.title = title;
@@ -45,8 +52,13 @@ public class Question extends EntityTime {
         this.member = member;
     }
 
-    public void update(String content) {
+    public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void updateImages(List<Image> images) {
+        this.images.clear();
+        this.images.addAll(images);
     }
 
 }

@@ -25,7 +25,7 @@ public class QuestionBookMark extends EntityTime {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    QuestionBookMark(Member member, Question question) {
+    public QuestionBookMark(Member member, Question question) {
         this.member = member;
         this.question = question;
     }

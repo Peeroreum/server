@@ -4,18 +4,15 @@ import com.peeroreum.dto.member.MemberProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class QuestionReadDto {
+public class QuestionListReadDto {
     private MemberProfileDto memberProfileDto;
     private String title;
-    private String content;
-    private List<String> imageUrls;
-    private String createdTime;
+    private boolean isSelected;
     private Long likes;
     private Long comments;
-    private boolean isLiked;
-    private boolean isBookmarked;
+    private LocalDateTime createdTime;
 }

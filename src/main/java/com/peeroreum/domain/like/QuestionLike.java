@@ -24,7 +24,7 @@ public class QuestionLike extends EntityTime {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    QuestionLike(Member member, Question question) {
+    public QuestionLike(Member member, Question question) {
         this.member = member;
         this.question = question;
     }
