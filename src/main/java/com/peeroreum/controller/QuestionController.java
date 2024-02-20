@@ -22,7 +22,7 @@ public class QuestionController {
     }
 
     @GetMapping("/question")
-    public ResponseDto getQuestions(@RequestParam("grade") Long grade, @RequestParam("subject") Long subject, @RequestParam("detailSubject") Long detailSubject, @RequestParam(defaultValue = "0") int page) {
+    public ResponseDto getQuestions(@RequestParam(value = "grade", defaultValue = "0") Long grade, @RequestParam(value = "subject", defaultValue = "0") Long subject, @RequestParam(value = "detailSubject", defaultValue = "0") Long detailSubject, @RequestParam(defaultValue = "0") int page) {
         return ResponseDto.success(questionService.getQuestions(grade, subject, detailSubject, page));
     }
 

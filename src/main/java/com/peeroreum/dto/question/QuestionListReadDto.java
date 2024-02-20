@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class QuestionListReadDto {
+    private Long id;
     private MemberProfileDto memberProfileDto;
     private String title;
     private boolean isSelected;

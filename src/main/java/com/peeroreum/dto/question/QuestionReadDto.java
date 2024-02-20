@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class QuestionReadDto {
+    private Long id;
     private MemberProfileDto memberProfileDto;
     private String title;
     private String content;

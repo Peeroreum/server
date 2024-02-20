@@ -42,7 +42,7 @@ public class QuestionService {
                 .build();
 
         List<Image> images = new ArrayList<>();
-        if(!saveDto.getFiles().isEmpty()) {
+        if(saveDto.getFiles() != null) {
             for(MultipartFile file : saveDto.getFiles()) {
                 images.add(imageService.saveImage(file));
             }
@@ -90,6 +90,7 @@ public class QuestionService {
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
         Member writer = question.getMember();
         QuestionReadDto questionReadDto = new QuestionReadDto(
+                question.getId(),
                 new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
                 question.getTitle(), question.getContent(), question.getImages().stream().map(Image::getImagePath).toList(), question.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 likeService.countByQuestion(question), answerService.countByQuestion(question),
@@ -103,6 +104,7 @@ public class QuestionService {
         for(Question question : questions) {
             Member writer = question.getMember();
             QuestionListReadDto questionListReadDto = new QuestionListReadDto(
+                    question.getId(),
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
                     question.getTitle(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
             );
