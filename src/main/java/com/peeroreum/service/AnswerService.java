@@ -89,5 +89,28 @@ public class AnswerService {
     }
 
     public void delete(Long id, String name) {
+        Answer answer = answerRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
+        Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(answer.getMember() != member) {
+            throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
+        }
+
+        if(answer.isSelected()) {
+            throw new CustomException(ExceptionType.CANNOT_DELETE_SELECTED_ANSWER);
+        }
+
+        for(Image image : answer.getImages()) {
+            imageService.deleteImage(image.getId());
+        }
+
+        likeService.deleteAllByAnswer(answer);
+
+        if(answer.getParentAnswerId() == -1 && answerRepository.existsByParentAnswerId(answer.getId())) {
+            answer.delete();
+            answerRepository.save(answer);
+        } else {
+            answerRepository.delete(answer);
+        }
     }
 }

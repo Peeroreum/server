@@ -94,4 +94,8 @@ public class LikeService {
     public Long countByAnswer(Answer answer) {
         return answerLikeRepository.countAllByAnswer(answer);
     }
+
+    public void deleteAllByAnswer(Answer answer) {
+        answerLikeRepository.deleteAllByAnswer(answer);
+    }
 }
