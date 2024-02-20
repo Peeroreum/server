@@ -68,7 +68,8 @@ public class Answer extends EntityTime {
 
     public void delete() {
         this.content = "";
-        isDeleted = true;
+        this.images.clear();
+        this.isDeleted = true;
     }
 
 }

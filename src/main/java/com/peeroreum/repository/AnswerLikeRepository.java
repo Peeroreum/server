@@ -11,4 +11,5 @@ public interface AnswerLikeRepository extends JpaRepository<AnswerLike, Long> {
     Long countAllByAnswer(Answer answer);
     boolean existsByAnswerAndMember(Answer answer, Member member);
     void deleteByAnswerAndMember(Answer answer, Member member);
+    void deleteAllByAnswer(Answer answer);
 }

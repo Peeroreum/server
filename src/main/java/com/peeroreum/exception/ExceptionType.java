@@ -27,6 +27,7 @@ public enum ExceptionType {
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요 한 적 없는 글입니다."),
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "북마크 한 적 없는 글입니다."),
     DO_NOT_HAVE_PERMISSION(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    CANNOT_DELETE_SELECTED_ANSWER(HttpStatus.FORBIDDEN, "채택된 답변은 삭제할 수 없습니다."),
     CANNOT_CHANGE_NICKNAME(HttpStatus.NOT_ACCEPTABLE, "마지막 닉네임 변경 이후 30일이 지나지 않았습니다.");
 
     private final HttpStatus httpStatus;
