@@ -157,6 +157,7 @@ public class QuestionService {
             }
         }
 
+        answerService.deleteAllByQuestion(question);
         bookmarkService.deleteAllByQuestion(question);
         likeService.deleteAllByQuestion(question);
         questionRepository.delete(question);

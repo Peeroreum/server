@@ -113,4 +113,22 @@ public class AnswerService {
             answerRepository.delete(answer);
         }
     }
+
+    public void deleteAllByQuestion(Question question) {
+        List<Answer> answers = answerRepository.findAllByQuestion(question);
+        deleteAll(answers);
+    }
+
+    private void deleteAll(List<Answer> answers) {
+        for(Answer answer : answers) {
+            if(answer.isSelected()) {
+                throw new CustomException(ExceptionType.CANNOT_DELETE_SELECTED_ANSWER);
+            }
+            for(Image image : answer.getImages()) {
+                imageService.deleteImage(image.getId());
+            }
+            likeService.deleteAllByAnswer(answer);
+            answerRepository.delete(answer);
+        }
+    }
 }
