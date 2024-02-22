@@ -43,7 +43,7 @@ public class AnswerService {
         );
 
         List<Image> images = new ArrayList<>();
-        if(!answerSaveDto.getFiles().isEmpty()) {
+        if(answerSaveDto.getFiles() != null) {
             for(MultipartFile file : answerSaveDto.getFiles()) {
                 images.add(imageService.saveImage(file));
             }
@@ -72,7 +72,7 @@ public class AnswerService {
             AnswerReadDto answerReadDto = new AnswerReadDto(
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
                     answer.getId(), answer.getContent(), answer.getImages().stream().map(Image::getImagePath).toList(), answer.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
-                    answer.isSelected(), answer.isDeleted(), likeService.isLikedAnswer(answer, member), answer.getParentAnswerId(), likeService.countByAnswer(answer), answerRepository.countAllByParentAnswerId(answer.getParentAnswerId())
+                    answer.isSelected(), answer.isDeleted(), likeService.isLikedAnswer(answer, member), answer.getParentAnswerId(), likeService.countByAnswer(answer), (answer.getParentAnswerId() == -1)? answerRepository.countAllByParentAnswerId(answer.getId()) : 0
             );
             answerReadDtos.add(answerReadDto);
         }
@@ -110,6 +110,24 @@ public class AnswerService {
             answer.delete();
             answerRepository.save(answer);
         } else {
+            answerRepository.delete(answer);
+        }
+    }
+
+    public void deleteAllByQuestion(Question question) {
+        List<Answer> answers = answerRepository.findAllByQuestion(question);
+        deleteAll(answers);
+    }
+
+    private void deleteAll(List<Answer> answers) {
+        for(Answer answer : answers) {
+            if(answer.isSelected()) {
+                throw new CustomException(ExceptionType.CANNOT_DELETE_SELECTED_ANSWER);
+            }
+            for(Image image : answer.getImages()) {
+                imageService.deleteImage(image.getId());
+            }
+            likeService.deleteAllByAnswer(answer);
             answerRepository.delete(answer);
         }
     }
