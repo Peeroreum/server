@@ -1,5 +1,6 @@
 package com.peeroreum.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.peeroreum.domain.image.Image;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@JsonIgnoreProperties({"member"})
 public class Question extends EntityTime {
 
     @Id
