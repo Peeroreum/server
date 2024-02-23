@@ -30,4 +30,10 @@ public class AnswerController {
         answerService.delete(id, principal.getName());
         return ResponseDto.success();
     }
+
+    @PutMapping("/answer/{id}/select")
+    public ResponseDto selectAnswer(@PathVariable Long id, Principal principal) {
+        answerService.selectAnswer(id, principal.getName());
+        return ResponseDto.success();
+    }
 }
