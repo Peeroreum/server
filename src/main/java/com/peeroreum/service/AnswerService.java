@@ -96,6 +96,10 @@ public class AnswerService {
             throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
         }
 
+        if(answer.isDeleted()) {
+            throw new CustomException(ExceptionType.ALREADY_DELETED);
+        }
+
         if(answer.isSelected()) {
             throw new CustomException(ExceptionType.CANNOT_DELETE_SELECTED_ANSWER);
         }
@@ -138,6 +142,10 @@ public class AnswerService {
 
         if(answer.getQuestion().getMember() != member) {
             throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
+        }
+
+        if(answer.isDeleted()) {
+            throw new CustomException(ExceptionType.ALREADY_DELETED);
         }
 
         if(checkIfSelected(answer.getQuestion())) {
