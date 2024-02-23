@@ -23,6 +23,7 @@ public enum ExceptionType {
     UPLOAD_FAILURE_EXCEPTION(HttpStatus.EXPECTATION_FAILED, "이미지 업로드에 실패했습니다."),
     ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 눌렀습니다."),
     ALREADY_BOOKMARKED(HttpStatus.CONFLICT, "이미 북마크한 글입니다."),
+    ALREADY_SELECTED(HttpStatus.CONFLICT, "이미 채택되었습니다."),
     ALREADY_ENROLLED_WEDU(HttpStatus.CONFLICT, "이미 참여 중인 같이방입니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요 한 적 없는 글입니다."),
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "북마크 한 적 없는 글입니다."),

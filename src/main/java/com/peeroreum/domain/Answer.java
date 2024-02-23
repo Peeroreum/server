@@ -72,4 +72,7 @@ public class Answer extends EntityTime {
         this.isDeleted = true;
     }
 
+    public void select() {
+        this.isSelected = true;
+    }
 }

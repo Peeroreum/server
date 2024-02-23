@@ -131,4 +131,20 @@ public class AnswerService {
             answerRepository.delete(answer);
         }
     }
+
+    public void selectAnswer(Long id, String name) {
+        Answer answer = answerRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
+        Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(answer.getQuestion().getMember() != member) {
+            throw new CustomException(ExceptionType.DO_NOT_HAVE_PERMISSION);
+        }
+
+        if(checkIfSelected(answer.getQuestion())) {
+            throw new CustomException(ExceptionType.ALREADY_SELECTED);
+        }
+
+        answer.select();
+        answerRepository.save(answer);
+    }
 }
