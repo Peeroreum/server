@@ -26,7 +26,7 @@ public class BookmarkService {
         this.memberRepository = memberRepository;
     }
 
-    public QuestionBookMark makeQuestionBookmark(Long id, String name) {
+    public void makeQuestionBookmark(Long id, String name) {
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
@@ -35,7 +35,7 @@ public class BookmarkService {
         }
 
         QuestionBookMark questionBookMark = new QuestionBookMark(member, question);
-        return questionBookmarkRepository.save(questionBookMark);
+        questionBookmarkRepository.save(questionBookMark);
     }
 
     public void cancelQuestionBookmark(Long id, String name) {

@@ -29,7 +29,7 @@ public class LikeService {
         this.memberRepository = memberRepository;
     }
 
-    public QuestionLike makeQuestionLike(Long id, String name) {
+    public void makeQuestionLike(Long id, String name) {
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
 
@@ -38,7 +38,7 @@ public class LikeService {
         }
 
         QuestionLike questionLike = new QuestionLike(member, question);
-        return questionLikeRepository.save(questionLike);
+        questionLikeRepository.save(questionLike);
     }
 
     public void cancelQuestionLike(Long id, String name) {
@@ -64,7 +64,7 @@ public class LikeService {
         questionLikeRepository.deleteAllByQuestion(question);
     }
 
-    public AnswerLike makeAnswerLike(Long id, String name) {
+    public void makeAnswerLike(Long id, String name) {
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         Answer answer = answerRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.ANSWER_NOT_FOUND_EXCEPTION));
 
@@ -73,7 +73,7 @@ public class LikeService {
         }
 
         AnswerLike answerLike = new AnswerLike(member, answer);
-        return answerLikeRepository.save(answerLike);
+        answerLikeRepository.save(answerLike);
     }
 
     public void cancelAnswerLike(Long id, String name) {
