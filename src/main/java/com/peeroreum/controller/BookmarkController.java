@@ -2,10 +2,7 @@ package com.peeroreum.controller;
 
 import com.peeroreum.dto.response.ResponseDto;
 import com.peeroreum.service.BookmarkService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -18,9 +15,10 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-    @PutMapping("/bookmark/question/{id}")
+    @PostMapping("/bookmark/question/{id}")
     public ResponseDto createQuestionBookmark(@PathVariable Long id, Principal principal) {
-        return ResponseDto.success(bookmarkService.makeQuestionBookmark(id, principal.getName()));
+        bookmarkService.makeQuestionBookmark(id, principal.getName());
+        return ResponseDto.success();
     }
 
     @DeleteMapping("/bookmark/question/{id}")

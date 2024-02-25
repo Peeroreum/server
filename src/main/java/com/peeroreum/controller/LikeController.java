@@ -20,7 +20,8 @@ public class LikeController {
 
     @PostMapping("/like/question/{id}")
     public ResponseDto createQuestionLike(@PathVariable Long id, Principal principal) {
-        return ResponseDto.success(likeService.makeQuestionLike(id, principal.getName()));
+        likeService.makeQuestionLike(id, principal.getName());
+        return ResponseDto.success();
     }
 
     @DeleteMapping("/like/question/{id}")
@@ -31,7 +32,8 @@ public class LikeController {
 
     @PostMapping("/like/answer/{id}")
     public ResponseDto createAnswerLike(@PathVariable Long id, Principal principal) {
-        return ResponseDto.success(likeService.makeAnswerLike(id, principal.getName()));
+        likeService.makeAnswerLike(id, principal.getName());
+        return ResponseDto.success();
     }
 
     @DeleteMapping("/like/answer/{id}")
