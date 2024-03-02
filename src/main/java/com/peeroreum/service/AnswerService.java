@@ -115,6 +115,11 @@ public class AnswerService {
             answer.delete();
             answerRepository.save(answer);
         } else {
+            if(answer.getParentAnswerId() != -1) {
+                if(answerRepository.countAllByParentAnswerId(answer.getParentAnswerId()) == 1) {
+                    answerRepository.deleteById(answer.getParentAnswerId());
+                }
+            }
             answerRepository.delete(answer);
         }
     }
