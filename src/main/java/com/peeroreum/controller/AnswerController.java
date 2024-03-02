@@ -25,6 +25,11 @@ public class AnswerController {
         return ResponseDto.success(answerService.readAll(questionId, page, principal.getName()));
     }
 
+    @GetMapping("/answer/{id}/selected")
+    public ResponseDto readSelectedAnswer(@PathVariable Long id, Principal principal) {
+        return ResponseDto.success(answerService.readSelected(id, principal.getName()));
+    }
+
     @DeleteMapping("/answer/{id}")
     public ResponseDto deleteAnswer(@PathVariable Long id, Principal principal) {
         answerService.delete(id, principal.getName());
