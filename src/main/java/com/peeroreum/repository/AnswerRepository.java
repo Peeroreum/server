@@ -14,6 +14,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     List<Answer> findAllByQuestionOrderByGroupIdAscIdAsc(Question question, Pageable pageable);
     List<Answer> findAllByMember(Member member, Pageable pageable);
     List<Answer> findAllByQuestion(Question question);
+    Answer findAnswerByQuestionAndIsSelected(Question question, boolean isSelected);
     boolean existsByQuestionAndIsSelected(Question question, boolean isSelected);
     boolean existsByParentAnswerId(Long parentAnswerId);
     Long countAllByQuestion(Question question);

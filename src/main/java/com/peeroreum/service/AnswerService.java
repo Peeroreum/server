@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -154,5 +155,23 @@ public class AnswerService {
 
         answer.select();
         answerRepository.save(answer);
+    }
+
+    public Optional<AnswerReadDto> readSelected(Long id, String name) {
+        Question question = questionRepository.findById(id).orElseThrow(() -> new CustomException(ExceptionType.QUESTION_NOT_FOUND_EXCEPTION));
+        Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(answerRepository.existsByQuestionAndIsSelected(question, true)) {
+            Answer answer = answerRepository.findAnswerByQuestionAndIsSelected(question, true);
+            Member writer = answer.getMember();
+            AnswerReadDto answerReadDto = new AnswerReadDto(
+                    new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
+                    answer.getId(), answer.getContent(), answer.getImages().stream().map(Image::getImagePath).toList(), answer.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                    answer.isSelected(), answer.isDeleted(), likeService.isLikedAnswer(answer, member), answer.getParentAnswerId(), likeService.countByAnswer(answer), (answer.getParentAnswerId() == -1)? answerRepository.countAllByParentAnswerId(answer.getId()) : 0
+            );
+            return Optional.of(answerReadDto);
+        } else {
+            return null;
+        }
     }
 }
