@@ -46,4 +46,9 @@ public class QuestionController {
         questionService.delete(id, principal.getName());
         return ResponseDto.success();
     }
+
+    @GetMapping("/question/my")
+    public ResponseDto getMyQuestions(Principal principal, @RequestParam(defaultValue = "0") int page) {
+        return ResponseDto.success(questionService.getAllMy(principal.getName(), page));
+    }
 }
