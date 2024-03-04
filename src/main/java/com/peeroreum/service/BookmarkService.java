@@ -83,7 +83,7 @@ public class BookmarkService {
             QuestionListReadDto questionListReadDto = new QuestionListReadDto(
                     question.getId(),
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
-                    question.getTitle(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
+                    question.getTitle(), question.getContent(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
             );
             questionListReadDtos.add(questionListReadDto);
         }

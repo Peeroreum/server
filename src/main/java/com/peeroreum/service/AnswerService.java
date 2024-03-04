@@ -7,11 +7,14 @@ import com.peeroreum.domain.image.Image;
 import com.peeroreum.dto.answer.AnswerReadDto;
 import com.peeroreum.dto.answer.AnswerSaveDto;
 import com.peeroreum.dto.member.MemberProfileDto;
+import com.peeroreum.dto.mypage.MyQuestionReadDto;
+import com.peeroreum.dto.question.QuestionListReadDto;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
 import com.peeroreum.service.attachment.ImageService;
 import com.peeroreum.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -178,5 +181,22 @@ public class AnswerService {
         } else {
             return null;
         }
+    }
+
+    public MyQuestionReadDto getAllMy(String name, int page) {
+        Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        Page<Question> questions = answerRepository.findDistinctQuestionsByMember(member, PageRequest.of(page, 15));
+        List<QuestionListReadDto> questionListReadDtos = new ArrayList<>();
+        for(Question question : questions.getContent()) {
+            Member writer = question.getMember();
+            QuestionListReadDto questionListReadDto = new QuestionListReadDto(
+                    question.getId(),
+                    new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
+                    question.getTitle(), question.getContent(), checkIfSelected(question), likeService.countByQuestion(question), countByQuestion(question), question.getCreatedTime()
+            );
+            questionListReadDtos.add(questionListReadDto);
+        }
+
+        return new MyQuestionReadDto((int)questions.getTotalElements(), questionListReadDtos);
     }
 }
