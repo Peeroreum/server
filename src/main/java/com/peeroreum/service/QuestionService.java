@@ -4,6 +4,7 @@ import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.Member;
 import com.peeroreum.dto.member.MemberProfileDto;
+import com.peeroreum.dto.mypage.MyQuestionReadDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.service.attachment.ImageService;
@@ -106,7 +107,7 @@ public class QuestionService {
             QuestionListReadDto questionListReadDto = new QuestionListReadDto(
                     question.getId(),
                     new MemberProfileDto(writer.getGrade(), writer.getImage() != null? writer.getImage().getImagePath() : null, writer.getNickname()),
-                    question.getTitle(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
+                    question.getTitle(), question.getContent(), answerService.checkIfSelected(question), likeService.countByQuestion(question), answerService.countByQuestion(question), question.getCreatedTime()
             );
             questionListReadDtos.add(questionListReadDto);
         }
@@ -161,5 +162,11 @@ public class QuestionService {
         bookmarkService.deleteAllByQuestion(question);
         likeService.deleteAllByQuestion(question);
         questionRepository.delete(question);
+    }
+
+    public MyQuestionReadDto getAllMy(String username, int page) {
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
+        List<Question> questions = questionRepository.findAllByMemberOrderByIdDesc(member, PageRequest.of(page, 15));
+        return new MyQuestionReadDto(questionRepository.countAllByMember(member), makeToQuestionReadDto(questions));
     }
 }

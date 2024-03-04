@@ -41,4 +41,9 @@ public class AnswerController {
         answerService.selectAnswer(id, principal.getName());
         return ResponseDto.success();
     }
+
+    @GetMapping("/answer/my")
+    public ResponseDto getAllMyAnswers(@RequestParam(defaultValue = "0") int page, Principal principal) {
+        return ResponseDto.success(answerService.getAllMy(principal.getName(), page));
+    }
 }

@@ -27,4 +27,9 @@ public class BookmarkController {
         return ResponseDto.success();
     }
 
+    @GetMapping("/bookmark/question/my")
+    public ResponseDto getBookmarkQuestions(Principal principal, @RequestParam(defaultValue = "0") int page) {
+        return ResponseDto.success(bookmarkService.getMyQuestions(principal.getName(), page));
+    }
+
 }

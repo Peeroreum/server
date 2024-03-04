@@ -12,6 +12,7 @@ public class QuestionListReadDto {
     private Long id;
     private MemberProfileDto memberProfileDto;
     private String title;
+    private String content;
     private boolean isSelected;
     private Long likes;
     private Long comments;
