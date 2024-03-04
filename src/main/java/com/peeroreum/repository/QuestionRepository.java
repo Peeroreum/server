@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
+    int countAllByMember(Member member);
     List<Question> findAllByGradeAndSubjectAndDetailSubjectOrderByIdDesc(Long grade, Long subject, Long detailSubject, Pageable pageable);
     List<Question> findAllBySubjectAndGradeOrderByIdDesc(Long subject, Long grade, Pageable pageable);
     List<Question> findAllBySubjectAndDetailSubjectOrderByIdDesc(Long subject, Long detailSubject, Pageable pageable);

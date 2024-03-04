@@ -4,6 +4,7 @@ import com.peeroreum.domain.image.Image;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.Member;
 import com.peeroreum.dto.member.MemberProfileDto;
+import com.peeroreum.dto.mypage.MyQuestionReadDto;
 import com.peeroreum.dto.question.*;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.service.attachment.ImageService;
@@ -163,9 +164,9 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
-    public List<QuestionListReadDto> getAllMy(String username, int page) {
+    public MyQuestionReadDto getAllMy(String username, int page) {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
         List<Question> questions = questionRepository.findAllByMemberOrderByIdDesc(member, PageRequest.of(page, 15));
-        return makeToQuestionReadDto(questions);
+        return new MyQuestionReadDto(questionRepository.countAllByMember(member), makeToQuestionReadDto(questions));
     }
 }

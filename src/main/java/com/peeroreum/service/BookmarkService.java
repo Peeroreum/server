@@ -4,6 +4,7 @@ import com.peeroreum.domain.Member;
 import com.peeroreum.domain.Question;
 import com.peeroreum.domain.bookmark.QuestionBookMark;
 import com.peeroreum.dto.member.MemberProfileDto;
+import com.peeroreum.dto.mypage.MyQuestionReadDto;
 import com.peeroreum.dto.question.QuestionListReadDto;
 import com.peeroreum.exception.CustomException;
 import com.peeroreum.exception.ExceptionType;
@@ -70,7 +71,7 @@ public class BookmarkService {
         return questionBookmarkRepository.existsByQuestionAndMember(question, member);
     }
 
-    public List<QuestionListReadDto> getMyQuestions(String name, int page) {
+    public MyQuestionReadDto getMyQuestions(String name, int page) {
         Member member = memberRepository.findByUsername(name).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND_EXCEPTION));
 
         List<Question> questions = questionBookmarkRepository.findAllByMemberOrderByIdDesc(member, PageRequest.of(page, 15))
@@ -87,6 +88,6 @@ public class BookmarkService {
             questionListReadDtos.add(questionListReadDto);
         }
 
-        return questionListReadDtos;
+        return new MyQuestionReadDto(questionBookmarkRepository.countAllByMember(member), questionListReadDtos);
     }
 }

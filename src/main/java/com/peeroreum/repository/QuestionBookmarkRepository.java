@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface QuestionBookmarkRepository extends JpaRepository<QuestionBookMark, Long> {
     List<QuestionBookMark> findAllByMemberOrderByIdDesc(Member member, Pageable pageable);
+    int countAllByMember(Member member);
     boolean existsByQuestionAndMember(Question question, Member member);
     void deleteAllByMember(Member member);
     void deleteAllByQuestion(Question question);
