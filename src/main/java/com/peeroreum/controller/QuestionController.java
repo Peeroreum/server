@@ -27,8 +27,8 @@ public class QuestionController {
     }
 
     @GetMapping("/question/search/{keyword}")
-    public ResponseDto searchQuestions(@PathVariable String keyword, @RequestParam(defaultValue = "0") int page) {
-        return ResponseDto.success(questionService.getSearchResults(keyword, page));
+    public ResponseDto searchQuestions(@PathVariable String keyword, @RequestParam(value = "grade", defaultValue = "0") Long grade, @RequestParam(value = "subject", defaultValue = "0") Long subject, @RequestParam(value = "detailSubject", defaultValue = "0") Long detailSubject, @RequestParam(defaultValue = "0") int page) {
+        return ResponseDto.success(questionService.getSearchResults(keyword, grade, subject, detailSubject, page));
     }
 
     @GetMapping("/question/{id}")
