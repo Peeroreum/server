@@ -1,3 +1,4 @@
+
 package com.peeroreum.service;
 
 import com.peeroreum.domain.image.Image;
@@ -81,8 +82,30 @@ public class QuestionService {
         return makeToQuestionReadDto(questions);
     }
 
-    public List<QuestionListReadDto> getSearchResults(String keyword, int page) {
-        List<Question> questions = questionRepository.findAllByTitleContainingOrContentContaining(keyword, keyword, PageRequest.of(page, 15));
+    public List<QuestionListReadDto> getSearchResults(String keyword, Long grade, Long subject, Long detailSubject, int page) {
+        List<Question> questions = new ArrayList<>();
+
+        if(subject == 0) {
+            if(grade == 0) {
+                questions = questionRepository.findAllByTitleContainingOrContentContainingOrderByIdDesc(keyword, keyword, PageRequest.of(page, 15));
+            } else {
+                questions = questionRepository.findAllByTitleContainingOrContentContainingAndGradeOrderByIdDesc(keyword, keyword, grade, PageRequest.of(page, 15));
+            }
+        } else {
+            if(detailSubject == 0) {
+                if(grade == 0) {
+                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndSubjectOrderByIdDesc(keyword, keyword, subject, PageRequest.of(page, 15));
+                } else {
+                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndSubjectAndGradeOrderByIdDesc(keyword, keyword, subject, grade, PageRequest.of(page, 15));
+                }
+            } else {
+                if(grade == 0) {
+                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndSubjectAndDetailSubjectOrderByIdDesc(keyword, keyword, subject, detailSubject, PageRequest.of(page, 15));
+                } else {
+                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndGradeAndSubjectAndDetailSubjectOrderByIdDesc(keyword, keyword, grade, subject, detailSubject, PageRequest.of(page, 15));
+                }
+            }
+        }
         return makeToQuestionReadDto(questions);
     }
 
