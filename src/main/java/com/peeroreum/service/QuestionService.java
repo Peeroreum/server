@@ -89,20 +89,20 @@ public class QuestionService {
             if(grade == 0) {
                 questions = questionRepository.findAllByTitleContainingOrContentContainingOrderByIdDesc(keyword, keyword, PageRequest.of(page, 15));
             } else {
-                questions = questionRepository.findAllByTitleContainingOrContentContainingAndGradeOrderByIdDesc(keyword, keyword, grade, PageRequest.of(page, 15));
+                questions = questionRepository.findAllByGradeAndTitleContainingOrGradeAndContentContainingOrderByIdDesc(grade, keyword, grade, keyword, PageRequest.of(page, 15));
             }
         } else {
             if(detailSubject == 0) {
                 if(grade == 0) {
-                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndSubjectOrderByIdDesc(keyword, keyword, subject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectAndTitleContainingOrSubjectAndContentContainingOrderByIdDesc(subject, keyword, subject, keyword, PageRequest.of(page, 15));
                 } else {
-                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndSubjectAndGradeOrderByIdDesc(keyword, keyword, subject, grade, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectAndGradeAndTitleContainingOrSubjectAndGradeAndContentContainingOrderByIdDesc(subject, grade, keyword, subject, grade, keyword, PageRequest.of(page, 15));
                 }
             } else {
                 if(grade == 0) {
-                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndSubjectAndDetailSubjectOrderByIdDesc(keyword, keyword, subject, detailSubject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllBySubjectAndDetailSubjectAndTitleContainingOrSubjectAndDetailSubjectAndContentContainingOrderByIdDesc(subject, detailSubject, keyword, subject, detailSubject, keyword, PageRequest.of(page, 15));
                 } else {
-                    questions = questionRepository.findAllByTitleContainingOrContentContainingAndGradeAndSubjectAndDetailSubjectOrderByIdDesc(keyword, keyword, grade, subject, detailSubject, PageRequest.of(page, 15));
+                    questions = questionRepository.findAllByGradeAndSubjectAndDetailSubjectAndTitleContainingOrGradeAndSubjectAndDetailSubjectAndContentContainingOrderByIdDesc(grade, subject, detailSubject, keyword, grade, subject, detailSubject, keyword, PageRequest.of(page, 15));
                 }
             }
         }

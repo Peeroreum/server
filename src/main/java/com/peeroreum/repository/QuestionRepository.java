@@ -23,9 +23,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
     List<Question> findAllByTitleContainingOrContentContainingOrderByIdDesc(String title, String content, Pageable pageable);
-    List<Question> findAllByTitleContainingOrContentContainingAndGradeOrderByIdDesc(String title, String content, Long grade, Pageable pageable);
-    List<Question> findAllByTitleContainingOrContentContainingAndSubjectOrderByIdDesc(String title, String content, Long subject, Pageable pageable);
-    List<Question> findAllByTitleContainingOrContentContainingAndSubjectAndGradeOrderByIdDesc(String title, String content, Long subject, Long grade, Pageable pageable);
-    List<Question> findAllByTitleContainingOrContentContainingAndSubjectAndDetailSubjectOrderByIdDesc(String title, String content, Long subject, Long detailSubject, Pageable pageable);
-    List<Question> findAllByTitleContainingOrContentContainingAndGradeAndSubjectAndDetailSubjectOrderByIdDesc(String title, String content, Long grade, Long subject, Long detailSubject, Pageable pageable);
+    List<Question> findAllByGradeAndTitleContainingOrGradeAndContentContainingOrderByIdDesc(Long grade1, String title, Long grade2, String content, Pageable pageable);
+    List<Question> findAllBySubjectAndTitleContainingOrSubjectAndContentContainingOrderByIdDesc(Long subject1, String title, Long subject2, String content, Pageable pageable);
+    List<Question> findAllBySubjectAndGradeAndTitleContainingOrSubjectAndGradeAndContentContainingOrderByIdDesc(Long subject1, Long grade1, String title, Long subject2, Long grade2, String content, Pageable pageable);
+    List<Question> findAllBySubjectAndDetailSubjectAndTitleContainingOrSubjectAndDetailSubjectAndContentContainingOrderByIdDesc(Long subject1, Long detailSubject1, String title, Long subject2, Long detailSubject2, String content, Pageable pageable);
+    List<Question> findAllByGradeAndSubjectAndDetailSubjectAndTitleContainingOrGradeAndSubjectAndDetailSubjectAndContentContainingOrderByIdDesc(Long grade1, Long subject1, Long detailSubject1, String title, Long grade2, Long subject2, Long detailSubject2, String content, Pageable pageable);
 }
