@@ -11,6 +11,7 @@ import java.util.List;
 public class QuestionSaveDto {
     private String title;
     private String content;
+    private Long grade;
     private Long subject;
     private Long detailSubject;
     private List<MultipartFile> files;

@@ -39,7 +39,7 @@ public class QuestionService {
                 .content(saveDto.getContent())
                 .subject(saveDto.getSubject())
                 .detailSubject(saveDto.getDetailSubject())
-                .grade(member.getGrade())
+                .grade(saveDto.getGrade())
                 .member(member)
                 .build();
 
