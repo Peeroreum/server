@@ -85,7 +85,7 @@ public class AnswerService {
     }
 
     public Long countByQuestion(Question question) {
-        return answerRepository.countAllByQuestion(question);
+        return answerRepository.countAllByQuestionAndIsDeleted(question, false);
     }
 
     public boolean checkIfSelected(Question question) {

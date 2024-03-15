@@ -21,5 +21,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     boolean existsByQuestionAndIsSelected(Question question, boolean isSelected);
     boolean existsByParentAnswerId(Long parentAnswerId);
     Long countAllByQuestion(Question question);
+    Long countAllByQuestionAndIsDeleted(Question question, boolean isDeleted);
     Long countAllByParentAnswerId(Long parentAnswerId);
 }
