@@ -292,7 +292,6 @@ public class WeduService {
         }
 
         challengeService.createChallengeImages(member, wedu, proofImages);
-
     }
 
     public void deleteChallengeImages(Long id, String username) {
