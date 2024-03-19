@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -34,7 +33,15 @@ public class MemberWedu extends EntityTime {
         this.continuousDate = 0;
     }
 
-    public void updateContinuousDate(int continuousDate) {
-        this.continuousDate = continuousDate;
+    public void clearContinuousDate() {
+        this.continuousDate = 0;
+    }
+
+    public void addContinuousDate() {
+        this.continuousDate += 1;
+    }
+
+    public void subContinuousDate() {
+        this.continuousDate -= 1;
     }
 }

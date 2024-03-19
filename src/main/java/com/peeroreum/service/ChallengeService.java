@@ -34,18 +34,12 @@ public class ChallengeService {
     }
 
     public void createChallengeImages(Member member, Wedu wedu, List<Image> proofImages) {
-        int continuity = 1;
-        LocalDate now = LocalDate.now();
         MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
-        if(challengeImageRepository.existsByWeduAndMemberAndChallengeDate(wedu, member, now)) {
-            deleteTodayChallengeImages(member, wedu);
-            challengeImageRepository.deleteByWeduAndMemberAndChallengeDate(wedu, member, now);
-        }
 
-        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByMemberAndWeduOrderByChallengeDateDesc(member, wedu);
-        if(!challengeImages.isEmpty() && challengeImages.get(0).getChallengeDate().plusDays(1).equals(now)) {
-            continuity = memberWedu.getContinuousDate() + 1;
-        }
+//        List<ChallengeImage> challengeImages = challengeImageRepository.findAllByMemberAndWeduOrderByChallengeDateDesc(member, wedu);
+//        if(!challengeImages.isEmpty() && challengeImages.get(0).getChallengeDate().plusDays(1).equals(now)) {
+//            continuity = memberWedu.getContinuousDate() + 1;
+//        }
         ChallengeImage challengeImage = ChallengeImage.builder()
                 .member(member)
                 .wedu(wedu)
@@ -53,7 +47,7 @@ public class ChallengeService {
                 .challengeDate(LocalDate.now())
                 .build();
 
-        memberWedu.updateContinuousDate(continuity);
+        memberWedu.addContinuousDate();
         memberWeduRepository.save(memberWedu);
         challengeImageRepository.save(challengeImage);
     }
@@ -62,11 +56,12 @@ public class ChallengeService {
         LocalDate now = LocalDate.now();
         MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
         List<ChallengeImage> challengeImages = challengeImageRepository.findAllByMemberAndWeduOrderByChallengeDateDesc(member, wedu);
-        if(!challengeImages.isEmpty() && (challengeImages.get(0).getChallengeDate().plusDays(1).equals(now) || challengeImages.get(0).getChallengeDate().equals(now))) {
-            return memberWedu.getContinuousDate();
-        } else {
-            return 0;
+        if(challengeImages.isEmpty() || (!challengeImages.get(0).getChallengeDate().equals(now) && !challengeImages.get(0).getChallengeDate().plusDays(1).equals(now))
+        ) {
+            memberWedu.clearContinuousDate();
+            memberWeduRepository.save(memberWedu);
         }
+        return memberWedu.getContinuousDate();
     }
 
     public ChallengeReadDto readChallengeImages(Wedu wedu, Member member, LocalDate formattedDate) {
@@ -74,7 +69,6 @@ public class ChallengeService {
                 .map(ChallengeImage::getImage)
                 .map(images -> images.stream().map(Image::getImagePath).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
-
 
         return new ChallengeReadDto(imageUrls);
     }
@@ -86,6 +80,11 @@ public class ChallengeService {
         for(Image image : images) {
             imageService.deleteImage(image.getId());
         }
+
+        MemberWedu memberWedu = memberWeduRepository.findByMemberAndWedu(member, wedu);
+        memberWedu.subContinuousDate();
+        memberWeduRepository.save(memberWedu);
+
         challengeImageRepository.deleteAllByMemberAndWeduAndChallengeDate(member, wedu, now);
     }
 
